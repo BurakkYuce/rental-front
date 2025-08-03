@@ -1,0 +1,7 @@
+// src/pages/404Page.jsx import React, { useEffect } from 'react'; const
+NotFoundPage = () => { useEffect(() => { // public/404.html dosyasına yönlendir
+window.location.href = '/404.html'; }, []); return (
+<div>
+  <p>Sayfa bulunamadı, yönlendiriliyor...</p>
+</div>
+); }; export default NotFoundPage;

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Currency Debug Test</title>
+</head>
+<body>
+    <h1>Currency System Debug</h1>
+    <button onclick="testBackend()">Test Backend Rates</button>
+    <button onclick="testConversion()">Test Currency Conversion</button>
+    <div id="output"></div>
+
+    <script>
+        async function testBackend() {
+            try {
+                const response = await fetch('http://localhost:4000/api/exchange-rates/current');
+                const data = await response.json();
+                document.getElementById('output').innerHTML = 
+                    '<h3>Backend Response:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('output').innerHTML = 
+                    '<p style="color: red;">Error: ' + error.message + '</p>';
+            }
+        }
+
+        async function testConversion() {
+            const DEFAULT_RATES = {
+                EUR: 1,
+                USD: 1.1,
+                TRY: 35,
+            };
+
+            // Simulate backend response based on current data
+            const backendResponse = {
+                success: true,
+                data: {
+                    baseCurrency: "USD",
+                    rates: {
+                        TRY: 100,  // Current backend rate
+                        USD: 1.1   // Current backend rate
+                    }
+                }
+            };
+
+            const backendRates = backendResponse.data.rates;
+            const baseCurrency = backendResponse.data.baseCurrency;
+            
+            console.log("🔄 Converting from " + baseCurrency + "-based to EUR-based rates");
+            
+            let eurBasedRates = {...DEFAULT_RATES};
+            const eurRate = backendRates.EUR;
+            
+            if (eurRate) {
+                console.log("✅ EUR rate available");
+            } else {
+                console.log("⚠️ No EUR rate from backend, creating synthetic EUR-based rates");
+                
+                eurBasedRates = {...DEFAULT_RATES};
+                
+                if (baseCurrency === "USD" && backendRates.TRY) {
+                    const usdToEurRate = DEFAULT_RATES.USD;
+                    eurBasedRates.TRY = backendRates.TRY / usdToEurRate;
+                    console.log("📊 Updated TRY rate based on backend USD-TRY: " + eurBasedRates.TRY);
+                }
+            }
+
+            function convertAmount(amount, fromCurrency = "EUR", toCurrency = "USD") {
+                if (!amount || amount <= 0) return 0;
+                if (fromCurrency === toCurrency) return amount;
+                
+                const fromRate = eurBasedRates[fromCurrency] || 1;
+                const toRate = eurBasedRates[toCurrency] || 1;
+                
+                const eurAmount = fromCurrency === "EUR" ? amount : amount / fromRate;
+                const convertedAmount = toCurrency === "EUR" ? eurAmount : eurAmount * toRate;
+                
+                return convertedAmount;
+            }
+
+            const testPrice = 100;
+            const results = {
+                "Backend Rates": backendRates,
+                "Converted EUR-based Rates": eurBasedRates,
+                "Test Conversions (100 EUR)": {
+                    "EUR to USD": convertAmount(testPrice, "EUR", "USD"),
+                    "EUR to TRY": convertAmount(testPrice, "EUR", "TRY")
+                },
+                "Test Conversions (100 TRY)": {
+                    "TRY to EUR": convertAmount(testPrice, "TRY", "EUR"),
+                    "TRY to USD": convertAmount(testPrice, "TRY", "USD")
+                }
+            };
+
+            document.getElementById('output').innerHTML = 
+                '<h3>Currency Conversion Test:</h3><pre>' + JSON.stringify(results, null, 2) + '</pre>';
+        }
+    </script>
+</body>
+</html>

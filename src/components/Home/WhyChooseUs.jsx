@@ -1,6 +1,5 @@
 // src/components/Home/WhyChooseUs.jsx
 import React from "react";
-import "./assets/css/whyChooseUs.css"; // Import your custom CSS for the WhyChooseUs
 const WhyChooseUs = () => {
   return (
     <section id="section-features" className="why-choose-section">

@@ -1,6 +1,7 @@
 // src/components/Header.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import CurrencySelector from "./CurrencySelector";
 
 const Header = () => {
   return (
@@ -29,22 +30,27 @@ const Header = () => {
           </div>
 
           <div className="topbar-right">
-            <div className="social-icons">
-              <a href="#">
-                <i className="fa fa-facebook fa-lg"></i>
-              </a>
-              <a href="#">
-                <i className="fa fa-twitter fa-lg"></i>
-              </a>
-              <a href="#">
-                <i className="fa fa-youtube fa-lg"></i>
-              </a>
-              <a href="#">
-                <i className="fa fa-pinterest fa-lg"></i>
-              </a>
-              <a href="#">
-                <i className="fa fa-instagram fa-lg"></i>
-              </a>
+            <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+              {/* Currency Selector */}
+              <CurrencySelector variant="header" />
+
+              <div className="social-icons">
+                <a href="#">
+                  <i className="fa fa-facebook fa-lg"></i>
+                </a>
+                <a href="#">
+                  <i className="fa fa-twitter fa-lg"></i>
+                </a>
+                <a href="#">
+                  <i className="fa fa-youtube fa-lg"></i>
+                </a>
+                <a href="#">
+                  <i className="fa fa-pinterest fa-lg"></i>
+                </a>
+                <a href="#">
+                  <i className="fa fa-instagram fa-lg"></i>
+                </a>
+              </div>
             </div>
           </div>
           <div className="clearfix"></div>
@@ -78,92 +84,18 @@ const Header = () => {
                     <Link className="menu-item" to="/">
                       Home
                     </Link>
-                    <ul>
-                      <li>
-                        <Link className="menu-item" to="/">
-                          Homepage Main
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/home-2">
-                          Homepage 2
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/home-3">
-                          Homepage 3
-                        </Link>
-                      </li>
-                    </ul>
                   </li>
 
                   <li>
                     <Link className="menu-item" to="/cars">
                       Cars
                     </Link>
-                    <ul>
-                      <li>
-                        <Link className="menu-item" to="/cars">
-                          Cars List 1
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/cars-grid">
-                          Cars List 2
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/car-single">
-                          Cars Single
-                        </Link>
-                      </li>
-                    </ul>
                   </li>
 
                   <li>
                     <Link className="menu-item" to="/booking">
                       Booking
                     </Link>
-                    <ul>
-                      <li>
-                        <Link className="menu-item" to="/quick-booking">
-                          Quick Booking
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/booking">
-                          Booking
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
-
-                  <li>
-                    <Link className="menu-item" to="/account">
-                      My Account
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link className="menu-item" to="/account-dashboard">
-                          Dashboard
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/account-profile">
-                          My Profile
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/account-booking">
-                          My Orders
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/account-favorite">
-                          My Favorite Cars
-                        </Link>
-                      </li>
-                    </ul>
                   </li>
 
                   <li>
@@ -203,56 +135,6 @@ const Header = () => {
                     <a className="menu-item" href="#">
                       News
                     </a>
-                    <ul>
-                      <li>
-                        <Link className="menu-item" to="/news">
-                          News Standard
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/news-grid">
-                          News Grid
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
-
-                  <li>
-                    <a className="menu-item" href="#">
-                      Elements
-                    </a>
-                    <ul>
-                      <li>
-                        <Link className="menu-item" to="/preloader">
-                          Preloader
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/icon-boxes">
-                          Icon Boxes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/badge">
-                          Badge
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/counters">
-                          Counters
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/gallery-popup">
-                          Gallery Popup
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="menu-item" to="/icons-elegant">
-                          Icons Elegant
-                        </Link>
-                      </li>
-                    </ul>
                   </li>
                 </ul>
               </div>

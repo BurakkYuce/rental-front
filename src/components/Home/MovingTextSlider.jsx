@@ -1,6 +1,5 @@
 // src/components/Home/MovingTextSlider.jsx
 import React from "react";
-import "./assets/css/movingTextSlider.css"; // Import your custom CSS for the MovingTextSlider
 const MovingTextSlider = () => {
   const carTypes = [
     "SUV",

@@ -5,47 +5,49 @@ import HeroSection from "./components/Home/HeroSection";
 import MovingTextSlider from "./components/Home/MovingTextSlider";
 import WhyChooseUs from "./components/Home/WhyChooseUs";
 import VehicleFleet from "./components/Home/VehicleFleet";
+import CarsPartInHome from "./components/Home/CarsPartInHome";
 import LatestNews from "./components/Home/LatestNews";
 import GoogleMapsReviews from "./components/Home/GoogleMapsReviews";
 import FAQContactFooter from "./components/Home/FAQContactFooter";
-// Home Page Component
+
+// CSS imports
 import "./assets/css/bootstrap.min.css";
 import "./assets/css/plugins.css";
 import "./assets/css/style.css";
 
 const HomePage = () => {
   return (
-    <div id="wrapper">
-      {/* Page Preloader */}
-      <div id="de-preloader"></div>
-
+    <div>
       {/* Header */}
       <Header />
 
       {/* Content Begin */}
-      <div className="no-bottom no-top" id="content">
-        <div id="top"></div>
 
-        {/* Hero Section */}
-        <HeroSection />
-        <MovingTextSlider />
+      {/* Hero Section */}
+      <HeroSection />
 
-        {/* Why Choose Us Section - Slider'ın ALTINDA */}
-        <WhyChooseUs />
-        <VehicleFleet />
-        <LatestNews />
-        <GoogleMapsReviews />
-        <FAQContactFooter />
+      {/* Moving Text Slider */}
+      <MovingTextSlider />
 
-        {/* Diğer sections buraya eklenecek */}
-        {/* Örnek: */}
-        {/* <FeaturedCars />
-        <Services />
-        <Testimonials />
-        <Newsletter />
-        <Footer /> */}
-      </div>
+      {/* Why Choose Us Section */}
+      <WhyChooseUs />
+
+      {/* Vehicle Fleet */}
+      <VehicleFleet />
+
+      {/* Featured Cars */}
+      <CarsPartInHome />
+
+      {/* Latest News */}
+      <LatestNews />
+
+      {/* Google Maps Reviews */}
+      <GoogleMapsReviews />
+
+      {/* FAQ & Contact Footer */}
+      <FAQContactFooter />
     </div>
   );
 };
+
 export default HomePage;

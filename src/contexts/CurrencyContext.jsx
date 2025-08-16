@@ -57,25 +57,17 @@ export const CurrencyProvider = ({ children }) => {
 
       if (response?.data?.success && response.data.data) {
         const backendData = response.data.data;
-        // Extract rates and lastUpdated from the response
-        const { lastUpdated, ...rates } = backendData;
-        console.log("📊 Backend rates format:", rates);
+        // Extract rates from the response
+        const rates = backendData.rates || backendData;
+        console.log("📊 Backend rates:", rates);
 
-        console.log("📡 Received backend rates:", rates);
-
-        // The rates appear to be TRY-based (TRY: 1), need to convert to EUR-based
-        if (rates.TRY === 1) {
-          // Convert to EUR-based rates
-          const eurBasedRates = {
-            EUR: 1,  // Base currency
-            TRY: 1 / rates.EUR,  // Convert TRY to EUR rate
-            USD: rates.USD / rates.EUR  // Convert USD through EUR
-          };
-          console.log("✅ Converted to EUR-based rates:", eurBasedRates);
-          setExchangeRates(eurBasedRates);
-        } else {
-          console.log("✅ Using rates directly from backend");
+        // Backend sends EUR-based rates (EUR: 1, TRY: X, USD: Y)
+        if (rates && rates.EUR === 1) {
+          console.log("✅ Using EUR-based rates from backend");
           setExchangeRates(rates);
+        } else {
+          console.warn("Invalid rate format, using default rates");
+          setExchangeRates(DEFAULT_RATES);
         }
         
         setLastUpdated(lastUpdated || new Date().toISOString());

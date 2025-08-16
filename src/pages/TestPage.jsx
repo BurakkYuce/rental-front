@@ -1,11 +1,15 @@
 // src/pages/TestPage.jsx
 import React from "react";
+import BackToHomeButton from "../components/BackToHomeButton";
 // import CurrencySelector from "../components/CurrencySelector";
 // import CurrencySelectorTest from "../components/CurrencySelectorTest";
 
 const TestPage = () => {
   return (
     <div style={{ padding: "50px" }}>
+      {/* Back to Home Button */}
+      <BackToHomeButton />
+      
       <h1>Frontend is Working!</h1>
       <p>If you can see this, the React app is running correctly.</p>
       

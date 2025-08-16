@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import Header from "../components/Header";
-import { blogAPI } from "../services/api";
+import BackToHomeButton from "../components/BackToHomeButton";
+import { publicAPI, blogAPI } from "../services/api";
 
 const NewsLeftGrid = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,14 +39,42 @@ const NewsLeftGrid = () => {
         page: currentPage,
         limit: 6,
       };
-      
+
       if (currentCategory) params.category = currentCategory;
       if (currentTag) params.tag = currentTag;
       if (currentSearch) params.search = currentSearch;
 
-      const response = await blogAPI.getBlogs(params);
-      setBlogs(response.data.data.blogs);
-      setPagination(response.data.data.pagination);
+      const response = await publicAPI.getNews(params);
+      console.log("📰 News API response:", response);
+
+      // Handle different possible response structures
+      let blogsData = [];
+      let paginationData = {};
+
+      if (response.data && response.data.success) {
+        blogsData = response.data.data?.blogs || response.data.data || [];
+        paginationData = response.data.data?.pagination || {};
+      } else if (response.data && response.data.data) {
+        blogsData = response.data.data.blogs || response.data.data || [];
+        paginationData = response.data.data.pagination || {};
+      }
+
+      console.log("📰 Processed blogs data:", blogsData);
+
+      // Debug image fields for first blog
+      if (blogsData.length > 0) {
+        console.log("🖼️ First blog image fields:", {
+          featuredImage: blogsData[0].featuredImage,
+          mainImage: blogsData[0].mainImage,
+          main_image: blogsData[0].main_image,
+          image: blogsData[0].image,
+          images: blogsData[0].images,
+          thumbnail: blogsData[0].thumbnail,
+        });
+      }
+
+      setBlogs(blogsData);
+      setPagination(paginationData);
     } catch (error) {
       console.error("Failed to load blogs:", error);
       setError("Failed to load blog posts");
@@ -56,9 +85,19 @@ const NewsLeftGrid = () => {
 
   const loadFeaturedBlogs = async () => {
     try {
-      const response = await blogAPI.getFeaturedBlogs({ limit: 4 });
-      // getFeaturedBlogs calls /blogs with featured=true, so it returns { data: { blogs: [...], pagination: {...} } }
-      setFeaturedBlogs(response.data.data.blogs || []);
+      const response = await publicAPI.getNews({ limit: 4, featured: true });
+      console.log("🌟 Featured blogs API response:", response);
+
+      // Handle different possible response structures
+      let featuredData = [];
+      if (response.data && response.data.success) {
+        featuredData = response.data.data?.blogs || response.data.data || [];
+      } else if (response.data && response.data.data) {
+        featuredData = response.data.data.blogs || response.data.data || [];
+      }
+
+      console.log("🌟 Processed featured blogs:", featuredData);
+      setFeaturedBlogs(featuredData);
     } catch (error) {
       console.error("Failed to load featured blogs:", error);
     }
@@ -117,16 +156,6 @@ const NewsLeftGrid = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Format date
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return {
-      day: date.getDate().toString().padStart(2, '0'),
-      month: date.toLocaleDateString("en-US", { month: "short" }).toUpperCase()
-    };
-  };
-
-
   const testimonials = [
     {
       id: 1,
@@ -158,6 +187,9 @@ const NewsLeftGrid = () => {
     <div className="news-page">
       {/* Header */}
       <Header />
+      
+      {/* Back to Home Button */}
+      <BackToHomeButton />
 
       {/* Hero Section */}
       <section
@@ -187,7 +219,7 @@ const NewsLeftGrid = () => {
             <div className="row">
               <div className="col-md-12">
                 <h1 style={{ fontSize: "3rem", fontWeight: "bold", margin: 0 }}>
-                  Blog & News
+                  Haberler
                 </h1>
               </div>
             </div>
@@ -198,6 +230,28 @@ const NewsLeftGrid = () => {
       {/* Main Content */}
       <section style={{ padding: "80px 0" }}>
         <div className="container">
+          {/* Blog & News Header */}
+          <div className="row" style={{ marginBottom: "50px" }}>
+            <div className="col-12 text-center">
+              <h2 style={{ 
+                fontSize: "2.5rem", 
+                fontWeight: "700", 
+                color: "#2c3e50",
+                marginBottom: "15px"
+              }}>
+                Blog & News
+              </h2>
+              <p style={{ 
+                fontSize: "1.1rem", 
+                color: "#6c757d",
+                maxWidth: "600px",
+                margin: "0 auto"
+              }}>
+                Son haberler, blog yazıları ve güncellemelerden haberdar olun
+              </p>
+            </div>
+          </div>
+          
           <div className="row">
             {/* Left Sidebar */}
             <div className="col-lg-4">
@@ -235,8 +289,27 @@ const NewsLeftGrid = () => {
                     >
                       <div style={{ marginRight: "15px", flexShrink: 0 }}>
                         <img
-                          src={post.featuredImage?.url || "/images/news-thumbnail/pic-blog-1.jpg"}
+                          src={
+                            post.featuredImage?.url ||
+                            post.mainImage?.url ||
+                            post.main_image?.url ||
+                            post.image?.url ||
+                            post.image ||
+                            post.images?.main?.url ||
+                            post.images?.featured?.url ||
+                            post.thumbnail?.url ||
+                            post.thumbnail ||
+                            "/images/news-thumbnail/pic-blog-1.jpg"
+                          }
                           alt={post.title}
+                          onError={(e) => {
+                            console.warn(
+                              "🖼️ Featured blog thumbnail failed to load:",
+                              e.target.src
+                            );
+                            e.target.src =
+                              "/images/news-thumbnail/pic-blog-1.jpg";
+                          }}
                           style={{
                             width: "70px",
                             height: "70px",
@@ -265,18 +338,6 @@ const NewsLeftGrid = () => {
                             {post.title}
                           </Link>
                         </h4>
-                        <div
-                          style={{
-                            fontSize: "0.85rem",
-                            color: "#666",
-                          }}
-                        >
-                          {new Date(post.publishedAt).toLocaleDateString("en-US", { 
-                            year: "numeric", 
-                            month: "long", 
-                            day: "numeric" 
-                          })}
-                        </div>
                       </div>
                     </li>
                   ))}
@@ -311,12 +372,15 @@ const NewsLeftGrid = () => {
                       style={{
                         display: "inline-block",
                         padding: "6px 12px",
-                        backgroundColor: currentTag === tagItem.tag ? "#1ECB15" : "#f8f9fa",
+                        backgroundColor:
+                          currentTag === tagItem.tag ? "#1ECB15" : "#f8f9fa",
                         color: currentTag === tagItem.tag ? "white" : "#666",
                         textDecoration: "none",
                         borderRadius: "20px",
                         fontSize: "0.85rem",
-                        border: `1px solid ${currentTag === tagItem.tag ? "#1ECB15" : "#e9ecef"}`,
+                        border: `1px solid ${
+                          currentTag === tagItem.tag ? "#1ECB15" : "#e9ecef"
+                        }`,
                         transition: "all 0.3s ease",
                         cursor: "pointer",
                       }}
@@ -427,61 +491,25 @@ const NewsLeftGrid = () => {
                   <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Loading...</span>
                   </div>
-                  <p style={{ marginTop: "1rem", color: "#666" }}>Loading blog posts...</p>
+                  <p style={{ marginTop: "1rem", color: "#666" }}>
+                    Loading blog posts...
+                  </p>
                 </div>
               ) : error ? (
-                <div style={{ textAlign: "center", padding: "50px", color: "#dc3545" }}>
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "50px",
+                    color: "#dc3545",
+                  }}
+                >
                   {error}
                 </div>
               ) : (
                 <>
-                  {/* Category Filter Buttons */}
-                  {categories.length > 0 && (
-                    <div style={{ marginBottom: "30px" }}>
-                      <h4 style={{ fontSize: "1.2rem", fontWeight: "600", marginBottom: "15px", color: "#333" }}>
-                        Categories
-                      </h4>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                        <button
-                          onClick={() => handleCategoryFilter("")}
-                          style={{
-                            backgroundColor: !currentCategory ? "#1ECB15" : "#f8f9fa",
-                            color: !currentCategory ? "white" : "#666",
-                            border: `1px solid ${!currentCategory ? "#1ECB15" : "#e9ecef"}`,
-                            borderRadius: "20px",
-                            padding: "8px 16px",
-                            fontSize: "0.9rem",
-                            cursor: "pointer",
-                            transition: "all 0.3s ease",
-                          }}
-                        >
-                          All
-                        </button>
-                        {categories.map((cat) => (
-                          <button
-                            key={cat.category}
-                            onClick={() => handleCategoryFilter(cat.category)}
-                            style={{
-                              backgroundColor: currentCategory === cat.category ? "#1ECB15" : "#f8f9fa",
-                              color: currentCategory === cat.category ? "white" : "#666",
-                              border: `1px solid ${currentCategory === cat.category ? "#1ECB15" : "#e9ecef"}`,
-                              borderRadius: "20px",
-                              padding: "8px 16px",
-                              fontSize: "0.9rem",
-                              cursor: "pointer",
-                              transition: "all 0.3s ease",
-                            }}
-                          >
-                            {cat.category} ({cat.count})
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   <div className="row">
                     {blogs.map((article) => {
-                      const dateObj = formatDate(article.publishedAt);
                       return (
                         <div
                           key={article._id}
@@ -494,10 +522,12 @@ const NewsLeftGrid = () => {
                               borderRadius: "12px",
                               overflow: "hidden",
                               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                              transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                              transition:
+                                "transform 0.3s ease, box-shadow 0.3s ease",
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.transform = "translateY(-5px)";
+                              e.currentTarget.style.transform =
+                                "translateY(-5px)";
                               e.currentTarget.style.boxShadow =
                                 "0 8px 25px rgba(0, 0, 0, 0.15)";
                             }}
@@ -528,21 +558,35 @@ const NewsLeftGrid = () => {
                                     fontWeight: "bold",
                                     lineHeight: "1.2",
                                   }}
-                                >
-                                  {dateObj.day}
-                                </div>
+                                ></div>
                                 <div
                                   style={{
                                     fontSize: "0.8rem",
                                     fontWeight: "600",
                                   }}
-                                >
-                                  {dateObj.month}
-                                </div>
+                                ></div>
                               </div>
                               <img
-                                src={article.featuredImage?.url || "/images/news/pic-blog-1.jpg"}
+                                src={
+                                  article.featuredImage?.url ||
+                                  article.mainImage?.url ||
+                                  article.main_image?.url ||
+                                  article.image?.url ||
+                                  article.image ||
+                                  article.images?.main?.url ||
+                                  article.images?.featured?.url ||
+                                  article.thumbnail?.url ||
+                                  article.thumbnail ||
+                                  "/images/news/pic-blog-1.jpg"
+                                }
                                 alt={article.title}
+                                onError={(e) => {
+                                  console.warn(
+                                    "🖼️ Blog main image failed to load:",
+                                    e.target.src
+                                  );
+                                  e.target.src = "/images/news/pic-blog-1.jpg";
+                                }}
                                 style={{
                                   width: "100%",
                                   height: "200px",
@@ -552,14 +596,16 @@ const NewsLeftGrid = () => {
                             </div>
                             <div style={{ padding: "25px" }}>
                               <div style={{ marginBottom: "10px" }}>
-                                <span style={{ 
-                                  backgroundColor: "#1ECB15", 
-                                  color: "white", 
-                                  padding: "4px 8px", 
-                                  borderRadius: "12px", 
-                                  fontSize: "0.75rem",
-                                  fontWeight: "600"
-                                }}>
+                                <span
+                                  style={{
+                                    backgroundColor: "#1ECB15",
+                                    color: "white",
+                                    padding: "4px 8px",
+                                    borderRadius: "12px",
+                                    fontSize: "0.75rem",
+                                    fontWeight: "600",
+                                  }}
+                                >
                                   {article.category}
                                 </span>
                               </div>
@@ -659,15 +705,16 @@ const NewsLeftGrid = () => {
                         </button>
                       </li>
                     )}
-                    
+
                     {[...Array(pagination.totalPages)].map((_, index) => {
                       const page = index + 1;
                       const isCurrentPage = page === pagination.page;
-                      
+
                       if (
                         page === 1 ||
                         page === pagination.totalPages ||
-                        (page >= pagination.page - 1 && page <= pagination.page + 1)
+                        (page >= pagination.page - 1 &&
+                          page <= pagination.page + 1)
                       ) {
                         return (
                           <li key={page}>
@@ -677,8 +724,12 @@ const NewsLeftGrid = () => {
                                 display: "block",
                                 padding: "10px 15px",
                                 color: isCurrentPage ? "white" : "#666",
-                                backgroundColor: isCurrentPage ? "#1ECB15" : "transparent",
-                                border: `1px solid ${isCurrentPage ? "#1ECB15" : "#e9ecef"}`,
+                                backgroundColor: isCurrentPage
+                                  ? "#1ECB15"
+                                  : "transparent",
+                                border: `1px solid ${
+                                  isCurrentPage ? "#1ECB15" : "#e9ecef"
+                                }`,
                                 borderRadius: "6px",
                                 transition: "all 0.3s ease",
                                 minWidth: "45px",
@@ -691,10 +742,15 @@ const NewsLeftGrid = () => {
                             </button>
                           </li>
                         );
-                      } else if (page === pagination.page - 2 || page === pagination.page + 2) {
+                      } else if (
+                        page === pagination.page - 2 ||
+                        page === pagination.page + 2
+                      ) {
                         return (
-                          <li key={page}>
-                            <span style={{ padding: "10px", color: "#666" }}>...</span>
+                          <li key={`dots-${page}`}>
+                            <span style={{ padding: "10px", color: "#666" }}>
+                              ...
+                            </span>
                           </li>
                         );
                       }

@@ -5,7 +5,6 @@ import {
   Plus,
   Edit,
   Trash2,
-  Eye,
   Star,
   Search,
   Calendar,
@@ -60,28 +59,27 @@ const AdminBlog = () => {
       console.log("🔄 Loading blogs with filters:", filters);
       const response = await adminAPI.getBlogPosts(filters);
 
-      // FIXED: Consistent response handling
+      // FIXED: Simplified response handling
+      console.log("📦 Full API Response:", response);
+      console.log("📦 Response.data:", response?.data);
+      
       let blogData, paginationData;
-      if (response?.success && response?.data) {
-        if (response.data.blogs) {
-          blogData = response.data.blogs;
-          paginationData = response.data.pagination || {};
-        } else if (response.data.data) {
-          blogData = response.data.data.blogs || response.data.data;
-          paginationData = response.data.data.pagination || {};
-        } else if (Array.isArray(response.data)) {
-          blogData = response.data;
-          paginationData = {};
-        } else {
-          blogData = [response.data];
-          paginationData = {};
-        }
-      } else if (response?.data) {
-        blogData = Array.isArray(response.data)
-          ? response.data
-          : [response.data];
+      
+      // Check if response.data has the expected structure
+      if (response?.data?.success && response.data.data) {
+        // Backend returns { success: true, data: { blogs: [...], pagination: {...} } }
+        blogData = response.data.data.blogs || [];
+        paginationData = response.data.data.pagination || {};
+      } else if (response?.data?.blogs) {
+        // Direct structure: { blogs: [...], pagination: {...} }
+        blogData = response.data.blogs || [];
+        paginationData = response.data.pagination || {};
+      } else if (Array.isArray(response?.data)) {
+        // Array response
+        blogData = response.data;
         paginationData = {};
       } else {
+        console.error("❌ Unexpected response structure:", response);
         throw new Error("Invalid response structure");
       }
 
@@ -483,17 +481,6 @@ const AdminBlog = () => {
                         </td>
                         <td className="actions-cell">
                           <div className="action-buttons">
-                            {/* FIXED: Safe slug access */}
-                            {getBlogProperty(blog, "slug") && (
-                              <Link
-                                to={`/blog/${blog.slug}`}
-                                target="_blank"
-                                className="action-btn view-btn"
-                                title="View Post"
-                              >
-                                <Eye size={14} />
-                              </Link>
-                            )}
                             <button
                               onClick={() =>
                                 navigate(

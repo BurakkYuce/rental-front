@@ -17,7 +17,9 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import TestPage from "./pages/TestPage.jsx";
 import AdminBlog from "./pages/AdminBlog.jsx";
 import AdminBlogForm from "./pages/AdminBlogForm.jsx";
-import AdminBookings from "./pages/AdminBookings.jsx";
+import AdminBookings from "./pages/admin/AdminBookings.jsx";
+import TransferZones from "./pages/admin/TransferZones.jsx";
+import TransferService from "./pages/TransferService.jsx";
 import DebugAuth from "./pages/DebugAuth.jsx";
 const App = () => {
   return (
@@ -28,10 +30,9 @@ const App = () => {
           <Route path="*" element={<NotFoundPage />} />
           <Route path="/cars" element={<Cars />} />
           <Route path="/news" element={<Newsgrid />} />
+          <Route path="/transfer" element={<TransferService />} />
           <Route path="/cars/:id" element={<CarsSingle />} />
           <Route path="/news/:slug" element={<NewsSingle />} />
-          <Route path="/test" element={<TestPage />} />
-          <Route path="/debug-auth" element={<DebugAuth />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route
             path="/admin/editCar"
@@ -86,6 +87,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <AdminBookings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/transfer-zones"
+            element={
+              <ProtectedRoute>
+                <TransferZones />
               </ProtectedRoute>
             }
           />

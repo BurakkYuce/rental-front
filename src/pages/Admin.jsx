@@ -1,5 +1,5 @@
 // src/pages/Admin.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Car,
@@ -12,15 +12,14 @@ import {
   Plus,
   Edit,
   Trash2,
-  Eye,
   X,
   Save,
   LogOut,
   ToggleLeft,
   ToggleRight,
+  Truck,
 } from "lucide-react";
 import { adminAPI, authAPI, blogAPI } from "../services/api";
-import "../assets/css/bootstrap.min.css";
 import "../assets/css/plugins.css";
 import "../assets/css/style.css";
 
@@ -41,7 +40,7 @@ const Admin = () => {
 
   // State for real data from API
   const [cars, setCars] = useState([]);
-  const [bookings, setBookings] = useState([]);
+  
   const [blogs, setBlogs] = useState([]);
   const [dashboardStats, setDashboardStats] = useState({});
   const [loadingStates, setLoadingStates] = useState({
@@ -54,21 +53,30 @@ const Admin = () => {
   const sidebarItems = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
     { id: "cars", label: "Cars Management", icon: Car },
-    { id: "bookings", label: "Bookings", icon: Calendar },
+    {
+      id: "bookings",
+      label: "Bookings",
+      icon: Calendar,
+      route: "/admin/bookings",
+    },
     {
       id: "blog",
       label: "Blog Management",
       icon: FileText,
       route: "/admin/blog",
     },
-    { id: "reports", label: "Reports", icon: FileText },
-    { id: "settings", label: "Settings", icon: Settings },
+    {
+      id: "transfers",
+      label: "Transfer Zones",
+      icon: Truck,
+      route: "/admin/transfer-zones",
+    },
   ];
 
   // Load data from API on component mount
   useEffect(() => {
     loadInitialData();
-  }, []);
+  }, [loadInitialData]);
 
   // Load data when section changes
   useEffect(() => {
@@ -79,14 +87,11 @@ const Admin = () => {
       case "cars":
         loadCarsData();
         break;
-      case "bookings":
-        loadBookingsData();
-        break;
       case "blog":
         loadBlogsData();
         break;
     }
-  }, [activeSection]);
+  }, [activeSection, loadDashboardData]);
 
   // Simple refresh handler for navigation state
   useEffect(() => {
@@ -104,17 +109,15 @@ const Admin = () => {
           case "cars":
             loadCarsData();
             break;
-          case "bookings":
-            loadBookingsData();
-            break;
           case "blog":
             loadBlogsData();
             break;
         }
       }
     }
-  }, [location.state]);
+  }, [activeSection, loadDashboardData, location.state]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadInitialData = async () => {
     setLoading(true);
     try {
@@ -127,7 +130,7 @@ const Admin = () => {
     }
   };
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     if (loadingStates.dashboard) {
       console.log("⏳ Dashboard already loading, skipping...");
       return;
@@ -146,7 +149,7 @@ const Admin = () => {
     } finally {
       setLoadingStates((prev) => ({ ...prev, dashboard: false }));
     }
-  };
+  }, []);
 
   const loadCarsData = async () => {
     try {
@@ -160,19 +163,6 @@ const Admin = () => {
     } catch (error) {
       console.error("❌ Failed to load cars:", error);
       setError("Failed to load cars data.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadBookingsData = async () => {
-    try {
-      setLoading(true);
-      const response = await adminAPI.getBookings();
-      setBookings(response.data.data.bookings || []);
-    } catch (error) {
-      console.error("Failed to load bookings:", error);
-      setError("Failed to load bookings data.");
     } finally {
       setLoading(false);
     }
@@ -220,53 +210,9 @@ const Admin = () => {
     }
   };
 
-  const toggleCarStatus = async (carId, currentStatus) => {
-    try {
-      const newStatus = currentStatus === "active" ? "inactive" : "active";
-
-      // Call API to update car status
-      await adminAPI.updateCarStatus(carId, newStatus);
-
-      // Update local state
-      setCars((prevCars) =>
-        prevCars.map((car) =>
-          car.id === carId ? { ...car, status: newStatus } : car
-        )
-      );
-
-      console.log(`✅ Car status updated to ${newStatus}`);
-    } catch (error) {
-      console.error("Failed to toggle car status:", error);
-      setError("Failed to update car status.");
-    }
-  };
-
   const handleLogout = () => {
     authAPI.logout();
     navigate("/");
-  };
-
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case "available":
-        return "#1ECB15";
-      case "active":
-        return "#1ECB15";
-      case "rented":
-        return "#ff6b35";
-      case "maintenance":
-        return "#ffa500";
-      case "completed":
-        return "#6c757d";
-      case "pending":
-        return "#17a2b8";
-      case "inactive":
-        return "#dc3545";
-      case "out of service":
-        return "#dc3545";
-      default:
-        return "#6c757d";
-    }
   };
 
   // Modal Functions
@@ -299,9 +245,6 @@ const Admin = () => {
       if (activeSection === "cars") {
         await adminAPI.deleteCar(selectedItem._id || selectedItem.id);
         await loadCarsData();
-      } else if (activeSection === "bookings") {
-        await adminAPI.deleteBooking(selectedItem._id || selectedItem.id);
-        await loadBookingsData();
       } else if (activeSection === "blog") {
         await adminAPI.deleteBlogPost(selectedItem.id);
         await loadBlogsData();
@@ -390,30 +333,6 @@ const Admin = () => {
               textAlign: "center",
             }}
           >
-            <BarChart3
-              size={32}
-              color="#ffa500"
-              style={{ marginBottom: "15px" }}
-            />
-            <h3 style={{ margin: "0 0 5px 0", color: "#333" }}>
-              ${dashboardStats.totalRevenue || 0}
-            </h3>
-            <p style={{ margin: 0, color: "#666", fontSize: "0.9rem" }}>
-              Total Revenue
-            </p>
-          </div>
-        </div>
-
-        <div className="col-lg-3 col-md-6 mb-4">
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "25px",
-              borderRadius: "12px",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              textAlign: "center",
-            }}
-          >
             <FileText
               size={32}
               color="#17a2b8"
@@ -438,55 +357,11 @@ const Admin = () => {
               padding: "25px",
               borderRadius: "12px",
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              height: "400px",
-            }}
-          >
-            <h4 style={{ marginBottom: "20px", color: "#333" }}>
-              Recent Bookings
-            </h4>
-            {bookings.slice(0, 5).map((booking) => (
-              <div
-                key={booking._id || booking.id}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "10px 0",
-                  borderBottom: "1px solid #f1f1f1",
-                }}
-              >
-                <div>
-                  <p style={{ margin: 0, fontWeight: "600", color: "#333" }}>
-                    {booking.customerName || booking.customer?.name}
-                  </p>
-                  <p style={{ margin: 0, fontSize: "0.8rem", color: "#666" }}>
-                    {booking.carName || booking.car?.title}
-                  </p>
-                </div>
-                <span
-                  style={{
-                    padding: "4px 8px",
-                    borderRadius: "12px",
-                    fontSize: "0.8rem",
-                    backgroundColor: `${getStatusColor(booking.status)}20`,
-                    color: getStatusColor(booking.status),
-                  }}
-                >
-                  {booking.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="col-lg-6">
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "25px",
-              borderRadius: "12px",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              height: "400px",
+              width: "100%", // Ekranı kaplasın
+              minWidth: "100%", // Minimum genişlik
+              maxWidth: "1600px", // Önceki max 1200px ise büyüttük
+              minHeight: "450px",
+              margin: "0 auto",
             }}
           >
             <h4 style={{ marginBottom: "20px", color: "#333" }}>
@@ -600,7 +475,6 @@ const Admin = () => {
           <div>Status</div>
           <div>Units</div>
           <div>Daily Rate</div>
-          <div>Actions</div>
         </div>
 
         {loading ? (
@@ -627,11 +501,7 @@ const Admin = () => {
                 style={{ display: "flex", alignItems: "center", gap: "12px" }}
               >
                 <img
-                  src={
-                    car.mainImage?.url ||
-                    car.image ||
-                    "/images/cars/default.jpg"
-                  }
+                  src={car.mainImage?.url || car.image}
                   alt={car.title || car.name}
                   style={{
                     width: "50px",
@@ -657,21 +527,6 @@ const Admin = () => {
               </div>
 
               <div>
-                <span
-                  style={{
-                    padding: "4px 8px",
-                    borderRadius: "12px",
-                    fontSize: "0.8rem",
-                    backgroundColor:
-                      car.status === "active" ? "#1ECB1520" : "#dc354520",
-                    color: car.status === "active" ? "#1ECB15" : "#dc3545",
-                  }}
-                >
-                  {car.status === "active" ? "Active" : "Inactive"}
-                </span>
-              </div>
-
-              <div>
                 <span style={{ fontSize: "0.9rem", color: "#333" }}>
                   {car.available_units || 1}/{car.total_units || 1}
                 </span>
@@ -689,19 +544,6 @@ const Admin = () => {
 
               <div style={{ display: "flex", gap: "8px" }}>
                 <button
-                  onClick={() => openModal("view", car)}
-                  style={{
-                    padding: "6px",
-                    backgroundColor: "#17a2b8",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}
-                >
-                  <Eye size={14} />
-                </button>
-                <button
                   onClick={() =>
                     navigate(`/admin/editCar?id=${car._id || car.id}`)
                   }
@@ -716,27 +558,7 @@ const Admin = () => {
                 >
                   <Edit size={14} />
                 </button>
-                <button
-                  onClick={() => toggleCarStatus(car.id, car.status)}
-                  style={{
-                    padding: "6px",
-                    backgroundColor:
-                      car.status === "active" ? "#dc3545" : "#28a745",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}
-                  title={
-                    car.status === "active" ? "Deactivate car" : "Activate car"
-                  }
-                >
-                  {car.status === "active" ? (
-                    <ToggleLeft size={14} />
-                  ) : (
-                    <ToggleRight size={14} />
-                  )}
-                </button>
+
                 <button
                   onClick={() => openModal("delete", car)}
                   style={{
@@ -983,149 +805,6 @@ const Admin = () => {
         return <DashboardSection />;
       case "cars":
         return <CarsSection />;
-      case "bookings":
-        return (
-          <div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "30px",
-              }}
-            >
-              <div>
-                <h2 style={{ margin: 0, color: "#333" }}>
-                  Bookings Management
-                </h2>
-                <p style={{ margin: 0, color: "#666", fontSize: "0.9rem" }}>
-                  Manage customer bookings and reservations
-                </p>
-              </div>
-            </div>
-
-            {/* Bookings Table */}
-            <div
-              style={{
-                backgroundColor: "white",
-                borderRadius: "12px",
-                overflow: "hidden",
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr 1fr 120px",
-                  padding: "20px",
-                  backgroundColor: "#f8f9fa",
-                  fontWeight: "600",
-                  color: "#333",
-                  borderBottom: "2px solid #e9ecef",
-                }}
-              >
-                <div>Customer</div>
-                <div>Car</div>
-                <div>Dates</div>
-                <div>Amount</div>
-                <div>Status</div>
-              </div>
-
-              {loading ? (
-                <div
-                  style={{
-                    padding: "40px",
-                    textAlign: "center",
-                    color: "#666",
-                  }}
-                >
-                  Loading bookings...
-                </div>
-              ) : bookings.length === 0 ? (
-                <div
-                  style={{
-                    padding: "40px",
-                    textAlign: "center",
-                    color: "#666",
-                  }}
-                >
-                  <Calendar
-                    size={48}
-                    color="#ccc"
-                    style={{ marginBottom: "20px" }}
-                  />
-                  <h4>No bookings found</h4>
-                  <p>When customers make bookings, they will appear here.</p>
-                </div>
-              ) : (
-                bookings.map((booking) => (
-                  <div
-                    key={booking._id || booking.id}
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr 1fr 1fr 120px",
-                      padding: "20px",
-                      borderBottom: "1px solid #f1f1f1",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div>
-                      <p
-                        style={{ margin: 0, fontWeight: "600", color: "#333" }}
-                      >
-                        {booking.customerName ||
-                          booking.customer?.name ||
-                          "N/A"}
-                      </p>
-                      <p
-                        style={{ margin: 0, fontSize: "0.8rem", color: "#666" }}
-                      >
-                        {booking.customerEmail || booking.customer?.email || ""}
-                      </p>
-                    </div>
-                    <div>
-                      <p style={{ margin: 0, color: "#333" }}>
-                        {booking.carName || booking.car?.title || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p style={{ margin: 0, color: "#333" }}>
-                        {booking.startDate || "N/A"} -{" "}
-                        {booking.endDate || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p
-                        style={{
-                          margin: 0,
-                          fontWeight: "600",
-                          color: "#1ECB15",
-                        }}
-                      >
-                        ${booking.totalAmount || booking.amount || 0}
-                      </p>
-                    </div>
-                    <div>
-                      <span
-                        style={{
-                          padding: "4px 8px",
-                          borderRadius: "12px",
-                          fontSize: "0.8rem",
-                          backgroundColor: `${getStatusColor(
-                            booking.status
-                          )}20`,
-                          color: getStatusColor(booking.status),
-                        }}
-                      >
-                        {booking.status || "pending"}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        );
       case "blog":
         return (
           <div>
@@ -1187,7 +866,6 @@ const Admin = () => {
                 <div>Category</div>
                 <div>Status</div>
                 <div>Created</div>
-                <div>Actions</div>
               </div>
 
               {loadingStates.blogs ? (
@@ -1284,9 +962,7 @@ const Admin = () => {
                           color: "white",
                           cursor: "pointer",
                         }}
-                      >
-                        <Eye size={14} />
-                      </button>
+                      ></button>
                       <button
                         onClick={() => navigate(`/admin/edit-blog/${blog.id}`)}
                         style={{

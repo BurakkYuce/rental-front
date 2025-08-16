@@ -1,8 +1,10 @@
 // src/pages/CarsSingle.jsx
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Calendar } from "lucide-react";
 import Header from "../components/Header";
-import { adminAPI, publicAPI } from "../services/api";
+import BackToHomeButton from "../components/BackToHomeButton";
+import { publicAPI } from "../services/api";
 import { useCurrency } from "../contexts/CurrencyContext";
 import "./CarsSingle.css"; // CSS'i ayrı dosyaya taşı
 
@@ -57,6 +59,44 @@ const CarsSingle = () => {
     ekSurucu: 0, // max 1, 8€ per day
     gencSurucu: 0, // max 1, 15€ per day
   });
+
+  // Date format helper - convert DD/MM/YYYY to YYYY-MM-DD
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("/");
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+    return dateString;
+  };
+
+  // Format date from YYYY-MM-DD to DD/MM/YYYY
+  const formatDateFromInput = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("-");
+    if (parts.length === 3) {
+      const [year, month, day] = parts;
+      return `${day}/${month}/${year}`;
+    }
+    return dateString;
+  };
+
+  // Handle date input changes
+  const handleDateChange = (fieldName, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [fieldName]: value,
+    }));
+
+    // Clear error for this field when user starts typing
+    if (formErrors[fieldName]) {
+      setFormErrors((prev) => ({
+        ...prev,
+        [fieldName]: "",
+      }));
+    }
+  };
 
   // Helper functions for date validation
   const getTodayDate = () => {
@@ -123,17 +163,9 @@ const CarsSingle = () => {
 
       console.log("🚗 Loading car with ID:", id);
 
-      let response;
-      try {
-        // Try public API first
-        response = await publicAPI.getCarById(id);
-        console.log("✅ Public API response:", response);
-      } catch (publicError) {
-        console.log("⚠️ Public API failed, trying admin API:", publicError);
-        // Fallback to admin API
-        response = await adminAPI.getCarById(id);
-        console.log("✅ Admin API response:", response);
-      }
+      // Use only public API
+      const response = await publicAPI.getCarById(id);
+      console.log("✅ Public API response:", response);
 
       // Handle different response structures
       let carData;
@@ -146,6 +178,24 @@ const CarsSingle = () => {
       }
 
       console.log("🔍 Parsed car data:", carData);
+      console.log("🔍 Car effectivePricing:", carData.effectivePricing);
+      console.log("🔍 Car basePricing:", carData.basePricing);
+      console.log("🔍 Car seasonal_pricing:", carData.seasonal_pricing);
+
+      // Debug seasonal pricing like in Cars.jsx
+      if (carData.seasonal_pricing && carData.seasonal_pricing.length > 0) {
+        console.log(
+          "🎯 CarsSingle - Car has seasonal_pricing:",
+          carData.id,
+          carData.seasonal_pricing
+        );
+        console.log(
+          "🎯 CarsSingle - Effective pricing:",
+          carData.effectivePricing
+        );
+        console.log("🎯 CarsSingle - Base pricing:", carData.pricing);
+      }
+
       setCar(carData);
     } catch (error) {
       console.error("❌ Failed to load car:", error);
@@ -277,7 +327,46 @@ const CarsSingle = () => {
     return errors;
   }, [formData]);
 
-  // Handle form submission
+  // Generate WhatsApp message with car and booking details
+  const generateWhatsAppMessage = () => {
+    if (!car) return "";
+
+    const carName = car.title || car.name || "Araç";
+    
+    // Format dates for display
+    const pickupDateFormatted = formData.pickupDate ? formatDateFromInput(formData.pickupDate) : "";
+    const returnDateFormatted = formData.returnDate ? formatDateFromInput(formData.returnDate) : "";
+    
+    // Prepare additional options text
+    const additionalOptionsText = [];
+    
+    if (additionalOptions.cocukKoltugu > 0) {
+      additionalOptionsText.push(`- Çocuk Koltuğu: ${additionalOptions.cocukKoltugu} adet`);
+    }
+    if (additionalOptions.ekSurucu > 0) {
+      additionalOptionsText.push(`- Ek Sürücü: ${additionalOptions.ekSurucu} adet`);
+    }
+    if (additionalOptions.gencSurucu > 0) {
+      additionalOptionsText.push(`- Genç Sürücü Paketi: ${additionalOptions.gencSurucu} adet`);
+    }
+
+    // Build the message
+    let message = `Merhaba, aşağıdaki araç için rezervasyon yapmak istiyorum 🚗\n\n`;
+    
+    message += `Araç: ${carName}\n`;
+    message += `Alış Yeri: ${formData.pickupLocation} – ${pickupDateFormatted} ${formData.pickupTime}\n`;
+    message += `Dönüş Yeri: ${formData.dropoffLocation} – ${returnDateFormatted} ${formData.returnTime}\n`;
+    
+    if (additionalOptionsText.length > 0) {
+      message += `\nEk Seçenekler:\n${additionalOptionsText.join('\n')}\n`;
+    }
+    
+    message += `\nLütfen müsaitliği ve fiyatı teyit eder misiniz? 🙂`;
+
+    return message;
+  };
+
+  // Handle form submission - Open WhatsApp instead
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
 
@@ -290,38 +379,38 @@ const CarsSingle = () => {
     setBookingLoading(true);
 
     try {
-      // Prepare booking data including additional options
-      const bookingData = {
-        carId: id,
-        ...formData,
-        additionalOptions,
-        additionalOptionsTotal: calculateAdditionalOptionsTotal(),
-      };
+      // Generate WhatsApp message
+      const message = generateWhatsAppMessage();
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappNumber = "905530755678"; // Turkish number format
+      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
-      console.log("📝 Booking data:", bookingData);
+      // Open WhatsApp in new tab
+      window.open(whatsappURL, '_blank');
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Show success message
+      alert("WhatsApp açılıyor! Rezervasyon talebiniz hazırlandı.");
 
-      alert("Booking submitted successfully!");
+      // Reset form after a short delay
+      setTimeout(() => {
+        setFormData({
+          pickupLocation: "",
+          dropoffLocation: "",
+          pickupDate: "",
+          pickupTime: "",
+          returnDate: "",
+          returnTime: "",
+        });
+        setAdditionalOptions({
+          cocukKoltugu: 0,
+          ekSurucu: 0,
+          gencSurucu: 0,
+        });
+      }, 1000);
 
-      // Reset form
-      setFormData({
-        pickupLocation: "",
-        dropoffLocation: "",
-        pickupDate: "",
-        pickupTime: "",
-        returnDate: "",
-        returnTime: "",
-      });
-      setAdditionalOptions({
-        cocukKoltugu: 0,
-        ekSurucu: 0,
-        gencSurucu: 0,
-      });
     } catch (error) {
-      console.error("Booking failed:", error);
-      alert("Failed to submit booking. Please try again.");
+      console.error("WhatsApp redirect failed:", error);
+      alert("WhatsApp açılırken bir hata oluştu. Lütfen tekrar deneyin.");
     } finally {
       setBookingLoading(false);
     }
@@ -372,8 +461,9 @@ const CarsSingle = () => {
       }
 
       try {
-        const pricing = car.pricing || {};
-        const baseCurrency = car.currency || "EUR";
+        // Use effective pricing (seasonal) if available, otherwise use base pricing
+        const pricing = car.effectivePricing || car.pricing || {};
+        const baseCurrency = pricing.currency || car.currency || "EUR";
         let amount = pricing[period];
 
         // Fallback for missing pricing periods
@@ -395,7 +485,10 @@ const CarsSingle = () => {
           amount,
           baseCurrency,
           currentCurrency,
-          pricing: car.pricing,
+          isSeasonalPricing: !!car.effectivePricing?.seasonalName,
+          seasonalName: car.effectivePricing?.seasonalName,
+          pricing: pricing,
+          basePricing: car.basePricing,
         });
 
         return convertAndFormatPrice(amount, baseCurrency);
@@ -478,6 +571,9 @@ const CarsSingle = () => {
       {/* Header */}
       <Header />
 
+      {/* Back to Home Button */}
+      <BackToHomeButton />
+
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-overlay"></div>
@@ -485,7 +581,7 @@ const CarsSingle = () => {
           <div className="container">
             <div className="row">
               <div className="col-md-12">
-                <h1>
+                <h1 style={{ color: "white" }}>
                   {loading
                     ? "Loading..."
                     : error
@@ -612,9 +708,9 @@ const CarsSingle = () => {
                   {/* Pricing Period Tabs */}
                   <div className="pricing-tabs">
                     {[
-                      { code: "daily", name: "Daily" },
-                      { code: "weekly", name: "Weekly" },
-                      { code: "monthly", name: "Monthly" },
+                      { code: "daily", name: "Günlük" },
+                      { code: "weekly", name: "Haftalık" },
+                      { code: "monthly", name: "Aylık" },
                     ].map((period) => (
                       <button
                         type="button"
@@ -635,10 +731,20 @@ const CarsSingle = () => {
                       {activePricingPeriod.charAt(0).toUpperCase() +
                         activePricingPeriod.slice(1)}{" "}
                       rate
+                      {car?.effectivePricing?.seasonalName && (
+                        <span className="seasonal-badge">
+                          🎯 {car.effectivePricing.seasonalName}
+                        </span>
+                      )}
                     </div>
                     <h3 className="price-amount">
                       {calculatePrice(activePricingPeriod)}
                     </h3>
+                    {car?.effectivePricing?.seasonalPeriod && (
+                      <div className="seasonal-period">
+                        Valid: {car.effectivePricing.seasonalPeriod}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -650,7 +756,7 @@ const CarsSingle = () => {
                     {/* Pick Up Location */}
                     <div className="form-group">
                       <label htmlFor="pickupLocation" className="form-label">
-                        Pick Up Location *
+                        Alış Yeri *
                       </label>
                       <select
                         id="pickupLocation"
@@ -664,7 +770,7 @@ const CarsSingle = () => {
                         }
                         className="form-input"
                       >
-                        <option value="">Select pickup location</option>
+                        <option value="">Alış Yeri Seçiniz</option>
                         {locationOptions.map((location) => (
                           <option key={location} value={location}>
                             {location}
@@ -681,7 +787,7 @@ const CarsSingle = () => {
                     {/* Drop Off Location */}
                     <div className="form-group">
                       <label htmlFor="dropoffLocation" className="form-label">
-                        Drop Off Location *
+                        Dönüş Yeri{" "}
                       </label>
                       <select
                         id="dropoffLocation"
@@ -695,7 +801,7 @@ const CarsSingle = () => {
                         }
                         className="form-input"
                       >
-                        <option value="">Select dropoff location</option>
+                        <option value="">Dönüş Yeri Seçiniz</option>
                         {locationOptions.map((location) => (
                           <option key={location} value={location}>
                             {location}
@@ -712,23 +818,61 @@ const CarsSingle = () => {
                     {/* Pick Up Date & Time */}
                     <div className="form-group">
                       <label className="form-label">
-                        Pick Up Date & Time *
+                        Alış Yeri Tarihi/Zamanı{" "}
                       </label>
                       <div className="datetime-inputs">
-                        <input
-                          name="pickupDate"
-                          type="date"
-                          value={formData.pickupDate}
-                          onChange={handleInputChange}
-                          min={getTodayDate()}
-                          style={{
-                            ...inputStyle,
-                            borderColor: formErrors.pickupDate
-                              ? "#dc3545"
-                              : "#e9ecef",
-                          }}
-                          className="form-input date-input"
-                        />
+                        <div className="date-input-wrapper">
+                          <input
+                            name="pickupDate"
+                            type="text"
+                            value={formData.pickupDate ? formatDateFromInput(formData.pickupDate) : ""}
+                            onChange={(e) => {
+                              let value = e.target.value;
+                              // Auto-format while typing
+                              value = value.replace(/[^\d]/g, ''); // Only numbers
+                              if (value.length >= 2) {
+                                value = value.slice(0, 2) + '/' + value.slice(2);
+                              }
+                              if (value.length >= 5) {
+                                value = value.slice(0, 5) + '/' + value.slice(5, 9);
+                              }
+                              if (value.length <= 10) {
+                                const formattedForAPI = formatDateForInput(value);
+                                handleDateChange('pickupDate', formattedForAPI);
+                              }
+                            }}
+                            placeholder="GG/AA/YYYY"
+                            maxLength="10"
+                            style={{
+                              ...inputStyle,
+                              borderColor: formErrors.pickupDate
+                                ? "#dc3545"
+                                : "#e9ecef",
+                              fontFamily: "monospace",
+                              paddingRight: "45px"
+                            }}
+                            className="form-input date-input"
+                          />
+                          <input
+                            type="date"
+                            className="date-picker-hidden"
+                            onChange={(e) => {
+                              handleDateChange('pickupDate', e.target.value);
+                            }}
+                            value={formData.pickupDate || ""}
+                            min={getTodayDate()}
+                          />
+                          <Calendar 
+                            className="calendar-icon" 
+                            size={18} 
+                            onClick={() => {
+                              const hiddenInput = document.querySelector('.datetime-inputs .date-picker-hidden');
+                              if (hiddenInput) {
+                                hiddenInput.showPicker();
+                              }
+                            }}
+                          />
+                        </div>
                         <select
                           name="pickupTime"
                           value={formData.pickupTime}
@@ -758,22 +902,63 @@ const CarsSingle = () => {
 
                     {/* Return Date & Time */}
                     <div className="form-group">
-                      <label className="form-label">Return Date & Time *</label>
+                      <label className="form-label">
+                        Dönüş Yeri Tarihi/Zamanı *
+                      </label>
                       <div className="datetime-inputs">
-                        <input
-                          name="returnDate"
-                          type="date"
-                          value={formData.returnDate}
-                          onChange={handleInputChange}
-                          min={getMinReturnDate()}
-                          style={{
-                            ...inputStyle,
-                            borderColor: formErrors.returnDate
-                              ? "#dc3545"
-                              : "#e9ecef",
-                          }}
-                          className="form-input date-input"
-                        />
+                        <div className="date-input-wrapper">
+                          <input
+                            name="returnDate"
+                            type="text"
+                            value={formData.returnDate ? formatDateFromInput(formData.returnDate) : ""}
+                            onChange={(e) => {
+                              let value = e.target.value;
+                              // Auto-format while typing
+                              value = value.replace(/[^\d]/g, ''); // Only numbers
+                              if (value.length >= 2) {
+                                value = value.slice(0, 2) + '/' + value.slice(2);
+                              }
+                              if (value.length >= 5) {
+                                value = value.slice(0, 5) + '/' + value.slice(5, 9);
+                              }
+                              if (value.length <= 10) {
+                                const formattedForAPI = formatDateForInput(value);
+                                handleDateChange('returnDate', formattedForAPI);
+                              }
+                            }}
+                            placeholder="GG/AA/YYYY"
+                            maxLength="10"
+                            style={{
+                              ...inputStyle,
+                              borderColor: formErrors.returnDate
+                                ? "#dc3545"
+                                : "#e9ecef",
+                              fontFamily: "monospace",
+                              paddingRight: "45px"
+                            }}
+                            className="form-input date-input"
+                          />
+                          <input
+                            type="date"
+                            className="date-picker-hidden"
+                            onChange={(e) => {
+                              handleDateChange('returnDate', e.target.value);
+                            }}
+                            value={formData.returnDate || ""}
+                            min={getMinReturnDate()}
+                          />
+                          <Calendar 
+                            className="calendar-icon" 
+                            size={18} 
+                            onClick={() => {
+                              const hiddenInputs = document.querySelectorAll('.datetime-inputs .date-picker-hidden');
+                              const returnDateInput = hiddenInputs[1]; // second date input is return date
+                              if (returnDateInput) {
+                                returnDateInput.showPicker();
+                              }
+                            }}
+                          />
+                        </div>
                         <select
                           name="returnTime"
                           value={formData.returnTime}
@@ -786,7 +971,7 @@ const CarsSingle = () => {
                           }}
                           className="form-input"
                         >
-                          <option value="">Select time</option>
+                          <option value="">Saat seçiniz</option>
                           {timeOptions.map((time) => (
                             <option key={time} value={time}>
                               {time}
@@ -803,7 +988,7 @@ const CarsSingle = () => {
 
                     {/* Additional Options */}
                     <div className="additional-options">
-                      <h5 className="options-title">Additional Options</h5>
+                      <h5 className="options-title">Ek Opsiyonlar</h5>
 
                       {/* Çocuk Koltuğu */}
                       <div className="option-item">
@@ -984,7 +1169,7 @@ const CarsSingle = () => {
                     <button
                       type="submit"
                       disabled={bookingLoading}
-                      className={`submit-btn ${
+                      className={`submit-btn whatsapp-btn ${
                         bookingLoading ? "loading" : ""
                       }`}
                     >
@@ -996,10 +1181,13 @@ const CarsSingle = () => {
                           >
                             <span className="visually-hidden">Loading...</span>
                           </div>
-                          Processing...
+                          WhatsApp Açılıyor...
                         </>
                       ) : (
-                        "Book Now"
+                        <>
+                          <i className="fa fa-whatsapp" style={{ marginRight: "8px" }}></i>
+                          WhatsApp ile Rezervasyon Yap
+                        </>
                       )}
                     </button>
                   </form>
@@ -1018,7 +1206,10 @@ const CarsSingle = () => {
                         aria-label={`Share on ${social.name}`}
                         className="social-icon"
                       >
-                        <i className={`fa ${social.icon}`}></i>
+                        <i
+                          className={`fa ${social.icon}`}
+                          style={{ color: "black" }} // ikon rengi siyah
+                        ></i>
                       </a>
                     ))}
                   </div>

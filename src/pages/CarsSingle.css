@@ -5,6 +5,87 @@
   background-color: #fff;
 }
 
+/* Date Input Wrapper Styles */
+.date-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.date-picker-hidden {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.calendar-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #1ecb15;
+  pointer-events: auto;
+  z-index: 3;
+  background: white;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.date-input-wrapper:hover .calendar-icon {
+  color: #179510;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 2px 6px rgba(30, 203, 21, 0.3);
+}
+
+.calendar-icon:hover {
+  background: #f0f8ff;
+  transform: translateY(-50%) scale(1.15);
+}
+
+/* WhatsApp Button Styles */
+.whatsapp-btn {
+  background: linear-gradient(135deg, #25d366, #128c7e) !important;
+  color: white !important;
+  border: none !important;
+  padding: 15px 25px !important;
+  border-radius: 8px !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3) !important;
+  text-transform: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+.whatsapp-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #128c7e, #25d366) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4) !important;
+}
+
+.whatsapp-btn:disabled {
+  background: linear-gradient(135deg, #cccccc, #999999) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+.whatsapp-btn .fa-whatsapp {
+  font-size: 1.2em !important;
+}
+
 /* Hero Section */
 .hero-section {
   background-image: url("/images/background/2.jpg");
@@ -254,6 +335,35 @@
   font-weight: bold;
   color: #1ecb15;
   margin: 0;
+}
+
+/* Seasonal Pricing Styles */
+.seasonal-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff6b6b, #feca57);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 8px;
+  animation: pulse 2s infinite;
+}
+
+.seasonal-period {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 /* Booking Form */

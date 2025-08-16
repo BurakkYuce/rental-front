@@ -8,6 +8,7 @@ import {
   BarChart3,
   FileText,
   LogOut,
+  MapPin,
 } from "lucide-react";
 import { authAPI } from "../services/api";
 import "../assets/css/bootstrap.min.css";
@@ -22,6 +23,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
     { id: "dashboard", label: "Dashboard", icon: BarChart3, route: "/admin" },
     { id: "cars", label: "Cars Management", icon: Car, route: "/admin" },
     { id: "bookings", label: "Bookings", icon: Calendar, route: "/admin/bookings" },
+    { id: "transfer-zones", label: "Transfer Zones", icon: MapPin, route: "/admin/transfer-zones" },
     { id: "blog", label: "Blog Management", icon: FileText, route: "/admin/blog" },
     { id: "reports", label: "Reports", icon: FileText, route: "/admin" },
     { id: "settings", label: "Settings", icon: Settings, route: "/admin" },

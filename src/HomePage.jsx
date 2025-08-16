@@ -5,7 +5,6 @@ import HeroSection from "./components/Home/HeroSection";
 import MovingTextSlider from "./components/Home/MovingTextSlider";
 import WhyChooseUs from "./components/Home/WhyChooseUs";
 import VehicleFleet from "./components/Home/VehicleFleet";
-import CarsPartInHome from "./components/Home/CarsPartInHome";
 import LatestNews from "./components/Home/LatestNews";
 import GoogleMapsReviews from "./components/Home/GoogleMapsReviews";
 import FAQContactFooter from "./components/Home/FAQContactFooter";
@@ -34,9 +33,6 @@ const HomePage = () => {
 
       {/* Vehicle Fleet */}
       <VehicleFleet />
-
-      {/* Featured Cars */}
-      <CarsPartInHome />
 
       {/* Latest News */}
       <LatestNews />

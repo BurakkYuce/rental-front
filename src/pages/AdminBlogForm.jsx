@@ -39,6 +39,7 @@ const AdminBlogForm = () => {
   const [error, setError] = useState("");
   const [newTag, setNewTag] = useState("");
   const [imagePreview, setImagePreview] = useState("");
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
 
   // Categories
   const categories = [
@@ -157,7 +158,7 @@ const AdminBlogForm = () => {
     }));
   }, []);
 
-  // Handle image upload
+  // Handle image selection (don't upload yet, wait for save)
   const handleImageUpload = useCallback(
     (e) => {
       const file = e.target.files[0];
@@ -178,16 +179,20 @@ const AdminBlogForm = () => {
       // Clear previous error
       setError("");
 
+      // Store the file for later upload and create preview
+      setSelectedImageFile(file);
+      
       // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target.result);
-        handleNestedChange("featuredImage", "url", e.target.result);
-      };
-      reader.onerror = () => {
-        setError("Failed to read image file");
       };
       reader.readAsDataURL(file);
+      
+      // Set alt text to filename
+      handleNestedChange("featuredImage", "alt", file.name);
+      
+      console.log("📁 Image selected for upload:", file.name);
     },
     [handleNestedChange]
   );
@@ -272,6 +277,26 @@ const AdminBlogForm = () => {
       setSaving(true);
       setError("");
 
+      // Upload image to Cloudinary if a new image was selected
+      let imageUrl = formData.featuredImage.url; // Keep existing URL for edits
+      
+      if (selectedImageFile) {
+        console.log("🔄 Uploading image to Cloudinary...");
+        try {
+          const uploadResponse = await adminAPI.uploadCarImage(selectedImageFile);
+          if (uploadResponse.data && uploadResponse.data.imageUrl) {
+            imageUrl = uploadResponse.data.imageUrl;
+            console.log("✅ Image uploaded successfully:", imageUrl);
+          } else {
+            throw new Error("Invalid upload response");
+          }
+        } catch (uploadError) {
+          console.error("❌ Failed to upload image:", uploadError);
+          setError("Failed to upload image. Please try again.");
+          return; // Don't save the blog if image upload fails
+        }
+      }
+
       // FIXED: Prepare blog data to match backend expectations
       const blogData = {
         title: formData.title.trim(),
@@ -287,7 +312,10 @@ const AdminBlogForm = () => {
         // Send author as the structure expected by backend
         author: formData.author,
         // Include featuredImage for backend processing
-        featuredImage: formData.featuredImage,
+        featuredImage: {
+          ...formData.featuredImage,
+          url: imageUrl, // Use the uploaded image URL
+        },
       };
 
       console.log("💾 Saving blog data:", blogData);
@@ -571,6 +599,7 @@ const AdminBlogForm = () => {
                       type="button"
                       onClick={() => {
                         setImagePreview("");
+                        setSelectedImageFile(null);
                         handleNestedChange("featuredImage", "url", "");
                       }}
                       className="remove-image-btn"

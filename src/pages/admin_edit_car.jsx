@@ -105,6 +105,217 @@ const carFeatures = [
   "Otomatik Şanzıman",
 ];
 
+// Separate Modal Component to prevent re-renders
+const PricingModal = React.memo(({ 
+  show, 
+  onClose, 
+  newPricing, 
+  onPricingChange, 
+  onAddPricing,
+  pricingPeriods 
+}) => {
+  if (!show) return null;
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "white",
+          borderRadius: "12px",
+          padding: "30px",
+          width: "90%",
+          maxWidth: "600px",
+          maxHeight: "80vh",
+          overflowY: "auto",
+        }}
+      >
+        <h4 style={{ marginBottom: "15px", color: "#333" }}>
+          Add Scheduled Pricing
+        </h4>
+        <div
+          style={{
+            backgroundColor: "#e3f2fd",
+            border: "1px solid #90caf9",
+            borderRadius: "6px",
+            padding: "10px",
+            marginBottom: "20px",
+            fontSize: "0.85rem",
+            color: "#1565c0",
+          }}
+        >
+          💡 Enter prices in EUR (Euro). These will be automatically
+          converted for customers.
+        </div>
+
+        <div className="row">
+          <div className="col-md-12 mb-3">
+            <label
+              style={{
+                display: "block",
+                marginBottom: "5px",
+                fontWeight: "600",
+              }}
+            >
+              Pricing Name <span style={{ color: "#e74c3c" }}>*</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={newPricing.name}
+              onChange={onPricingChange}
+              placeholder="e.g. Summer Special, Holiday Rates"
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "2px solid #e9ecef",
+                borderRadius: "6px",
+                fontSize: "1rem",
+              }}
+            />
+          </div>
+
+          <div className="col-md-6 mb-3">
+            <label
+              style={{
+                display: "block",
+                marginBottom: "5px",
+                fontWeight: "600",
+              }}
+            >
+              Start Date <span style={{ color: "#e74c3c" }}>*</span>
+            </label>
+            <input
+              type="date"
+              name="startDate"
+              value={newPricing.startDate}
+              onChange={onPricingChange}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "2px solid #e9ecef",
+                borderRadius: "6px",
+                fontSize: "1rem",
+              }}
+            />
+          </div>
+
+          <div className="col-md-6 mb-3">
+            <label
+              style={{
+                display: "block",
+                marginBottom: "5px",
+                fontWeight: "600",
+              }}
+            >
+              End Date <span style={{ color: "#e74c3c" }}>*</span>
+            </label>
+            <input
+              type="date"
+              name="endDate"
+              value={newPricing.endDate || ""}
+              onChange={onPricingChange}
+              min={newPricing.startDate}
+              required
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "2px solid #e9ecef",
+                borderRadius: "6px",
+                fontSize: "1rem",
+              }}
+            />
+          </div>
+
+          {pricingPeriods.map((period) => (
+            <div key={period.code} className="col-md-4 mb-3">
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "5px",
+                  fontWeight: "600",
+                }}
+              >
+                {period.name} (€ EUR)
+              </label>
+              <input
+                type="number"
+                name={`prices.${period.code}`}
+                value={newPricing.prices[period.code]}
+                onChange={onPricingChange}
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  border: "2px solid #e9ecef",
+                  borderRadius: "6px",
+                  fontSize: "1rem",
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "10px",
+            marginTop: "25px",
+          }}
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#6c757d",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onAddPricing}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#1ECB15",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <Plus size={16} />
+            Add Pricing
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+});
+
 // Car brands for selection (matching database enum values)
 const carBrands = [
   "Alfa Romeo",
@@ -211,22 +422,19 @@ const AdminEditCar = () => {
       monthly: "",
     },
     currency: "EUR",
-    images: {
-      main: {
-        url: "",
-      },
-      gallery: [],
+    mainImage: {
+      url: "",
+      alt: "",
     },
+    gallery: [],
     status: true,
     featured: false,
     features: [],
   });
 
-  // Separate state for file uploads
-  const [imageFiles, setImageFiles] = useState({
-    mainImage: null,
-    galleryImages: [],
-  });
+  // Separate state for file uploads (simplified to match blog pattern)
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   const [galleryImages, setGalleryImages] = useState([{ id: 1, url: "" }]);
 
@@ -262,13 +470,16 @@ const AdminEditCar = () => {
             ...prev,
             ...carData,
             pricing: carData.pricing || { daily: "", weekly: "", monthly: "" },
-            images: { 
-              main: carData.mainImage || { url: "" }, 
-              gallery: carData.gallery || [] 
-            },
+            mainImage: carData.mainImage || { url: "", alt: "" },
+            gallery: carData.gallery || [],
             featured: carData.featured || false,
             features: carData.features || [],
           }));
+
+          // Set image preview if main image exists
+          if (carData.mainImage?.url) {
+            setImagePreview(carData.mainImage.url);
+          }
 
           // Set up gallery images
           if (carData.gallery?.length > 0) {
@@ -285,9 +496,8 @@ const AdminEditCar = () => {
             const formattedPricing = carData.seasonalPricing.map(
               (pricing, index) => ({
                 id: index + 1,
-                startDate:
-                  pricing.startDate?.split("T")[0] || pricing.startDate,
-                endDate: pricing.endDate?.split("T")[0] || pricing.endDate,
+                startDate: convertFromTurkishDate(pricing.startDate),
+                endDate: convertFromTurkishDate(pricing.endDate),
                 prices: {
                   daily: pricing.daily || "",
                   weekly: pricing.weekly || "",
@@ -305,7 +515,7 @@ const AdminEditCar = () => {
       } finally {
         setLoading(false);
       }
-    };
+    }
 
     fetchCar();
   }, [carId, isEditMode]);
@@ -348,11 +558,7 @@ const AdminEditCar = () => {
   const removeGalleryImage = (id) => {
     if (galleryImages.length > 1) {
       setGalleryImages((prev) => prev.filter((img) => img.id !== id));
-      // Also remove from imageFiles state
-      setImageFiles((prev) => ({
-        ...prev,
-        galleryImages: prev.galleryImages.filter((img) => img.id !== id),
-      }));
+      // Gallery image removed
     }
   };
 
@@ -372,7 +578,9 @@ const AdminEditCar = () => {
   };
 
   const handlePricingModalOpen = () => {
+    console.log("🔵 Opening scheduled pricing modal...");
     setShowPricingModal(true);
+    setError(""); // Clear any existing errors
   };
 
   useEffect(() => {
@@ -386,15 +594,22 @@ const AdminEditCar = () => {
     }
   }, [showPricingModal]);
 
-  const handlePricingInputChange = (e) => {
+  const handlePricingInputChange = useCallback((e) => {
     const { name, value } = e.target;
+    
     if (name.startsWith("prices.")) {
       const period = name.split(".")[1];
+      // Validate numeric inputs for prices
+      const numericValue = value === "" ? "" : value;
+      if (numericValue !== "" && (isNaN(numericValue) || parseFloat(numericValue) < 0)) {
+        return; // Don't update if invalid number
+      }
+      
       setNewPricing((prev) => ({
         ...prev,
         prices: {
           ...prev.prices,
-          [period]: value,
+          [period]: numericValue,
         },
       }));
     } else {
@@ -403,18 +618,52 @@ const AdminEditCar = () => {
         [name]: value,
       }));
     }
-  };
+  }, []); // Empty dependency array to prevent re-creation
 
-  const addScheduledPricing = () => {
-    if (newPricing.startDate && newPricing.endDate && newPricing.name) {
-      const pricing = {
-        ...newPricing,
-        id: Date.now(),
-      };
-      setScheduledPricing((prev) => [...prev, pricing]);
-      setShowPricingModal(false);
+  const addScheduledPricing = useCallback(() => {
+    // Validate required fields
+    if (!newPricing.startDate) {
+      setError("Start date is required");
+      return;
     }
-  };
+    if (!newPricing.endDate) {
+      setError("End date is required");
+      return;
+    }
+    if (!newPricing.name) {
+      setError("Pricing name is required");
+      return;
+    }
+
+    // Validate date range
+    if (new Date(newPricing.startDate) >= new Date(newPricing.endDate)) {
+      setError("End date must be after start date");
+      return;
+    }
+
+    // Check if at least one price is provided
+    const hasPrice = Object.values(newPricing.prices).some(price => price && parseFloat(price) > 0);
+    if (!hasPrice) {
+      setError("At least one price must be provided");
+      return;
+    }
+
+    // Clear any previous errors
+    setError("");
+
+    const pricing = {
+      ...newPricing,
+      id: Date.now(),
+      // Convert dates to Turkish format for backend
+      startDate: convertToTurkishDate(newPricing.startDate),
+      endDate: convertToTurkishDate(newPricing.endDate),
+    };
+    
+    setScheduledPricing((prev) => [...prev, pricing]);
+    setShowPricingModal(false);
+    
+    console.log("✅ Scheduled pricing added successfully:", pricing);
+  }, [newPricing]);
 
   const removeScheduledPricing = (pricingId) => {
     if (
@@ -450,109 +699,43 @@ const AdminEditCar = () => {
     setError("");
 
     try {
-      let uploadedImages = {
-        main:
-          formData.images?.main?.url &&
-          !formData.images.main.url.startsWith("data:")
-            ? { url: formData.images.main.url }
-            : null,
-        gallery: galleryImages
-          .filter((img) => img.url && !img.url.startsWith("data:"))
-          .map((img) => ({ url: img.url })),
-      };
-
-      // Upload new images if there are any files to upload
-      const hasNewMainImage = imageFiles.mainImage;
-      const hasNewGalleryImages = imageFiles.galleryImages.length > 0;
-
-      if (hasNewMainImage || hasNewGalleryImages) {
-        console.log("📤 Uploading images to server...");
+      // Upload main image to Cloudinary if a new image was selected (SAME AS BLOG)
+      let mainImageUrl = formData.mainImage?.url || ""; // Keep existing URL for edits
+      
+      if (selectedImageFile) {
+        console.log("🔄 Uploading main image to Cloudinary...");
         setUploadingImages(true);
-
         try {
-          const formDataUpload = new FormData();
-
-          // Add main image if new file selected
-          if (hasNewMainImage) {
-            formDataUpload.append("mainImage", imageFiles.mainImage);
-          }
-
-          // Add gallery images if new files selected
-          if (hasNewGalleryImages) {
-            imageFiles.galleryImages.forEach(({ file }) => {
-              if (file) {
-                formDataUpload.append("galleryImages", file);
-              }
-            });
-          }
-
-          // Upload images to get URLs
-          const uploadResponse = await fetch(
-            "http://localhost:4000/api/images/car-listing",
-            {
-              method: "POST",
-              body: formDataUpload,
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("admin_token")}`,
-              },
-            }
-          );
-
-          if (!uploadResponse.ok) {
-            const errorText = await uploadResponse.text();
-            console.error(
-              "❌ Image upload failed:",
-              uploadResponse.status,
-              uploadResponse.statusText
-            );
-            console.error("❌ Error response:", errorText);
-            // Continue without images instead of failing
+          const uploadResponse = await adminAPI.uploadCarImage(selectedImageFile);
+          if (uploadResponse.data && uploadResponse.data.imageUrl) {
+            mainImageUrl = uploadResponse.data.imageUrl;
+            console.log("✅ Main image uploaded successfully:", mainImageUrl);
           } else {
-            const uploadResult = await uploadResponse.json();
-            console.log("✅ Images uploaded successfully:", uploadResult);
-
-            // Update uploaded images with new URLs
-            if (uploadResult.data?.main) {
-              uploadedImages.main = { url: uploadResult.data.main.url };
-            }
-
-            if (
-              uploadResult.data?.gallery &&
-              uploadResult.data.gallery.length > 0
-            ) {
-              // Merge with existing gallery images that weren't replaced
-              const newGalleryImages = uploadResult.data.gallery.map((img) => ({
-                url: img.url,
-              }));
-
-              // Keep existing URLs that weren't replaced
-              const existingGallery = galleryImages
-                .filter(
-                  (img) => img.url && !img.url.startsWith("data:") && !img.file
-                )
-                .map((img) => ({ url: img.url }));
-
-              uploadedImages.gallery = [
-                ...existingGallery,
-                ...newGalleryImages,
-              ];
-            }
+            throw new Error("Invalid upload response");
           }
         } catch (imageError) {
-          console.warn("⚠️ Image upload error:", imageError.message);
-          // Continue without images instead of failing the whole car creation
+          console.error("❌ Image upload failed:", imageError);
+          setError("Failed to upload image. Please try again.");
+          return;
         } finally {
           setUploadingImages(false);
         }
       }
 
-      // Prepare data for API
+      // Prepare data for API (SAME STRUCTURE AS BLOG)
       const saveData = {
         ...formData,
         // Ensure currency is always EUR
         currency: "EUR",
-        // Use uploaded image URLs
-        images: uploadedImages,
+        // Use BLOG-STYLE mainImage structure
+        mainImage: mainImageUrl ? {
+          url: mainImageUrl,
+          alt: formData.mainImage?.alt || `${formData.brand} ${formData.model}`
+        } : null,
+        // Keep gallery for now (simplified)
+        gallery: galleryImages
+          .filter((img) => img.url && !img.url.startsWith("data:"))
+          .map((img) => ({ url: img.url })),
         // Add seasonal pricing if exists
         seasonalPricing: scheduledPricing.map((pricing) => ({
           startDate: pricing.startDate,
@@ -593,216 +776,52 @@ const AdminEditCar = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
-  const PricingModal = () => {
-    return (
-      showPricingModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: "12px",
-              padding: "30px",
-              width: "90%",
-              maxWidth: "600px",
-              maxHeight: "80vh",
-              overflowY: "auto",
-            }}
-          >
-            <h4 style={{ marginBottom: "15px", color: "#333" }}>
-              Add Scheduled Pricing
-            </h4>
-            <div
-              style={{
-                backgroundColor: "#e3f2fd",
-                border: "1px solid #90caf9",
-                borderRadius: "6px",
-                padding: "10px",
-                marginBottom: "20px",
-                fontSize: "0.85rem",
-                color: "#1565c0",
-              }}
-            >
-              💡 Enter prices in EUR (Euro). These will be automatically
-              converted for customers.
-            </div>
-
-            <div className="row">
-              <div className="col-md-12 mb-3">
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "600",
-                  }}
-                >
-                  Pricing Name <span style={{ color: "#e74c3c" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={newPricing.name}
-                  onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-                  onChange={handlePricingInputChange}
-                  placeholder="e.g. Summer Special, Holiday Rates"
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    border: "2px solid #e9ecef",
-                    borderRadius: "6px",
-                    fontSize: "1rem",
-                  }}
-                />
-              </div>
-
-              <div className="col-md-6 mb-3">
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "600",
-                  }}
-                >
-                  Start Date <span style={{ color: "#e74c3c" }}>*</span>
-                </label>
-                <input
-                  type="date"
-                  name="startDate"
-                  value={newPricing.startDate}
-                  onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-                  onChange={handlePricingInputChange}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    border: "2px solid #e9ecef",
-                    borderRadius: "6px",
-                    fontSize: "1rem",
-                  }}
-                />
-              </div>
-
-              <div className="col-md-6 mb-3">
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    fontWeight: "600",
-                  }}
-                >
-                  End Date <span style={{ color: "#e74c3c" }}>*</span>
-                </label>
-                <input
-                  type="date"
-                  name="endDate"
-                  value={newPricing.endDate || ""}
-                  onChange={handlePricingInputChange}
-                  onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-                  min={newPricing.startDate} // Ensures end date >= start date
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    border: "2px solid #e9ecef",
-                    borderRadius: "6px",
-                    fontSize: "1rem",
-                  }}
-                />
-              </div>
-
-              {pricingPeriods.map((period) => (
-                <div key={period.code} className="col-md-4 mb-3">
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "5px",
-                      fontWeight: "600",
-                    }}
-                  >
-                    {period.name} (€ EUR)
-                  </label>
-                  <input
-                    type="number"
-                    name={`prices.${period.code}`}
-                    value={newPricing.prices[period.code]}
-                    onChange={handlePricingInputChange}
-                    placeholder="0.00"
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      border: "2px solid #e9ecef",
-                      borderRadius: "6px",
-                      fontSize: "1rem",
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: "10px",
-                marginTop: "25px",
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => setShowPricingModal(false)}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#6c757d",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="button" // ← Add this to prevent form submission
-                onClick={addScheduledPricing}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#1ECB15",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                }}
-              >
-                <Plus size={16} />
-                Add Pricing
-              </button>
-            </div>
-          </div>
-        </div>
-      )
-    );
+  // Convert HTML date input (YYYY-MM-DD) to Turkish format (DD/MM/YYYY)
+  const convertToTurkishDate = (htmlDate) => {
+    if (!htmlDate) return '';
+    const date = new Date(htmlDate);
+    return formatDate(date);
   };
+
+  // Convert Turkish format (DD/MM/YYYY) to HTML date input format (YYYY-MM-DD)
+  const convertFromTurkishDate = (turkishDate) => {
+    if (!turkishDate) return '';
+    
+    try {
+      // Handle different date formats
+      let day, month, year;
+      
+      if (turkishDate.includes('/')) {
+        // Turkish format: DD/MM/YYYY
+        const parts = turkishDate.split('/');
+        if (parts.length === 3) {
+          day = parts[0].padStart(2, '0');
+          month = parts[1].padStart(2, '0');
+          year = parts[2];
+        } else {
+          return '';
+        }
+      } else if (turkishDate.includes('-')) {
+        // Already in YYYY-MM-DD format
+        return turkishDate.split('T')[0]; // Remove time part if exists
+      } else {
+        return '';
+      }
+      
+      return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error('Error converting Turkish date:', error);
+      return '';
+    }
+  };
+
 
   if (loading && isEditMode) {
     return (
@@ -1373,27 +1392,23 @@ const AdminEditCar = () => {
                     onChange={(e) => {
                       const file = e.target.files[0];
                       if (file) {
-                        // Store file for upload
-                        setImageFiles((prev) => ({
-                          ...prev,
-                          mainImage: file,
-                        }));
-
-                        // Create preview URL for display
+                        // Validate file type (same as blog)
+                        if (!file.type.startsWith("image/")) {
+                          setError("Please select a valid image file");
+                          return;
+                        }
+                        
+                        // Store file for upload (same as blog)
+                        setSelectedImageFile(file);
+                        
+                        // Create preview URL for display (same as blog)
                         const reader = new FileReader();
                         reader.onload = (e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            images: {
-                              ...prev.images,
-                              main: {
-                                url: e.target.result,
-                                file: file,
-                              },
-                            },
-                          }));
+                          setImagePreview(e.target.result);
                         };
                         reader.readAsDataURL(file);
+                        
+                        console.log("📁 Main image selected for upload:", file.name);
                       }
                     }}
                     style={{
@@ -1417,10 +1432,10 @@ const AdminEditCar = () => {
                   >
                     Choose Main Image
                   </label>
-                  {formData.images?.main?.url && (
+                  {(imagePreview || formData.mainImage?.url) && (
                     <div style={{ marginTop: "15px" }}>
                       <img
-                        src={formData.images.main.url}
+                        src={imagePreview || formData.mainImage.url}
                         alt="Main car image"
                         style={{
                           maxWidth: "200px",
@@ -1437,7 +1452,7 @@ const AdminEditCar = () => {
                           color: "#666",
                         }}
                       >
-                        {formData.images.main.file?.name || "Image selected"}
+                        {selectedImageFile?.name || "Image selected"}
                       </p>
                     </div>
                   )}
@@ -1577,33 +1592,7 @@ const AdminEditCar = () => {
                             onChange={(e) => {
                               const file = e.target.files[0];
                               if (file) {
-                                // Store file for upload
-                                setImageFiles((prev) => {
-                                  const newGalleryImages = [
-                                    ...prev.galleryImages,
-                                  ];
-                                  const existingIndex =
-                                    newGalleryImages.findIndex(
-                                      (img) => img.id === image.id
-                                    );
-                                  if (existingIndex >= 0) {
-                                    newGalleryImages[existingIndex] = {
-                                      id: image.id,
-                                      file,
-                                    };
-                                  } else {
-                                    newGalleryImages.push({
-                                      id: image.id,
-                                      file,
-                                    });
-                                  }
-                                  return {
-                                    ...prev,
-                                    galleryImages: newGalleryImages,
-                                  };
-                                });
-
-                                // Create preview URL for display
+                                // Create preview URL for display (simplified)
                                 const reader = new FileReader();
                                 reader.onload = (e) => {
                                   handleGalleryImageChange(
@@ -1995,7 +1984,14 @@ const AdminEditCar = () => {
       </div>
 
       {/* Pricing Modal */}
-      <PricingModal />
+      <PricingModal 
+        show={showPricingModal}
+        onClose={() => setShowPricingModal(false)}
+        newPricing={newPricing}
+        onPricingChange={handlePricingInputChange}
+        onAddPricing={addScheduledPricing}
+        pricingPeriods={pricingPeriods}
+      />
     </AdminLayout>
   );
 };

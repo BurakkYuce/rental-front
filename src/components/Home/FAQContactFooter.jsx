@@ -8,39 +8,33 @@ const FAQContactFooter = () => {
   const faqData = [
     {
       id: 1,
-      question: "How do I get started with Car Rental?",
+      question: "Ödeme Seçenekleri Nelerdir?",
       answer:
-        "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.",
+        "Önceden belirtmek koşulu ile kredi kartı, ile ödeme , Eft-Havale ve peşin.",
     },
     {
       id: 2,
-      question: "Can I rent a car with a debit card?",
+      question: "Araç Kiralanırken Depozito Alıyor Musunuz? Neden?",
       answer:
-        "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.",
+        "Kiralanan aracın marka modeline ve araç yaşına bağlı olarak depozit alınmaktadır, bunun nedeni ise araç dönüşunde km farkı HGS ve yakıt durumu gibi durumlar kontrol edilir uygun olmayan durumlarda depozitten düşülür.",
     },
     {
       id: 3,
-      question: "What kind of Car Rental do I need?",
+      question: "Kiraladığım Araçla Yurtdışına Çıkabilir Miyim?",
       answer:
-        "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.",
+        "Şirket prosedürleri gereği kiraladığınız araçka yurtdışına çıkamazsınız. ",
     },
     {
       id: 4,
-      question: "What is a rental car security deposit?",
+      question: "Araçlarınızda Bulunan Sigortalar Nelerdir?",
       answer:
-        "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.",
+        "Araçlarımızda Zotunlu Trafik Sigortası , Muafiyeti Rent A Car Kaskosu, Hırsızlık Sigortası mevcuttur.",
     },
     {
       id: 5,
-      question: "Can I cancel or modify my reservation?",
+      question: "Sigorta Ve Kasko Hangi Koşullarda Geçerlidir?",
       answer:
-        "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.",
-    },
-    {
-      id: 6,
-      question: "Is it possible to extend my rental period?",
-      answer:
-        "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.",
+        "Trafik ve alkol raporları kazadan hemen sonra tutulmalıdır. Kaza olduğu andaki fotoğrafları mutlaka olmalıdır. Araçların neresinden hasar aldıysa oralar mutlaka fotoğraflarda açıkça belirtilmelidir. Kaza çift taraflı ise karşı tarafa ait ruhsat fotokopisi, sigorta poliçesi fotokopisi ve ehliyet fotokopisi kaza yerinde karşı taraftan alınmalı ve size ait aynı belgeler karşı tarafa verilmelidir. Kaza olduğu anda lütfen hemen bizi arayınız 0242 243 49 48 - 0554 633 16 50 Aracın alkollü, herhangi bir madde etkisi altında veya hız sınırlarının üzerinde kullanılması ve aracı kiralayan kişinin tamamen kusurlu olması durumunda aracı kiralayan kişi oluşabilecek tüm hasarlardan sorumlu tutulur. Rapor tutulmayan, eksik veya geçersiz evrak durumunda kiracı hiçbir şekilde sigortadan yararlanamaz ve yararlanmayı talep edemez. Belirtilen durumlarda sigortadan yararlanma talebi geçersiz sayılacak ve oluşan zararlar sigorta kapsamı dışında kalacaktır. Aracı kira sözleşmesi üzerinde belirtilen isim veya isimler dışında bir kişinin kullanması. Aracı normal koşullar dışında kullanma. (Motora zarar verecek kullanımlar, yol şartları, patlak veya hasarlı lastik ile kullanma, hatalı yakıt doldurma.) Trafik kuralları dışında kullanılması.(Hız sınırının aşılması, kırmızı ışık vb. diğer ihlaller, aracı alkol veya herhangi bir maddenin etkisi altında kullanma.) Araçta taşınan yükün bir kazaya sebebiyet vermesi. Aracın dikkatsiz kullanılması. (Aracın yağış veya yol durumuna göre kullanılmaması, öndeki aracın emniyet takip mesafesine uygun takip edilmemesi vb. durumlar.) Oluşan bir kaza, hasar veya çalınma durumunda verilen irtibat numarasından haber verilmemesi, aracın kaza yerinde terk edilmesi durumları. Oluşan kazanın üzerinden en çok 24 saat geçmesine rağmen trafik ve alkol raporunun alınmaması. Aracın çalınması durumunda orijinal anahtarının teslim edilmemesi. ( anahtar sizde olmalı mutlaka ) Kira süresi bitmiş olmasına rağmen herhangi bir onay alınmadan aracın kullanılmaya devam edilmesi ve teslim edilmemesi. Lastik, far veya camlarda meydana gelen hasarlarda ilgili irtibat numaralarından haber verilmeden işlem yapılması. Gibi durumlar sigortaya dahil değildir. ARACI KİRALAYAN SORUMLU OLUR. Oluşan kazalarda 3.şahıslara verilen hasarlardan oluşacak maddi tazminat tutarı, mali mesuliyet sigortası teminatı altındadır. Teminat dışında kalan tutarlar müşterinin sorumluluğundadır. Teminat dışında kalan tutarlar için RENTACARANTALYA.NET sorumlu tutulamaz. LÜTFEN HIZ SINIRLARINA UYUNUZ. KEMER TAKINIZ. ARAÇ KULLANIM ESNAFINDA TELEFON İLE GÖRÜŞMEYİZ. ALKOLLÜ VB MADDELERİ ALARAK ARAÇ KULLANMAYINIZ..",
     },
   ];
 
@@ -64,7 +58,7 @@ const FAQContactFooter = () => {
                   marginBottom: "20px",
                 }}
               >
-                Have Any Questions?
+                Sıkça Sorular Sorular
               </h2>
             </div>
           </div>
@@ -246,7 +240,7 @@ const FAQContactFooter = () => {
                   opacity: "0.9",
                 }}
               >
-                Call us for further information
+                Bize Ulaşın
               </p>
               <h3
                 style={{
@@ -284,7 +278,7 @@ const FAQContactFooter = () => {
                     opacity: "0.9",
                   }}
                 >
-                  CALL US NOW
+                  {" "}
                 </p>
                 <h2
                   style={{
@@ -294,7 +288,7 @@ const FAQContactFooter = () => {
                     margin: "0 0 20px 0",
                   }}
                 >
-                  1 200 333 800
+                  0 (536) 603 9907
                 </h2>
                 <button
                   style={{
@@ -317,7 +311,7 @@ const FAQContactFooter = () => {
                     e.target.style.transform = "translateY(0)";
                   }}
                 >
-                  Contact Us
+                  Bizi Arayın
                 </button>
               </div>
             </div>
@@ -339,7 +333,7 @@ const FAQContactFooter = () => {
                   marginBottom: "20px",
                 }}
               >
-                About Rentaly
+                MITCAR RENTAL
               </h5>
               <p
                 style={{
@@ -348,12 +342,12 @@ const FAQContactFooter = () => {
                   fontSize: "0.95rem",
                 }}
               >
-                Where quality meets affordability. We provide fast, reliable and
-                secure Car Rental services.
+                Kalite ile Uygun Fiyatın Buluştuğu Nokta Hızlı, güvenilir ve
+                güvenli araç kiralama hizmetleri sunuyoruz.{" "}
               </p>
               <div style={{ marginTop: "20px" }}>
                 <img
-                  src="/images/logo/logo-light.png"
+                  src="/images/logo/UMİT-2.png"
                   alt="Rentaly"
                   style={{ height: "40px" }}
                 />
@@ -370,15 +364,17 @@ const FAQContactFooter = () => {
                   marginBottom: "20px",
                 }}
               >
-                Contact Info
+                İletişim Bilgileri
               </h5>
               <div style={{ color: "#bbb", fontSize: "0.95rem" }}>
                 <p style={{ marginBottom: "10px" }}>
-                  📍 08 W 36th St, New York, NY 10001
+                  📍 Kızıltoprak Mah. 939 Sok. No.6/B MURATPAŞA / ANTALYA
                 </p>
-                <p style={{ marginBottom: "10px" }}>📞 1 200 333 800</p>
-                <p style={{ marginBottom: "10px" }}>✉️ contact@rentaly.com</p>
-                <p style={{ marginBottom: "0" }}>🕒 Mon - Sun: 08:00 - 18:00</p>
+                <p style={{ marginBottom: "10px" }}>📞 0 (536) 603 9907</p>
+
+                <p style={{ marginBottom: "0" }}>
+                  🕒 Pazartesi - Cuma: 08:00 - 18:00
+                </p>
               </div>
             </div>
 
@@ -485,7 +481,7 @@ const FAQContactFooter = () => {
           >
             <div className="col-12 text-center">
               <p style={{ color: "#bbb", margin: "0", fontSize: "0.9rem" }}>
-                Copyright 2025 - Rentaly by Designesia. All rights reserved.
+                Copyright 2025 - MITCAR RENTAL. All Rights Reserved.
               </p>
             </div>
           </div>

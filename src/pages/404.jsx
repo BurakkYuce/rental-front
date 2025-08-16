@@ -1,6 +1,7 @@
 // src/pages/404Page.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import BackToHomeButton from "../components/BackToHomeButton";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
@@ -11,6 +12,9 @@ const NotFoundPage = () => {
 
   return (
     <div className="error-page-404">
+      {/* Back to Home Button */}
+      <BackToHomeButton />
+      
       <div className="error-container">
         <div className="error-content">
           <div className="error-left">

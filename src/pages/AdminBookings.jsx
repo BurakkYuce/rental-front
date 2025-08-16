@@ -1,7 +1,7 @@
 // AdminBookings.jsx - Booking Management Component
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { adminAPI } from '../services/api';
+import { adminAPI, publicAPI } from '../services/api';
 
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -19,8 +19,8 @@ const AdminBookings = () => {
   const [formData, setFormData] = useState({
     carId: '',
     drivers: [{ name: '', surname: '', phoneNumber: '' }],
-    pickupLocation: '',
-    dropoffLocation: '',
+    pickupLocation: 'Antalya Airport',
+    dropoffLocation: 'Antalya City Center',
     pickupTime: '',
     dropoffTime: ''
   });
@@ -53,8 +53,21 @@ const AdminBookings = () => {
 
   const loadCars = async () => {
     try {
-      const response = await adminAPI.getCars({ limit: 100 });
-      setCars(response.data.data.cars || []);
+      // Try admin API first, fallback to public API
+      let response;
+      try {
+        response = await adminAPI.getCars({ limit: 100 });
+        console.log('Cars loaded via admin API:', response.data);
+        setCars(response.data.data?.cars || response.data?.cars || []);
+      } catch (adminErr) {
+        console.log('Admin API failed, trying public API:', adminErr.response?.status);
+        response = await publicAPI.getCars({ limit: 100 });
+        console.log('Cars loaded via public API:', response.data);
+        const carsData = response.data.data?.listings || response.data.data?.cars || response.data?.cars || [];
+        console.log('First car sample:', carsData[0]);
+        console.log('Car titles:', carsData.map(car => ({id: car.id?.slice(0,8), title: car.title, brand: car.brand, model: car.model})));
+        setCars(carsData);
+      }
     } catch (err) {
       console.error('Failed to load cars:', err);
     }
@@ -101,7 +114,7 @@ const AdminBookings = () => {
   const handleEdit = (booking) => {
     setEditingBooking(booking);
     setFormData({
-      carId: booking.car?._id || '',
+      carId: booking.car?.id || booking.carId || '',
       drivers: booking.drivers || [{ name: '', surname: '', phoneNumber: '' }],
       pickupLocation: booking.pickupLocation || '',
       dropoffLocation: booking.dropoffLocation || '',
@@ -137,8 +150,8 @@ const AdminBookings = () => {
     setFormData({
       carId: '',
       drivers: [{ name: '', surname: '', phoneNumber: '' }],
-      pickupLocation: '',
-      dropoffLocation: '',
+      pickupLocation: 'Antalya Airport',
+      dropoffLocation: 'Antalya City Center',
       pickupTime: '',
       dropoffTime: ''
     });
@@ -217,19 +230,6 @@ const AdminBookings = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
-                  <div className="col-md-3">
-                    <select
-                      className="form-select"
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                      <option value="">All Statuses</option>
-                      <option value="Pending">Pending</option>
-                      <option value="Active">Active</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
-                  </div>
                 </div>
 
                 {/* Bookings Table */}
@@ -242,7 +242,6 @@ const AdminBookings = () => {
                         <th>Driver(s)</th>
                         <th>Pickup</th>
                         <th>Dropoff</th>
-                        <th>Status</th>
                         <th>Total Price</th>
                         <th>Actions</th>
                       </tr>
@@ -250,7 +249,7 @@ const AdminBookings = () => {
                     <tbody>
                       {loading ? (
                         <tr>
-                          <td colSpan="8" className="text-center">
+                          <td colSpan="7" className="text-center">
                             <div className="spinner-border" role="status">
                               <span className="visually-hidden">Loading...</span>
                             </div>
@@ -258,13 +257,13 @@ const AdminBookings = () => {
                         </tr>
                       ) : bookings.length === 0 ? (
                         <tr>
-                          <td colSpan="8" className="text-center">
+                          <td colSpan="7" className="text-center">
                             No bookings found
                           </td>
                         </tr>
                       ) : (
                         bookings.map((booking) => (
-                          <tr key={booking._id}>
+                          <tr key={booking.id || booking._id}>
                             <td>#{booking.bookingReference}</td>
                             <td>{booking.car?.title || 'N/A'}</td>
                             <td>
@@ -289,11 +288,6 @@ const AdminBookings = () => {
                               </small>
                             </td>
                             <td>
-                              <span className={getStatusBadge(booking.status)}>
-                                {booking.status}
-                              </span>
-                            </td>
-                            <td>
                               {booking.pricing?.currency} {booking.pricing?.totalPrice}
                             </td>
                             <td>
@@ -304,52 +298,9 @@ const AdminBookings = () => {
                                 >
                                   <i className="fas fa-edit"></i>
                                 </button>
-                                <div className="dropdown">
-                                  <button
-                                    className="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                    type="button"
-                                    data-bs-toggle="dropdown"
-                                  >
-                                    Status
-                                  </button>
-                                  <ul className="dropdown-menu">
-                                    <li>
-                                      <button
-                                        className="dropdown-item"
-                                        onClick={() => handleStatusUpdate(booking._id, 'Pending')}
-                                      >
-                                        Pending
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        className="dropdown-item"
-                                        onClick={() => handleStatusUpdate(booking._id, 'Active')}
-                                      >
-                                        Active
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        className="dropdown-item"
-                                        onClick={() => handleStatusUpdate(booking._id, 'Completed')}
-                                      >
-                                        Completed
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        className="dropdown-item"
-                                        onClick={() => handleStatusUpdate(booking._id, 'Cancelled')}
-                                      >
-                                        Cancelled
-                                      </button>
-                                    </li>
-                                  </ul>
-                                </div>
                                 <button
                                   className="btn btn-sm btn-outline-danger"
-                                  onClick={() => handleDelete(booking._id)}
+                                  onClick={() => handleDelete(booking.id || booking._id)}
                                 >
                                   <i className="fas fa-trash"></i>
                                 </button>
@@ -439,8 +390,8 @@ const AdminBookings = () => {
                       >
                         <option value="">Select a car</option>
                         {cars.map((car) => (
-                          <option key={car._id} value={car._id}>
-                            {car.title} - {car.pricing?.daily} {car.currency}/day
+                          <option key={car.id || car._id} value={car.id || car._id}>
+                            {car.title ? car.title : (car.brand && car.model ? `${car.brand} ${car.model}` : `Car ${car.id?.slice(0,8) || 'Unknown'}`)} - {car.pricing?.daily || car.dailyRate || car.currentPrice?.daily || 0} {car.pricing?.currency || car.currency || 'EUR'}/day
                           </option>
                         ))}
                       </select>
@@ -512,25 +463,41 @@ const AdminBookings = () => {
                       <div className="col-md-6">
                         <div className="mb-3">
                           <label className="form-label">Pickup Location *</label>
-                          <input
-                            type="text"
-                            className="form-control"
+                          <select
+                            className="form-select"
                             value={formData.pickupLocation}
                             onChange={(e) => setFormData({ ...formData, pickupLocation: e.target.value })}
                             required
-                          />
+                          >
+                            <option value="Antalya Airport">Antalya Airport</option>
+                            <option value="Antalya City Center">Antalya City Center</option>
+                            <option value="Kaleici Old Town">Kaleici Old Town</option>
+                            <option value="Lara Beach">Lara Beach</option>
+                            <option value="Konyaalti Beach">Konyaalti Beach</option>
+                            <option value="Side Ancient City">Side Ancient City</option>
+                            <option value="Belek Golf Resort">Belek Golf Resort</option>
+                            <option value="Custom Location">Custom Location</option>
+                          </select>
                         </div>
                       </div>
                       <div className="col-md-6">
                         <div className="mb-3">
                           <label className="form-label">Dropoff Location *</label>
-                          <input
-                            type="text"
-                            className="form-control"
+                          <select
+                            className="form-select"
                             value={formData.dropoffLocation}
                             onChange={(e) => setFormData({ ...formData, dropoffLocation: e.target.value })}
                             required
-                          />
+                          >
+                            <option value="Antalya Airport">Antalya Airport</option>
+                            <option value="Antalya City Center">Antalya City Center</option>
+                            <option value="Kaleici Old Town">Kaleici Old Town</option>
+                            <option value="Lara Beach">Lara Beach</option>
+                            <option value="Konyaalti Beach">Konyaalti Beach</option>
+                            <option value="Side Ancient City">Side Ancient City</option>
+                            <option value="Belek Golf Resort">Belek Golf Resort</option>
+                            <option value="Custom Location">Custom Location</option>
+                          </select>
                         </div>
                       </div>
                     </div>

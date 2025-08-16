@@ -1,8 +1,9 @@
 // src/pages/CarsPage.jsx
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, Users, Calendar, Settings } from "lucide-react";
+import { Users, Calendar, Settings, CalendarIcon } from "lucide-react";
 import Header from "../components/Header.jsx";
+import BackToHomeButton from "../components/BackToHomeButton.jsx";
 import { publicAPI } from "../services/api";
 import { useCurrency } from "../contexts/CurrencyContext";
 
@@ -15,11 +16,13 @@ const CarsPage = () => {
   const { convertAndFormatPrice, getCurrentCurrencyInfo } = useCurrency();
 
   const [filters, setFilters] = useState({
-    vehicleType: [],
-    carBodyType: [],
-    carSeats: [],
-    engineCapacity: [],
+    fuelType: [],
+    bodyType: [],
+    brand: [],
+    transmission: [],
     priceRange: { min: 0, max: 2000 },
+    pickupDate: "",
+    dropoffDate: "",
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,7 +32,6 @@ const CarsPage = () => {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [likedCars, setLikedCars] = useState(new Set());
   const [imageLoadErrors, setImageLoadErrors] = useState(new Set());
 
   // Transform API car data to match component expected format
@@ -47,10 +49,37 @@ const CarsPage = () => {
         return null;
       }
 
+      // Use effective pricing (seasonal) if available, otherwise use base pricing
+      const pricing = apiCar.effectivePricing || apiCar.pricing || {};
+      const isSeasonalPricing = !!apiCar.effectivePricing?.seasonalName;
+
+      // Debug seasonal pricing
+      if (apiCar.seasonal_pricing && apiCar.seasonal_pricing.length > 0) {
+        console.log(
+          "🎯 Car has seasonal_pricing:",
+          apiCar.id,
+          apiCar.seasonal_pricing
+        );
+        console.log("🎯 Effective pricing:", apiCar.effectivePricing);
+        console.log("🎯 Base pricing:", apiCar.pricing);
+        console.log("🎯 Final pricing used:", pricing);
+        console.log(
+          "🎯 Daily rates - Base:",
+          apiCar.pricing?.daily,
+          "Effective:",
+          apiCar.effectivePricing?.daily,
+          "Final:",
+          pricing.daily
+        );
+      }
+
       return {
         id: carId,
         name: apiCar.title || apiCar.name || "Unknown Car",
-        image: apiCar.mainImage?.url || apiCar.main_image?.url || "/images/cars/default-car.jpg",
+        image:
+          apiCar.mainImage?.url ||
+          apiCar.main_image?.url ||
+          "/images/cars/default-car.jpg",
         rating: apiCar.stats?.rating?.average || 4.5,
         reviews:
           apiCar.stats?.rating?.count || Math.floor(Math.random() * 100) + 20,
@@ -61,8 +90,15 @@ const CarsPage = () => {
         vehicleType: "Car",
         engineCapacity: apiCar.engineCapacity || 2000,
         engineCapacityFormatted: `${apiCar.engineCapacity || 2000}cc`,
-        dailyRate: apiCar.pricing?.daily || 0,
-        liked: false,
+        dailyRate: pricing.daily || 0,
+        weeklyRate: pricing.weekly || (pricing.daily || 0) * 7,
+        monthlyRate: pricing.monthly || (pricing.daily || 0) * 30,
+        currency: pricing.currency || "EUR",
+        // Additional seasonal pricing info
+        isSeasonalPricing,
+        seasonalName: apiCar.effectivePricing?.seasonalName,
+        seasonalPeriod: apiCar.effectivePricing?.seasonalPeriod,
+        basePricing: apiCar.basePricing || apiCar.pricing,
       };
     } catch (error) {
       console.error("Error transforming car data:", error, apiCar);
@@ -76,11 +112,18 @@ const CarsPage = () => {
       setLoading(true);
       setError("");
 
+      // Build API parameters including date filters
+      const apiParams = {
+        page: 1,
+        limit: 100,
+      };
+
+      // Add date filters if selected
+      if (filters.pickupDate) apiParams.pickupDate = filters.pickupDate;
+      if (filters.dropoffDate) apiParams.dropoffDate = filters.dropoffDate;
+
       // Try public API first
-      const response = await publicAPI.getCars({
-        page: 1, // Load all cars for client-side filtering
-        limit: 100, // Increase limit to get more cars
-      });
+      const response = await publicAPI.getCars(apiParams);
 
       console.log("Full API Response:", response);
       console.log("Response data:", response.data);
@@ -104,12 +147,15 @@ const CarsPage = () => {
       }
 
       console.log("Extracted car data:", carData);
+      console.log("Sample car for debugging:", carData[0]);
 
       // Transform API data ve null değerleri filtrele
       const transformedCars = carData
         .map(transformCarData)
         .filter((car) => car !== null);
 
+      console.log("Transformed cars:", transformedCars);
+      console.log("Sample transformed car:", transformedCars[0]);
       setCars(transformedCars);
     } catch (error) {
       console.error("Failed to load cars:", error);
@@ -118,7 +164,7 @@ const CarsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [transformCarData]);
+  }, [transformCarData, filters.pickupDate, filters.dropoffDate]);
 
   // Load cars on component mount
   useEffect(() => {
@@ -126,26 +172,47 @@ const CarsPage = () => {
   }, [loadCars]);
 
   // Static filter options
-  const vehicleTypes = ["Car", "Van", "Minibus", "Prestige"];
-  const carBodyTypes = [
-    "Convertible",
-    "Coupe",
-    "Exotic Cars",
-    "Hatchback",
-    "Minivan",
-    "Truck",
-    "Sedan",
-    "Sports Car",
-    "Station Wagon",
-    "SUV",
+  const brands = [
+    "Citroën",
+    "Fiat",
+    "Ford",
+    "Hyundai",
+    "Mercedes-Benz",
+    "MG",
+    "Peugeot",
+    "Renault",
   ];
-  const carSeats = ["2 seats", "4 seats", "6 seats", "6+ seats"];
-  const engineCapacities = [
-    "1000 - 2000",
-    "2000 - 4000",
-    "4000 - 6000",
-    "6000+",
-    "Electric",
+
+  const bodyTypes = [
+    "Belirtilmemiş",
+    "Sedan",
+    "Hatchback",
+    "SUV",
+    "Station Wagon",
+    "Kombi",
+    "Panelvan",
+    "Minivan",
+    "Minivan & Panelvan",
+    "Pickup",
+    "Otobüs",
+    "Kamyonet",
+    "Kamyon",
+  ];
+
+  const fuelTypes = [
+    "Belirtilmemiş",
+    "Benzin",
+    "Dizel",
+    "Benzin+LPG",
+    "Elektrikli",
+    "Hibrit",
+  ];
+
+  const transmissions = [
+    "Belirtilmemiş",
+    "Manuel",
+    "Yarı Otomatik",
+    "Otomatik",
   ];
 
   // Helper function to check if engine capacity matches filter
@@ -174,38 +241,38 @@ const CarsPage = () => {
   // Memoize filtered cars to improve performance
   const filteredCars = useMemo(() => {
     return cars.filter((car) => {
-      // Vehicle Type filter
+      // Fuel Type filter
       if (
-        filters.vehicleType.length > 0 &&
-        !filters.vehicleType.includes(car.vehicleType)
+        filters.fuelType.length > 0 &&
+        !filters.fuelType.includes(car.fuelType || car.fuel || "Benzin")
       ) {
         return false;
       }
 
-      // Car Body Type filter
+      // Body Type filter
       if (
-        filters.carBodyType.length > 0 &&
-        !filters.carBodyType.includes(car.type)
+        filters.bodyType.length > 0 &&
+        !filters.bodyType.includes(car.bodyType || car.type || "Sedan")
       ) {
         return false;
       }
 
-      // Car Seats filter
+      // Brand filter
       if (
-        filters.carSeats.length > 0 &&
-        !filters.carSeats.includes(car.seats)
+        filters.brand.length > 0 &&
+        !filters.brand.includes(car.brand || car.make || "Unknown")
       ) {
         return false;
       }
 
-      // Engine Capacity filter
-      if (filters.engineCapacity.length > 0) {
-        const matchesAny = filters.engineCapacity.some((filterCapacity) =>
-          matchesEngineCapacity(car.engineCapacity, filterCapacity)
-        );
-        if (!matchesAny) {
-          return false;
-        }
+      // Transmission filter
+      if (
+        filters.transmission.length > 0 &&
+        !filters.transmission.includes(
+          car.transmission || car.gearbox || "Manuel"
+        )
+      ) {
+        return false;
       }
 
       // Price Range filter
@@ -235,6 +302,45 @@ const CarsPage = () => {
     }));
     setCurrentPage(1); // Reset to first page when filters change
   }, []);
+
+  // Date format helper - convert DD/MM/YYYY to YYYY-MM-DD
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("/");
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+    return dateString;
+  };
+
+  // Format date from YYYY-MM-DD to DD/MM/YYYY
+  const formatDateFromInput = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("-");
+    if (parts.length === 3) {
+      const [year, month, day] = parts;
+      return `${day}/${month}/${year}`;
+    }
+    return dateString;
+  };
+
+  // Handle date input changes
+  const handleDateChange = (type, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [type]: value,
+    }));
+    setCurrentPage(1);
+  };
+
+  // Handle calendar icon click
+  const handleCalendarClick = (inputId) => {
+    const hiddenDateInput = document.querySelector(`#${inputId} + .date-picker-hidden`);
+    if (hiddenDateInput) {
+      hiddenDateInput.showPicker();
+    }
+  };
 
   const handlePriceRangeChange = useCallback((type, value) => {
     const numValue = parseInt(value) || 0;
@@ -268,18 +374,6 @@ const CarsPage = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  const toggleLike = useCallback((carId) => {
-    setLikedCars((prev) => {
-      const newLikedCars = new Set(prev);
-      if (newLikedCars.has(carId)) {
-        newLikedCars.delete(carId);
-      } else {
-        newLikedCars.add(carId);
-      }
-      return newLikedCars;
-    });
-  }, []);
-
   const handleRentNow = useCallback(
     (carId) => {
       navigate(`/cars/${carId}`);
@@ -293,11 +387,13 @@ const CarsPage = () => {
 
   const clearAllFilters = useCallback(() => {
     setFilters({
-      vehicleType: [],
-      carBodyType: [],
-      carSeats: [],
-      engineCapacity: [],
+      fuelType: [],
+      bodyType: [],
+      brand: [],
+      transmission: [],
       priceRange: { min: 0, max: 2000 },
+      pickupDate: "",
+      dropoffDate: "",
     });
     setCurrentPage(1);
   }, []);
@@ -316,6 +412,9 @@ const CarsPage = () => {
       {/* Header */}
       <Header />
 
+      {/* Back to Home Button */}
+      <BackToHomeButton />
+
       {/* Hero Section */}
       <div className="cars-hero">
         <div className="container">
@@ -329,90 +428,195 @@ const CarsPage = () => {
           {/* Filters Sidebar */}
           <div className="filters-sidebar">
             <div className="filters-header">
-              <h2>Filters</h2>
-              <button
-                className="clear-filters-btn"
-                onClick={clearAllFilters}
-                type="button"
-              >
-                Clear All
-              </button>
+              <h2>Filtreler</h2>
             </div>
-
-            {/* Vehicle Type Filter */}
+            {/* Date Range Filter */}
             <div className="filter-section">
-              <h3>Vehicle Type</h3>
+              <h3>Tarih Aralığı</h3>
               <div className="filter-options">
-                {vehicleTypes.map((type) => (
-                  <label key={type} className="filter-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={filters.vehicleType.includes(type)}
-                      onChange={() => handleFilterChange("vehicleType", type)}
-                    />
-                    <span className="checkmark"></span>
-                    {type}
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Car Body Type Filter */}
-            <div className="filter-section">
-              <h3>Car Body Type</h3>
-              <div className="filter-options">
-                {carBodyTypes.map((type) => (
-                  <label key={type} className="filter-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={filters.carBodyType.includes(type)}
-                      onChange={() => handleFilterChange("carBodyType", type)}
-                    />
-                    <span className="checkmark"></span>
-                    {type}
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Car Seats Filter */}
-            <div className="filter-section">
-              <h3>Car Seats</h3>
-              <div className="filter-options">
-                {carSeats.map((seats) => (
-                  <label key={seats} className="filter-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={filters.carSeats.includes(seats)}
-                      onChange={() => handleFilterChange("carSeats", seats)}
-                    />
-                    <span className="checkmark"></span>
-                    {seats}
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Engine Capacity Filter */}
-            <div className="filter-section">
-              <h3>Car Engine Capacity (cc)</h3>
-              <div className="filter-options">
-                {engineCapacities.map((capacity) => (
-                  <label key={capacity} className="filter-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={filters.engineCapacity.includes(capacity)}
-                      onChange={() =>
-                        handleFilterChange("engineCapacity", capacity)
+                <div className="date-inputs">
+                  <div className="date-input-group">
+                    <label htmlFor="pickupDate">Alış (GG/AA/YYYY):</label>
+                    <div className="date-input-wrapper">
+                      <input
+                        type="text"
+                        id="pickupDate"
+                        value={filters.pickupDate ? formatDateFromInput(filters.pickupDate) : ""}
+                        onChange={(e) => {
+                          let value = e.target.value;
+                          // Auto-format while typing
+                          value = value.replace(/[^\d]/g, ''); // Only numbers
+                          if (value.length >= 2) {
+                            value = value.slice(0, 2) + '/' + value.slice(2);
+                          }
+                          if (value.length >= 5) {
+                            value = value.slice(0, 5) + '/' + value.slice(5, 9);
+                          }
+                          if (value.length <= 10) {
+                            const formattedForAPI = formatDateForInput(value);
+                            handleDateChange('pickupDate', formattedForAPI);
+                          }
+                        }}
+                        placeholder="GG/AA/YYYY"
+                        maxLength="10"
+                        style={{ fontFamily: "monospace" }}
+                      />
+                      <input
+                        type="date"
+                        className="date-picker-hidden"
+                        onChange={(e) => {
+                          handleDateChange('pickupDate', e.target.value);
+                        }}
+                        value={filters.pickupDate || ""}
+                        min={new Date().toISOString().split("T")[0]}
+                      />
+                      <Calendar 
+                        className="calendar-icon" 
+                        size={18} 
+                        onClick={() => {
+                          const hiddenInput = document.querySelector('#pickupDate').parentElement.querySelector('.date-picker-hidden');
+                          if (hiddenInput) {
+                            hiddenInput.showPicker();
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="date-input-group">
+                    <label htmlFor="dropoffDate">Teslim (GG/AA/YYYY):</label>
+                    <div className="date-input-wrapper">
+                      <input
+                        type="text"
+                        id="dropoffDate"
+                        value={filters.dropoffDate ? formatDateFromInput(filters.dropoffDate) : ""}
+                        onChange={(e) => {
+                          let value = e.target.value;
+                          // Auto-format while typing
+                          value = value.replace(/[^\d]/g, ''); // Only numbers
+                          if (value.length >= 2) {
+                            value = value.slice(0, 2) + '/' + value.slice(2);
+                          }
+                          if (value.length >= 5) {
+                            value = value.slice(0, 5) + '/' + value.slice(5, 9);
+                          }
+                          if (value.length <= 10) {
+                            const formattedForAPI = formatDateForInput(value);
+                            handleDateChange('dropoffDate', formattedForAPI);
+                          }
+                        }}
+                        placeholder="GG/AA/YYYY"
+                        maxLength="10"
+                        style={{ fontFamily: "monospace" }}
+                      />
+                      <input
+                        type="date"
+                        className="date-picker-hidden"
+                        onChange={(e) => {
+                          handleDateChange('dropoffDate', e.target.value);
+                        }}
+                        value={filters.dropoffDate || ""}
+                        min={
+                          filters.pickupDate ||
+                          new Date().toISOString().split("T")[0]
+                        }
+                      />
+                      <Calendar 
+                        className="calendar-icon" 
+                        size={18} 
+                        onClick={() => {
+                          const hiddenInput = document.querySelector('#dropoffDate').parentElement.querySelector('.date-picker-hidden');
+                          if (hiddenInput) {
+                            hiddenInput.showPicker();
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {(filters.pickupDate || filters.dropoffDate) && (
+                    <button
+                      className="clear-dates-btn"
+                      onClick={() =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          pickupDate: "",
+                          dropoffDate: "",
+                        }))
                       }
+                    >
+                      Tarihleri Temizle
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+            {/* Fuel Type Filter */}
+            <div className="filter-section">
+              <h3>Yakıt Türü</h3>
+              <div className="filter-options">
+                {fuelTypes.map((type) => (
+                  <label key={type} className="filter-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={filters.fuelType.includes(type)}
+                      onChange={() => handleFilterChange("fuelType", type)}
                     />
                     <span className="checkmark"></span>
-                    {capacity}
+                    {type}
                   </label>
                 ))}
               </div>
             </div>
-
+            {/* Body Type Filter */}
+            <div className="filter-section">
+              <h3>Kasa Tipi</h3>
+              <div className="filter-options">
+                {bodyTypes.map((type) => (
+                  <label key={type} className="filter-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={filters.bodyType.includes(type)}
+                      onChange={() => handleFilterChange("bodyType", type)}
+                    />
+                    <span className="checkmark"></span>
+                    {type}
+                  </label>
+                ))}
+              </div>
+            </div>
+            {/* Brand Filter */}
+            <div className="filter-section">
+              <h3>Marka</h3>
+              <div className="filter-options">
+                {brands.map((type) => (
+                  <label key={type} className="filter-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={filters.brand.includes(type)}
+                      onChange={() => handleFilterChange("brand", type)}
+                    />
+                    <span className="checkmark"></span>
+                    {type}
+                  </label>
+                ))}
+              </div>
+            </div>
+            {/* Transmission Filter */}
+            <div className="filter-section">
+              <h3>Vites Türü</h3>
+              <div className="filter-options">
+                {transmissions.map((type) => (
+                  <label key={type} className="filter-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={filters.transmission.includes(type)}
+                      onChange={() => handleFilterChange("transmission", type)}
+                    />
+                    <span className="checkmark"></span>
+                    {type}
+                  </label>
+                ))}
+              </div>
+            </div>
             {/* Price Range Filter */}
             <div className="filter-section">
               <h3>Price ({getCurrencySymbol()})</h3>
@@ -476,6 +680,16 @@ const CarsPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Clear All Filters Button */}
+            <button
+              className="clear-filters-btn secondary"
+              onClick={clearAllFilters}
+              type="button"
+              style={{ marginTop: "30px", width: "100%" }}
+            >
+              Tüm Filtreleri Temizle
+            </button>
           </div>
 
           {/* Cars Grid */}
@@ -517,21 +731,6 @@ const CarsPage = () => {
                       onError={() => handleImageError(car.id)}
                       loading="lazy"
                     />
-                    <button
-                      className={`like-btn ${
-                        likedCars.has(car.id) ? "liked" : ""
-                      }`}
-                      onClick={() => toggleLike(car.id)}
-                      aria-label={`${
-                        likedCars.has(car.id) ? "Unlike" : "Like"
-                      } ${car.name}`}
-                      type="button"
-                    >
-                      <Heart
-                        size={20}
-                        fill={likedCars.has(car.id) ? "currentColor" : "none"}
-                      />
-                    </button>
                   </div>
 
                   <div className="car-content">
@@ -557,21 +756,45 @@ const CarsPage = () => {
 
                     <div className="car-price">
                       <div className="price-info">
-                        <span className="price-label">Daily rate from</span>
-                        <span className="price">
-                          {car.dailyRate && convertAndFormatPrice
-                            ? convertAndFormatPrice(car.dailyRate, "EUR")
-                            : car.dailyRate
-                            ? `${getCurrencySymbol()}${car.dailyRate}`
-                            : "Price not available"}
-                        </span>
+                        <div className="pricing-periods">
+                          <div className="pricing-item">
+                            <span className="period-label">Günlük</span>
+                            <span className="period-price">
+                              {car.dailyRate && convertAndFormatPrice
+                                ? convertAndFormatPrice(car.dailyRate, "EUR")
+                                : car.dailyRate
+                                ? `€${car.dailyRate}`
+                                : "N/A"}
+                            </span>
+                          </div>
+                          <div className="pricing-item">
+                            <span className="period-label">Haftalık</span>
+                            <span className="period-price">
+                              {car.weeklyRate && convertAndFormatPrice
+                                ? convertAndFormatPrice(car.weeklyRate, "EUR")
+                                : car.weeklyRate
+                                ? `€${car.weeklyRate}`
+                                : "N/A"}
+                            </span>
+                          </div>
+                          <div className="pricing-item">
+                            <span className="period-label">Aylık</span>
+                            <span className="period-price">
+                              {car.monthlyRate && convertAndFormatPrice
+                                ? convertAndFormatPrice(car.monthlyRate, "EUR")
+                                : car.monthlyRate
+                                ? `€${car.monthlyRate}`
+                                : "N/A"}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                       <button
                         className="rent-btn"
                         onClick={() => handleRentNow(car.id)}
                         type="button"
                       >
-                        Rent Now
+                        Kirala
                       </button>
                     </div>
                   </div>

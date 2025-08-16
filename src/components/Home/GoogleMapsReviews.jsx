@@ -16,7 +16,7 @@ const GoogleMapsReviews = () => {
                 marginBottom: "20px",
               }}
             >
-              Find Us & Read Reviews
+              Bizi Ziyaret Edin, Deneyimleri Keşfedin
             </h2>
             <p
               style={{
@@ -27,8 +27,8 @@ const GoogleMapsReviews = () => {
                 lineHeight: "1.6",
               }}
             >
-              Visit our location and check out what our customers are saying
-              about MITCAR RENTAL services.
+              MITCAR RENTAL ayrıcalığını yerinde yaşayın ve memnun
+              müşterilerimizin gerçek deneyimlerini okuyarak ilham alın.
             </p>
           </div>
         </div>
@@ -46,14 +46,20 @@ const GoogleMapsReviews = () => {
             >
               {/* Google Maps iframe */}
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3048.4729896829666!2d27.1394!3d38.4237!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14bbd9b6c3a4d4d1%3A0x6d4e4f8b2c7a8e9f!2zTcSwVENBUiBSRU5UQUw!5e0!3m2!1str!2str!4v1689765432123!5m2!1str!2str"
+                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d797.7384654839356!2d30.735125999999998!3d36.891452!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14c385ced440d121%3A0x6d4faf414ac05dee!2sM%C4%B0TCAR%20RENTAL!5e0!3m2!1str!2str!4v1755206717251!5m2!1str!2str"
+                width="600"
+                height="450"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="MITCAR RENTAL Location"
+                title="MITCAR RENTAL Konumu"
               ></iframe>
             </div>
           </div>
@@ -106,13 +112,13 @@ const GoogleMapsReviews = () => {
                       fontWeight: "600",
                     }}
                   >
-                    4.8/5
+                    5/5
                   </span>
                 </div>
                 <p
                   style={{ color: "#6c757d", fontSize: "0.9rem", margin: "0" }}
                 >
-                  150+ Google Reviews
+                  30+ Google Reviews
                 </p>
               </div>
 
@@ -121,7 +127,7 @@ const GoogleMapsReviews = () => {
                 style={{ borderTop: "1px solid #dee2e6", paddingTop: "15px" }}
               >
                 <div style={{ marginBottom: "10px" }}>
-                  <strong style={{ color: "#2c3e50" }}>📍 Address:</strong>
+                  <strong style={{ color: "#2c3e50" }}>📍 Adres:</strong>
                   <p
                     style={{
                       color: "#6c757d",
@@ -212,11 +218,11 @@ const GoogleMapsReviews = () => {
               }}
             >
               <h5 style={{ margin: "0 0 10px 0", fontWeight: "700" }}>
-                📍 Visit Us Today!
+                📍 Bizi Ziyaret Edin! !
               </h5>
               <p style={{ margin: "0", fontSize: "1rem" }}>
-                Come to our location or click the button above to read authentic
-                customer reviews on Google Maps.
+                Lokasyonumuza uğrayın veya yukarıdaki butona tıklayarak Google
+                Haritalar’daki gerçek müşteri yorumlarımızı okuyun.
               </p>
             </div>
           </div>

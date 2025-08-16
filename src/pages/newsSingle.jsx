@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { blogAPI } from "../services/api";
+import BackToHomeButton from "../components/BackToHomeButton";
+import { publicAPI } from "../services/api";
 import "../assets/css/bootstrap.min.css";
 import "../assets/css/plugins.css";
 import "../assets/css/style.css";
@@ -18,10 +19,11 @@ const NewsSingle = () => {
   const [error, setError] = useState("");
   
 
-  // Load blog post
+  // Load blog post and related posts
   useEffect(() => {
     if (slug) {
       loadBlogPost();
+      loadRecentPosts();
     }
   }, [slug]);
 
@@ -29,29 +31,79 @@ const NewsSingle = () => {
     try {
       setLoading(true);
       setError("");
-      const response = await blogAPI.getBlogBySlug(slug);
-      setBlog(response.data.data);
-      setRelatedPosts(response.data.data.relatedPosts || []);
+      console.log("🔄 Loading blog post with slug:", slug);
+      
+      const response = await publicAPI.getNewsById(slug);
+      console.log("📰 Blog API response:", response);
+      console.log("📊 Response data structure:", response.data);
+      
+      // Handle different possible response structures
+      let blogData = null;
+      if (response.data && response.data.success) {
+        blogData = response.data.data || response.data.blog;
+      } else if (response.data) {
+        blogData = response.data;
+      }
+      
+      console.log("📰 Processed blog data:", blogData);
+      
+      if (blogData) {
+        // Debug image fields specifically
+        console.log("🖼️ Blog image fields:", {
+          featuredImage: blogData.featuredImage,
+          mainImage: blogData.mainImage,
+          main_image: blogData.main_image,
+          image: blogData.image,
+          images: blogData.images,
+          thumbnail: blogData.thumbnail
+        });
+        
+        setBlog(blogData);
+        // Don't set related posts from blog data, we load them separately
+      } else {
+        setError("Blog post data not found");
+      }
     } catch (error) {
-      console.error("Failed to load blog post:", error);
+      console.error("❌ Failed to load blog post:", error);
       if (error.response?.status === 404) {
         setError("Blog post not found");
       } else {
-        setError("Failed to load blog post");
+        setError("Failed to load blog post. Please try again later.");
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Format date
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long", 
-      day: "numeric",
-    });
+  // Load recent posts for sidebar
+  const loadRecentPosts = async () => {
+    try {
+      console.log("🔄 Loading recent posts...");
+      const response = await publicAPI.getNews({ 
+        limit: 5,
+        page: 1
+      });
+      console.log("📰 Recent posts API response:", response);
+      
+      // Handle different possible response structures
+      let postsData = [];
+      if (response.data && response.data.success) {
+        postsData = response.data.data?.blogs || response.data.data?.posts || [];
+      } else if (response.data && response.data.data) {
+        postsData = response.data.data.blogs || response.data.data || [];
+      }
+      
+      console.log("📰 Recent posts processed data:", postsData);
+      
+      // Filter out current post and take only 4 recent posts
+      const filteredPosts = postsData.filter(post => post.slug !== slug).slice(0, 4);
+      setRelatedPosts(filteredPosts);
+    } catch (error) {
+      console.error("❌ Failed to load recent posts:", error);
+      // Don't set error for recent posts, just log it
+    }
   };
+
 
   const socialIcons = [
     { name: "twitter", icon: "fa-twitter" },
@@ -68,6 +120,9 @@ const NewsSingle = () => {
     <div className="news-single-page" style={{ minHeight: "100vh", backgroundColor: "#fff" }}>
       {/* Header */}
       <Header />
+      
+      {/* Back to Home Button */}
+      <BackToHomeButton />
 
       {/* Hero Section */}
       <section
@@ -132,8 +187,6 @@ const NewsSingle = () => {
                     <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap", fontSize: "0.9rem", color: "#666" }}>
                       <span>By {blog.author?.name || "Admin"}</span>
                       <span>•</span>
-                      <span>{formatDate(blog.publishedAt)}</span>
-                      <span>•</span>
                       <span>{blog.readingTimeDisplay}</span>
                       <span>•</span>
                       <span style={{ backgroundColor: "#1ECB15", color: "white", padding: "2px 8px", borderRadius: "12px", fontSize: "0.8rem" }}>
@@ -144,8 +197,29 @@ const NewsSingle = () => {
 
                   {/* Featured Image */}
                   <img
-                    src={blog.featuredImage?.url || "/images/news/big.jpg"}
-                    alt={blog.featuredImage?.alt || blog.title}
+                    src={
+                      blog.featuredImage?.url ||
+                      blog.mainImage?.url ||
+                      blog.main_image?.url ||
+                      blog.image?.url ||
+                      blog.image ||
+                      blog.images?.main?.url ||
+                      blog.images?.featured?.url ||
+                      blog.thumbnail?.url ||
+                      blog.thumbnail ||
+                      "/images/news/big.jpg"
+                    }
+                    alt={
+                      blog.featuredImage?.alt ||
+                      blog.mainImage?.alt ||
+                      blog.main_image?.alt ||
+                      blog.image?.alt ||
+                      blog.title
+                    }
+                    onError={(e) => {
+                      console.warn("🖼️ Blog main image failed to load:", e.target.src);
+                      e.target.src = "/images/news/big.jpg";
+                    }}
                     style={{
                       width: "100%",
                       height: "400px",
@@ -180,7 +254,14 @@ const NewsSingle = () => {
                       color: "#666",
                       marginBottom: "30px"
                     }}
-                    dangerouslySetInnerHTML={{ __html: blog.content.replace(/\n/g, '<br>') }}
+                    dangerouslySetInnerHTML={{ 
+                      __html: blog.content ? 
+                        (typeof blog.content === 'string' ? 
+                          blog.content.replace(/\n/g, '<br>') : 
+                          blog.content
+                        ) : 
+                        blog.description || blog.excerpt || "Content not available"
+                    }}
                   />
 
                   {/* Tags */}
@@ -288,9 +369,9 @@ const NewsSingle = () => {
                   }}
                 ></div>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  {relatedPosts.map((post) => (
+                  {relatedPosts.length > 0 ? relatedPosts.map((post) => (
                     <li
-                      key={post._id}
+                      key={post._id || post.id}
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -301,8 +382,23 @@ const NewsSingle = () => {
                     >
                       <div style={{ marginRight: "15px", flexShrink: 0 }}>
                         <img
-                          src={post.featuredImage?.url || "/images/news-thumbnail/pic-blog-1.jpg"}
+                          src={
+                            post.featuredImage?.url ||
+                            post.mainImage?.url ||
+                            post.main_image?.url ||
+                            post.image?.url ||
+                            post.image ||
+                            post.images?.main?.url ||
+                            post.images?.featured?.url ||
+                            post.thumbnail?.url ||
+                            post.thumbnail ||
+                            "/images/news-thumbnail/pic-blog-1.jpg"
+                          }
                           alt={post.title}
+                          onError={(e) => {
+                            console.warn("🖼️ Recent post image failed to load:", e.target.src);
+                            e.target.src = "/images/news-thumbnail/pic-blog-1.jpg";
+                          }}
                           style={{
                             width: "70px",
                             height: "70px",
@@ -327,21 +423,23 @@ const NewsSingle = () => {
                               textDecoration: "none",
                               transition: "color 0.3s ease",
                             }}
+                            onMouseEnter={(e) => {
+                              e.target.style.color = "#1ECB15";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.color = "#333";
+                            }}
                           >
                             {post.title}
                           </Link>
                         </h4>
-                        <div
-                          style={{
-                            fontSize: "0.85rem",
-                            color: "#666",
-                          }}
-                        >
-                          {formatDate(post.publishedAt)}
-                        </div>
                       </div>
                     </li>
-                  ))}
+                  )) : (
+                    <li style={{ textAlign: "center", padding: "20px", color: "#666", fontSize: "0.9rem" }}>
+                      No recent posts available
+                    </li>
+                  )}
                 </ul>
               </div>
 

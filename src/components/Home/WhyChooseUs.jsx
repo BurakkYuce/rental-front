@@ -7,11 +7,10 @@ const WhyChooseUs = () => {
         {/* Section Header */}
         <div className="row">
           <div className="col-lg-12 text-center mb-5">
-            <h2 className="section-title">Our Features</h2>
+            <h2 className="section-title">Özelliklerimiz</h2>
             <p className="section-subtitle">
-              Discover a world of convenience, safety, and customization, paving
-              the way for unforgettable adventures and seamless mobility
-              solutions.
+              Kolaylık, güvenlik ve kişiselleştirme dünyasını keşfedin;
+              unutulmaz maceralar ve sorunsuz mobilite çözümleri için yol açın.
             </p>
           </div>
         </div>
@@ -28,10 +27,10 @@ const WhyChooseUs = () => {
                 />
               </div>
               <div className="feature-content">
-                <h4>First class services</h4>
+                <h4>Birinci Sınıf Hizmetler</h4>
                 <p>
-                  Where luxury meets exceptional care, creating unforgettable
-                  moments and exceeding your every expectation.
+                  Lüksün olağanüstü özenle buluştuğu yerde, beklentilerinizi
+                  aşan ve unutulmaz anlar yaratan bir deneyim.
                 </p>
               </div>
             </div>
@@ -44,10 +43,10 @@ const WhyChooseUs = () => {
                 />
               </div>
               <div className="feature-content">
-                <h4>24/7 road assistance</h4>
+                <h4>7/24 Yol Yardımı</h4>
                 <p>
-                  Reliable support when you need it most, keeping you on the
-                  move with confidence and peace of mind.
+                  En çok ihtiyacınız olduğu anda güvenilir destek; yolculuğunuza
+                  güven ve huzur katar.
                 </p>
               </div>
             </div>
@@ -68,10 +67,10 @@ const WhyChooseUs = () => {
           <div className="col-lg-4">
             <div className="feature-item feature-item-right">
               <div className="feature-content">
-                <h4>Quality at Minimum Expense</h4>
+                <h4>Minimum Maliyetle Maksimum Kalite</h4>
                 <p>
-                  Unlocking affordable brilliance without elevating quality
-                  while minimizing costs for maximum value.
+                  Kaliteden ödün vermeden, en uygun maliyetle üstün bir deneyim
+                  sunuyoruz.
                 </p>
               </div>
               <div className="feature-icon">
@@ -81,10 +80,10 @@ const WhyChooseUs = () => {
 
             <div className="feature-item feature-item-right">
               <div className="feature-content">
-                <h4>Free Pick-Up & Drop-Off</h4>
+                <h4>Ücretsiz Alım ve Teslimat</h4>
                 <p>
-                  Enjoy free pickup and drop-off services, adding an extra layer
-                  of ease to your car rental experience.
+                  Ücretsiz araç alım ve teslimat hizmeti ile kiralama
+                  deneyiminizi daha da kolaylaştırın.
                 </p>
               </div>
               <div className="feature-icon">

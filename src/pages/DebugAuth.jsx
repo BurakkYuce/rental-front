@@ -1,5 +1,6 @@
 // src/pages/DebugAuth.jsx - Debug authentication flow
 import React, { useState, useEffect } from 'react';
+import BackToHomeButton from '../components/BackToHomeButton';
 import { authAPI, adminAPI, isAuthenticated, getAuthToken, setAuthToken } from '../services/api';
 
 const DebugAuth = () => {
@@ -98,6 +99,9 @@ const DebugAuth = () => {
 
   return (
     <div style={{ padding: '20px', fontFamily: 'monospace' }}>
+      {/* Back to Home Button */}
+      <BackToHomeButton />
+      
       <h1>Auth Debug Panel</h1>
       
       <div style={{ marginBottom: '20px' }}>

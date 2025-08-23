@@ -1,26 +1,27 @@
 // src/pages/TransferService.jsx - Transfer Service Page for Customers
-import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import React, { useState, useEffect } from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import BackToHomeButton from "../components/BackToHomeButton.jsx";
 
 const TransferService = () => {
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [selectedZone, setSelectedZone] = useState(null);
-  const [selectedCapacity, setSelectedCapacity] = useState('capacity_1_4');
+  const [selectedCapacity, setSelectedCapacity] = useState("capacity_1_4");
 
   // Contact form state
   const [contactForm, setContactForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    passengers: '1',
-    pickupLocation: '',
-    dropoffLocation: '',
-    date: '',
-    time: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    passengers: "1",
+    pickupLocation: "",
+    dropoffLocation: "",
+    date: "",
+    time: "",
+    message: "",
   });
 
   const [contactFormSubmitting, setContactFormSubmitting] = useState(false);
@@ -29,26 +30,26 @@ const TransferService = () => {
   // Capacity options
   const capacityOptions = [
     {
-      key: 'capacity_1_4',
-      label: '1-4 Passengers',
-      description: 'Sedan / Standard Car',
-      icon: '🚗',
-      maxPassengers: 4
+      key: "capacity_1_4",
+      label: "1-4 Passengers",
+      description: "Sedan / Standard Car",
+      icon: "🚗",
+      maxPassengers: 4,
     },
     {
-      key: 'capacity_1_6',
-      label: '1-6 Passengers',
-      description: 'MPV / Minivan',
-      icon: '🚐',
-      maxPassengers: 6
+      key: "capacity_1_6",
+      label: "1-6 Passengers",
+      description: "MPV / Minivan",
+      icon: "🚐",
+      maxPassengers: 6,
     },
     {
-      key: 'capacity_1_16',
-      label: '1-16 Passengers',
-      description: 'Minibus / Coach',
-      icon: '🚌',
-      maxPassengers: 16
-    }
+      key: "capacity_1_16",
+      label: "1-16 Passengers",
+      description: "Minibus / Coach",
+      icon: "🚌",
+      maxPassengers: 16,
+    },
   ];
 
   // Fetch transfer zones
@@ -56,20 +57,20 @@ const TransferService = () => {
     const fetchZones = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:4000/api/transfers');
-        
+        const response = await fetch("http://localhost:4000/api/transfers");
+
         if (!response.ok) {
-          throw new Error('Failed to fetch transfer zones');
+          throw new Error("Failed to fetch transfer zones");
         }
 
         const data = await response.json();
         if (data.success) {
           setZones(data.data || []);
         } else {
-          throw new Error(data.error || 'Failed to load transfer zones');
+          throw new Error(data.error || "Failed to load transfer zones");
         }
       } catch (err) {
-        console.error('❌ Failed to load transfer zones:', err);
+        console.error("❌ Failed to load transfer zones:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -79,89 +80,137 @@ const TransferService = () => {
     fetchZones();
   }, []);
 
-  // Handle contact form submission
+  // Generate WhatsApp message with transfer details
+  const generateWhatsAppMessage = () => {
+    const selectedCapacityInfo = getSelectedCapacityInfo();
+
+    // Find the selected transfer zone for pricing
+    const selectedZoneData = zones.find(
+      (zone) =>
+        contactForm.dropoffLocation
+          .toLowerCase()
+          .includes(zone.zoneName.toLowerCase()) ||
+        zone.zoneName
+          .toLowerCase()
+          .includes(contactForm.dropoffLocation.toLowerCase())
+    );
+
+    const zonePricing = selectedZoneData
+      ? selectedZoneData.pricing[selectedCapacity]
+      : "Özel Fiyat";
+
+    // Build the message
+    let message = `Merhaba, transfer hizmeti için rezervasyon yapmak istiyorum 🚐\n\n`;
+
+    message += `Ad Soyad: ${contactForm.name}\n`;
+    message += `Email: ${contactForm.email}\n`;
+    message += `Telefon: ${contactForm.phone}\n`;
+    message += `Yolcu Sayısı: ${contactForm.passengers} kişi\n\n`;
+
+    message += `Araç Tipi: ${selectedCapacityInfo?.label} - ${selectedCapacityInfo?.description}\n`;
+    message += `Alış Yeri: ${contactForm.pickupLocation}\n`;
+    message += `Varış Yeri: ${contactForm.dropoffLocation}\n`;
+    message += `Tarih: ${contactForm.date}\n`;
+    message += `Saat: ${contactForm.time}\n\n`;
+
+    if (selectedZoneData) {
+      message += `Bölge: ${selectedZoneData.zoneName}\n`;
+      message += `Tahmini Fiyat: €${zonePricing}\n\n`;
+    }
+
+    if (contactForm.message.trim()) {
+      message += `Ek Bilgiler: ${contactForm.message}\n\n`;
+    }
+
+    message += `Lütfen müsaitliği ve fiyatı teyit eder misiniz? 🙂`;
+
+    return message;
+  };
+
+  // Validate form
+  const validateForm = () => {
+    const errors = {};
+
+    if (!contactForm.name.trim()) {
+      errors.name = "Ad soyad gereklidir";
+    }
+
+    if (!contactForm.email.trim()) {
+      errors.email = "Email adresi gereklidir";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactForm.email)) {
+      errors.email = "Geçerli bir email adresi giriniz";
+    }
+
+    if (!contactForm.phone.trim()) {
+      errors.phone = "Telefon numarası gereklidir";
+    }
+
+    if (!contactForm.pickupLocation.trim()) {
+      errors.pickupLocation = "Alış yeri gereklidir";
+    }
+
+    if (!contactForm.dropoffLocation.trim()) {
+      errors.dropoffLocation = "Varış yeri gereklidir";
+    }
+
+    if (!contactForm.date) {
+      errors.date = "Tarih seçimi gereklidir";
+    }
+
+    if (!contactForm.time) {
+      errors.time = "Saat seçimi gereklidir";
+    }
+
+    return errors;
+  };
+
+  // Handle contact form submission - Open WhatsApp instead
   const handleContactSubmit = async (e) => {
     e.preventDefault();
-    
+
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      // Show validation errors
+      let errorMessage = "Lütfen şu alanları kontrol edin:\n";
+      Object.values(errors).forEach((error) => {
+        errorMessage += `• ${error}\n`;
+      });
+      alert(errorMessage);
+      return;
+    }
+
     setContactFormSubmitting(true);
-    
+
     try {
-      // Find the selected transfer zone
-      const selectedZoneData = zones.find(zone => 
-        contactForm.dropoffLocation.toLowerCase().includes(zone.zoneName.toLowerCase()) ||
-        zone.zoneName.toLowerCase().includes(contactForm.dropoffLocation.toLowerCase())
-      );
+      // Generate WhatsApp message
+      const message = generateWhatsAppMessage();
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappNumber = "905530755678"; // Turkish number format
+      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
-      // Calculate pickup and dropoff times
-      const pickupDateTime = new Date(`${contactForm.date}T${contactForm.time}`);
-      const dropoffDateTime = new Date(pickupDateTime);
-      dropoffDateTime.setHours(dropoffDateTime.getHours() + 1); // Default 1 hour duration
+      // Open WhatsApp in new tab
+      window.open(whatsappURL, "_blank");
 
-      // Get pricing based on selected capacity
-      const selectedCapacityInfo = getSelectedCapacityInfo();
-      const zonePricing = selectedZoneData ? selectedZoneData.pricing[selectedCapacity] : 0;
-
-      const bookingData = {
-        serviceType: 'transfer',
-        transferId: selectedZoneData?.id || null,
-        drivers: [{
-          name: contactForm.name.split(' ')[0] || contactForm.name,
-          surname: contactForm.name.split(' ').slice(1).join(' ') || '',
-          phoneNumber: contactForm.phone,
-        }],
-        pickupLocation: contactForm.pickupLocation,
-        dropoffLocation: contactForm.dropoffLocation,
-        pickupTime: pickupDateTime.toISOString(),
-        dropoffTime: dropoffDateTime.toISOString(),
-        transferData: {
-          vehicleCapacity: selectedCapacity,
-          passengers: parseInt(contactForm.passengers),
-          flightNumber: '',
-          notes: contactForm.message
-        },
-        specialRequests: contactForm.message,
-        pricing: {
-          total: zonePricing,
-          currency: 'EUR',
-          breakdown: {
-            basePrice: zonePricing,
-            vehicleType: selectedCapacityInfo?.label,
-            zone: selectedZoneData?.zoneName || contactForm.dropoffLocation
-          }
-        }
-      };
-
-      const response = await fetch('http://localhost:4000/api/admin/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(bookingData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create booking');
-      }
-
-      const result = await response.json();
-      console.log('✅ Transfer booking created:', result);
-
+      // Show success message
       setContactFormSuccess(true);
-      setContactForm({
-        name: '',
-        email: '',
-        phone: '',
-        passengers: '1',
-        pickupLocation: '',
-        dropoffLocation: '',
-        date: '',
-        time: '',
-        message: ''
-      });
+
+      // Reset form after a short delay
+      setTimeout(() => {
+        setContactForm({
+          name: "",
+          email: "",
+          phone: "",
+          passengers: "1",
+          pickupLocation: "",
+          dropoffLocation: "",
+          date: "",
+          time: "",
+          message: "",
+        });
+      }, 1000);
     } catch (error) {
-      console.error('❌ Transfer booking error:', error);
-      alert(`Error creating transfer booking: ${error.message}`);
+      console.error("WhatsApp redirect failed:", error);
+      alert("WhatsApp açılırken bir hata oluştu. Lütfen tekrar deneyin.");
     } finally {
       setContactFormSubmitting(false);
     }
@@ -170,9 +219,9 @@ const TransferService = () => {
   // Handle form input changes
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setContactForm(prev => ({
+    setContactForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -183,45 +232,61 @@ const TransferService = () => {
 
   // Get selected capacity info
   const getSelectedCapacityInfo = () => {
-    return capacityOptions.find(option => option.key === selectedCapacity);
+    return capacityOptions.find((option) => option.key === selectedCapacity);
   };
 
   if (loading) {
     return (
       <div>
         <Header />
-        <div className="loading-container" style={{ padding: '100px 0', textAlign: 'center' }}>
+        <div
+          className="loading-container"
+          style={{ padding: "100px 0", textAlign: "center" }}
+        >
           <div className="spinner-border text-primary" role="status">
             <span className="sr-only">Loading...</span>
           </div>
-          <p style={{ marginTop: '20px', color: '#666' }}>Loading transfer services...</p>
+          <p style={{ marginTop: "20px", color: "#666" }}>
+            Loading transfer services...
+          </p>
         </div>
         <Footer />
       </div>
     );
   }
-
   return (
     <div>
       <Header />
-      
+      <BackToHomeButton />
       {/* Hero Section */}
-      <section style={{ 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        padding: '80px 0',
-        color: 'white',
-        textAlign: 'center'
-      }}>
+      <section
+        style={{
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          padding: "80px 0",
+          color: "white",
+          textAlign: "center",
+        }}
+      >
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-8">
-              <i className="fa fa-plane" style={{ fontSize: '60px', marginBottom: '30px', opacity: 0.9 }}></i>
-              <h1 style={{ fontSize: '3rem', fontWeight: '700', marginBottom: '20px' }}>
+              <i
+                className="fa fa-plane"
+                style={{ fontSize: "60px", marginBottom: "30px", opacity: 0.9 }}
+              ></i>
+              <h1
+                style={{
+                  fontSize: "3rem",
+                  fontWeight: "700",
+                  marginBottom: "20px",
+                }}
+              >
                 Transfer Services
               </h1>
-              <p style={{ fontSize: '1.2rem', opacity: 0.9, lineHeight: 1.6 }}>
-                Professional and reliable transfer services to your destination. 
-                Comfortable vehicles with experienced drivers for all passenger capacities.
+              <p style={{ fontSize: "1.2rem", opacity: 0.9, lineHeight: 1.6 }}>
+                Professional and reliable transfer services to your destination.
+                Comfortable vehicles with experienced drivers for all passenger
+                capacities.
               </p>
             </div>
           </div>
@@ -229,13 +294,20 @@ const TransferService = () => {
       </section>
 
       {/* Vehicle Capacity Selection */}
-      <section style={{ padding: '60px 0', backgroundColor: '#f8f9fa' }}>
+      <section style={{ padding: "60px 0", backgroundColor: "#f8f9fa" }}>
         <div className="container">
-          <div className="text-center" style={{ marginBottom: '50px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: '600', color: '#333', marginBottom: '15px' }}>
+          <div className="text-center" style={{ marginBottom: "50px" }}>
+            <h2
+              style={{
+                fontSize: "2.5rem",
+                fontWeight: "600",
+                color: "#333",
+                marginBottom: "15px",
+              }}
+            >
               Choose Your Vehicle
             </h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>
+            <p style={{ fontSize: "1.1rem", color: "#666" }}>
               Select the vehicle type that best fits your group size
             </p>
           </div>
@@ -243,41 +315,62 @@ const TransferService = () => {
           <div className="row">
             {capacityOptions.map((option) => (
               <div key={option.key} className="col-lg-4 col-md-6 mb-4">
-                <div 
-                  className={`card h-100 ${selectedCapacity === option.key ? 'border-primary bg-primary text-white' : ''}`}
-                  style={{ 
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    border: selectedCapacity === option.key ? '3px solid #007bff' : '1px solid #dee2e6'
+                <div
+                  className={`card h-100 ${
+                    selectedCapacity === option.key
+                      ? "border-primary bg-primary text-white"
+                      : ""
+                  }`}
+                  style={{
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    border:
+                      selectedCapacity === option.key
+                        ? "3px solid #007bff"
+                        : "1px solid #dee2e6",
                   }}
                   onClick={() => setSelectedCapacity(option.key)}
                 >
-                  <div className="card-body text-center" style={{ padding: '30px' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '20px' }}>
+                  <div
+                    className="card-body text-center"
+                    style={{ padding: "30px" }}
+                  >
+                    <div style={{ fontSize: "3rem", marginBottom: "20px" }}>
                       {option.icon}
                     </div>
-                    <h5 className="card-title" style={{ fontWeight: '600', marginBottom: '10px' }}>
+                    <h5
+                      className="card-title"
+                      style={{ fontWeight: "600", marginBottom: "10px" }}
+                    >
                       {option.label}
                     </h5>
-                    <p className="card-text" style={{ 
-                      opacity: selectedCapacity === option.key ? 0.9 : 0.7,
-                      marginBottom: '15px'
-                    }}>
+                    <p
+                      className="card-text"
+                      style={{
+                        opacity: selectedCapacity === option.key ? 0.9 : 0.7,
+                        marginBottom: "15px",
+                      }}
+                    >
                       {option.description}
                     </p>
-                    <div style={{ 
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
-                      gap: '8px',
-                      fontSize: '0.9rem',
-                      fontWeight: '500'
-                    }}>
+                    <div
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        fontSize: "0.9rem",
+                        fontWeight: "500",
+                      }}
+                    >
                       <i className="fa fa-users"></i>
                       Max {option.maxPassengers} passengers
                     </div>
                     {selectedCapacity === option.key && (
-                      <div style={{ marginTop: '15px' }}>
-                        <i className="fa fa-check" style={{ fontSize: '20px' }}></i>
+                      <div style={{ marginTop: "15px" }}>
+                        <i
+                          className="fa fa-check"
+                          style={{ fontSize: "20px" }}
+                        ></i>
                       </div>
                     )}
                   </div>
@@ -289,14 +382,22 @@ const TransferService = () => {
       </section>
 
       {/* Transfer Zones & Pricing */}
-      <section style={{ padding: '60px 0' }}>
+      <section style={{ padding: "60px 0" }}>
         <div className="container">
-          <div className="text-center" style={{ marginBottom: '50px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: '600', color: '#333', marginBottom: '15px' }}>
+          <div className="text-center" style={{ marginBottom: "50px" }}>
+            <h2
+              style={{
+                fontSize: "2.5rem",
+                fontWeight: "600",
+                color: "#333",
+                marginBottom: "15px",
+              }}
+            >
               Destinations & Pricing
             </h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>
-              Pricing for {getSelectedCapacityInfo()?.label} - {getSelectedCapacityInfo()?.description}
+            <p style={{ fontSize: "1.1rem", color: "#666" }}>
+              Pricing for {getSelectedCapacityInfo()?.label} -{" "}
+              {getSelectedCapacityInfo()?.description}
             </p>
           </div>
 
@@ -306,8 +407,14 @@ const TransferService = () => {
               <p>{error}</p>
             </div>
           ) : zones.length === 0 ? (
-            <div className="text-center" style={{ color: '#666', padding: '40px 0' }}>
-              <i className="fa fa-car" style={{ fontSize: '60px', opacity: 0.3, marginBottom: '20px' }}></i>
+            <div
+              className="text-center"
+              style={{ color: "#666", padding: "40px 0" }}
+            >
+              <i
+                className="fa fa-car"
+                style={{ fontSize: "60px", opacity: 0.3, marginBottom: "20px" }}
+              ></i>
               <h5>No transfer zones available</h5>
               <p>Please contact us for custom transfer arrangements.</p>
             </div>
@@ -316,41 +423,64 @@ const TransferService = () => {
               {zones.map((zone) => (
                 <div key={zone.id} className="col-lg-6 col-md-6 mb-4">
                   <div className="card h-100 shadow-sm">
-                    <div className="card-body" style={{ padding: '25px' }}>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
-                        <i className="fa fa-map-marker" 
-                          style={{ 
-                            fontSize: '24px', 
-                            color: '#007bff', 
-                            marginTop: '5px', 
-                            flexShrink: 0 
+                    <div className="card-body" style={{ padding: "25px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: "15px",
+                        }}
+                      >
+                        <i
+                          className="fa fa-map-marker"
+                          style={{
+                            fontSize: "24px",
+                            color: "#007bff",
+                            marginTop: "5px",
+                            flexShrink: 0,
                           }}
                         ></i>
                         <div style={{ flex: 1 }}>
-                          <h5 style={{ fontWeight: '600', color: '#333', marginBottom: '8px' }}>
+                          <h5
+                            style={{
+                              fontWeight: "600",
+                              color: "#333",
+                              marginBottom: "8px",
+                            }}
+                          >
                             {zone.zoneName}
                           </h5>
                           {zone.description && (
-                            <p style={{ color: '#666', fontSize: '0.95rem', marginBottom: '15px' }}>
+                            <p
+                              style={{
+                                color: "#666",
+                                fontSize: "0.95rem",
+                                marginBottom: "15px",
+                              }}
+                            >
                               {zone.description}
                             </p>
                           )}
-                          <div style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'space-between',
-                            backgroundColor: '#f8f9fa',
-                            padding: '15px',
-                            borderRadius: '8px'
-                          }}>
-                            <span style={{ color: '#666', fontSize: '0.9rem' }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              backgroundColor: "#f8f9fa",
+                              padding: "15px",
+                              borderRadius: "8px",
+                            }}
+                          >
+                            <span style={{ color: "#666", fontSize: "0.9rem" }}>
                               {getSelectedCapacityInfo()?.label}
                             </span>
-                            <span style={{ 
-                              fontSize: '1.5rem', 
-                              fontWeight: '700', 
-                              color: '#28a745' 
-                            }}>
+                            <span
+                              style={{
+                                fontSize: "1.5rem",
+                                fontWeight: "700",
+                                color: "#28a745",
+                              }}
+                            >
                               €{getPrice(zone, selectedCapacity)}
                             </span>
                           </div>
@@ -363,19 +493,22 @@ const TransferService = () => {
             </div>
           )}
 
-          <div className="text-center" style={{ marginTop: '40px' }}>
-            <p style={{ color: '#666', fontSize: '0.9rem' }}>
-              * Prices are in EUR and include VAT. Additional charges may apply for waiting time, tolls, or special requests.
+          <div className="text-center" style={{ marginTop: "40px" }}>
+            <p style={{ color: "#666", fontSize: "0.9rem" }}>
+              * Prices are in EUR and include VAT. Additional charges may apply
+              for waiting time, tolls, or special requests.
             </p>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section style={{ padding: '60px 0', backgroundColor: '#f8f9fa' }}>
+      <section style={{ padding: "60px 0", backgroundColor: "#f8f9fa" }}>
         <div className="container">
-          <div className="text-center" style={{ marginBottom: '50px' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: '600', color: '#333' }}>
+          <div className="text-center" style={{ marginBottom: "50px" }}>
+            <h2
+              style={{ fontSize: "2.5rem", fontWeight: "600", color: "#333" }}
+            >
               Why Choose Our Transfer Service?
             </h2>
           </div>
@@ -383,96 +516,132 @@ const TransferService = () => {
           <div className="row">
             <div className="col-lg-3 col-md-6 mb-4">
               <div className="text-center">
-                <div style={{ 
-                  width: '80px', 
-                  height: '80px', 
-                  backgroundColor: '#007bff',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 20px',
-                  color: 'white'
-                }}>
-                  <i className="fa fa-car" style={{ fontSize: '30px' }}></i>
+                <div
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    backgroundColor: "#007bff",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 20px",
+                    color: "white",
+                  }}
+                >
+                  <i className="fa fa-car" style={{ fontSize: "30px" }}></i>
                 </div>
-                <h5 style={{ fontWeight: '600', color: '#333', marginBottom: '10px' }}>
+                <h5
+                  style={{
+                    fontWeight: "600",
+                    color: "#333",
+                    marginBottom: "10px",
+                  }}
+                >
                   Professional Drivers
                 </h5>
-                <p style={{ color: '#666', fontSize: '0.9rem' }}>
-                  Experienced, licensed drivers who know the local routes and speak multiple languages.
+                <p style={{ color: "#666", fontSize: "0.9rem" }}>
+                  Experienced, licensed drivers who know the local routes and
+                  speak multiple languages.
                 </p>
               </div>
             </div>
 
             <div className="col-lg-3 col-md-6 mb-4">
               <div className="text-center">
-                <div style={{ 
-                  width: '80px', 
-                  height: '80px', 
-                  backgroundColor: '#28a745',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 20px',
-                  color: 'white'
-                }}>
-                  <i className="fa fa-check" style={{ fontSize: '30px' }}></i>
+                <div
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    backgroundColor: "#28a745",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 20px",
+                    color: "white",
+                  }}
+                >
+                  <i className="fa fa-check" style={{ fontSize: "30px" }}></i>
                 </div>
-                <h5 style={{ fontWeight: '600', color: '#333', marginBottom: '10px' }}>
+                <h5
+                  style={{
+                    fontWeight: "600",
+                    color: "#333",
+                    marginBottom: "10px",
+                  }}
+                >
                   Reliable Service
                 </h5>
-                <p style={{ color: '#666', fontSize: '0.9rem' }}>
-                  Punctual pickups and drop-offs with real-time tracking and 24/7 customer support.
+                <p style={{ color: "#666", fontSize: "0.9rem" }}>
+                  Punctual pickups and drop-offs with real-time tracking and
+                  24/7 customer support.
                 </p>
               </div>
             </div>
 
             <div className="col-lg-3 col-md-6 mb-4">
               <div className="text-center">
-                <div style={{ 
-                  width: '80px', 
-                  height: '80px', 
-                  backgroundColor: '#ffc107',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 20px',
-                  color: 'white'
-                }}>
-                  <i className="fa fa-users" style={{ fontSize: '30px' }}></i>
+                <div
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    backgroundColor: "#ffc107",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 20px",
+                    color: "white",
+                  }}
+                >
+                  <i className="fa fa-users" style={{ fontSize: "30px" }}></i>
                 </div>
-                <h5 style={{ fontWeight: '600', color: '#333', marginBottom: '10px' }}>
+                <h5
+                  style={{
+                    fontWeight: "600",
+                    color: "#333",
+                    marginBottom: "10px",
+                  }}
+                >
                   Comfortable Vehicles
                 </h5>
-                <p style={{ color: '#666', fontSize: '0.9rem' }}>
-                  Modern, clean, and well-maintained vehicles with air conditioning and spacious interiors.
+                <p style={{ color: "#666", fontSize: "0.9rem" }}>
+                  Modern, clean, and well-maintained vehicles with air
+                  conditioning and spacious interiors.
                 </p>
               </div>
             </div>
 
             <div className="col-lg-3 col-md-6 mb-4">
               <div className="text-center">
-                <div style={{ 
-                  width: '80px', 
-                  height: '80px', 
-                  backgroundColor: '#dc3545',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 20px',
-                  color: 'white'
-                }}>
-                  <i className="fa fa-phone" style={{ fontSize: '30px' }}></i>
+                <div
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    backgroundColor: "#dc3545",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 20px",
+                    color: "white",
+                  }}
+                >
+                  <i className="fa fa-phone" style={{ fontSize: "30px" }}></i>
                 </div>
-                <h5 style={{ fontWeight: '600', color: '#333', marginBottom: '10px' }}>
+                <h5
+                  style={{
+                    fontWeight: "600",
+                    color: "#333",
+                    marginBottom: "10px",
+                  }}
+                >
                   Easy Booking
                 </h5>
-                <p style={{ color: '#666', fontSize: '0.9rem' }}>
-                  Simple online booking process with instant confirmation and flexible payment options.
+                <p style={{ color: "#666", fontSize: "0.9rem" }}>
+                  Simple online booking process with instant confirmation and
+                  flexible payment options.
                 </p>
               </div>
             </div>
@@ -481,36 +650,64 @@ const TransferService = () => {
       </section>
 
       {/* Contact Form Section */}
-      <section style={{ padding: '60px 0' }}>
+      <section style={{ padding: "60px 0" }}>
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-8">
-              <div className="text-center" style={{ marginBottom: '40px' }}>
-                <h2 style={{ fontSize: '2.5rem', fontWeight: '600', color: '#333', marginBottom: '15px' }}>
+              <div className="text-center" style={{ marginBottom: "40px" }}>
+                <h2
+                  style={{
+                    fontSize: "2.5rem",
+                    fontWeight: "600",
+                    color: "#333",
+                    marginBottom: "15px",
+                  }}
+                >
                   Book Your Transfer
                 </h2>
-                <p style={{ fontSize: '1.1rem', color: '#666' }}>
-                  Contact us to reserve your transfer service or get a custom quote
+                <p style={{ fontSize: "1.1rem", color: "#666" }}>
+                  Bilgilerinizi doldurun ve WhatsApp üzerinden transfer
+                  rezervasyonu yapın
                 </p>
               </div>
 
               {contactFormSuccess ? (
                 <div className="alert alert-success text-center">
-                  <i className="fa fa-check" style={{ fontSize: '40px', marginBottom: '15px' }}></i>
-                  <h5>Request Submitted Successfully!</h5>
-                  <p>We'll contact you shortly to confirm your transfer booking.</p>
-                  <button 
+                  <i
+                    className="fa fa-whatsapp"
+                    style={{
+                      fontSize: "40px",
+                      marginBottom: "15px",
+                      color: "#25D366",
+                    }}
+                  ></i>
+                  <h5>WhatsApp Açılıyor!</h5>
+                  <p>
+                    Transfer rezervasyon talebiniz hazırlandı. WhatsApp
+                    üzerinden talebi gönderebilirsiniz.
+                  </p>
+                  <button
                     className="btn btn-primary"
                     onClick={() => setContactFormSuccess(false)}
                   >
-                    Book Another Transfer
+                    Yeni Transfer Rezervasyonu
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleContactSubmit} className="card" style={{ padding: '30px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                <form
+                  onSubmit={handleContactSubmit}
+                  className="card"
+                  style={{
+                    padding: "30px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  }}
+                >
                   <div className="row">
                     <div className="col-md-6 mb-3">
-                      <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
+                      <label
+                        className="form-label"
+                        style={{ fontWeight: "600", color: "#333" }}
+                      >
                         Full Name *
                       </label>
                       <input
@@ -520,11 +717,15 @@ const TransferService = () => {
                         value={contactForm.name}
                         onChange={handleFormChange}
                         required
-                        style={{ padding: '12px' }}
+                        placeholder="Burak Yüce"
+                        style={{ padding: "12px" }}
                       />
                     </div>
                     <div className="col-md-6 mb-3">
-                      <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
+                      <label
+                        className="form-label"
+                        style={{ fontWeight: "600", color: "#333" }}
+                      >
                         Email Address *
                       </label>
                       <input
@@ -534,14 +735,18 @@ const TransferService = () => {
                         value={contactForm.email}
                         onChange={handleFormChange}
                         required
-                        style={{ padding: '12px' }}
+                        placeholder="20230808006@ogr.akdeniz.edu.tr"
+                        style={{ padding: "12px" }}
                       />
                     </div>
                   </div>
 
                   <div className="row">
                     <div className="col-md-6 mb-3">
-                      <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
+                      <label
+                        className="form-label"
+                        style={{ fontWeight: "600", color: "#333" }}
+                      >
                         Phone Number *
                       </label>
                       <input
@@ -551,11 +756,15 @@ const TransferService = () => {
                         value={contactForm.phone}
                         onChange={handleFormChange}
                         required
-                        style={{ padding: '12px' }}
+                        placeholder="5530755678"
+                        style={{ padding: "12px" }}
                       />
                     </div>
                     <div className="col-md-6 mb-3">
-                      <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
+                      <label
+                        className="form-label"
+                        style={{ fontWeight: "600", color: "#333" }}
+                      >
                         Number of Passengers *
                       </label>
                       <select
@@ -564,20 +773,29 @@ const TransferService = () => {
                         value={contactForm.passengers}
                         onChange={handleFormChange}
                         required
-                        style={{ padding: '12px' }}
+                        style={{ padding: "12px" }}
                       >
-                        {Array.from({ length: getSelectedCapacityInfo()?.maxPassengers || 4 }, (_, i) => (
-                          <option key={i + 1} value={i + 1}>
-                            {i + 1} passenger{i + 1 > 1 ? 's' : ''}
-                          </option>
-                        ))}
+                        {Array.from(
+                          {
+                            length:
+                              getSelectedCapacityInfo()?.maxPassengers || 4,
+                          },
+                          (_, i) => (
+                            <option key={i + 1} value={i + 1}>
+                              {i + 1} {i + 1 === 1 ? "passenger" : "passengers"}
+                            </option>
+                          )
+                        )}
                       </select>
                     </div>
                   </div>
 
                   <div className="row">
                     <div className="col-md-6 mb-3">
-                      <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
+                      <label
+                        className="form-label"
+                        style={{ fontWeight: "600", color: "#333" }}
+                      >
                         Pickup Location *
                       </label>
                       <input
@@ -587,12 +805,15 @@ const TransferService = () => {
                         value={contactForm.pickupLocation}
                         onChange={handleFormChange}
                         required
-                        placeholder="e.g., Hotel name, Address, Airport"
-                        style={{ padding: '12px' }}
+                        placeholder="İzmir"
+                        style={{ padding: "12px" }}
                       />
                     </div>
                     <div className="col-md-6 mb-3">
-                      <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
+                      <label
+                        className="form-label"
+                        style={{ fontWeight: "600", color: "#333" }}
+                      >
                         Drop-off Location *
                       </label>
                       <input
@@ -602,15 +823,18 @@ const TransferService = () => {
                         value={contactForm.dropoffLocation}
                         onChange={handleFormChange}
                         required
-                        placeholder="Destination address"
-                        style={{ padding: '12px' }}
+                        placeholder="Antalya Havalimanı"
+                        style={{ padding: "12px" }}
                       />
                     </div>
                   </div>
 
                   <div className="row">
                     <div className="col-md-6 mb-3">
-                      <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
+                      <label
+                        className="form-label"
+                        style={{ fontWeight: "600", color: "#333" }}
+                      >
                         Date *
                       </label>
                       <input
@@ -620,12 +844,15 @@ const TransferService = () => {
                         value={contactForm.date}
                         onChange={handleFormChange}
                         required
-                        min={new Date().toISOString().split('T')[0]}
-                        style={{ padding: '12px' }}
+                        min={new Date().toISOString().split("T")[0]}
+                        style={{ padding: "12px" }}
                       />
                     </div>
                     <div className="col-md-6 mb-3">
-                      <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
+                      <label
+                        className="form-label"
+                        style={{ fontWeight: "600", color: "#333" }}
+                      >
                         Time *
                       </label>
                       <input
@@ -635,13 +862,16 @@ const TransferService = () => {
                         value={contactForm.time}
                         onChange={handleFormChange}
                         required
-                        style={{ padding: '12px' }}
+                        style={{ padding: "12px" }}
                       />
                     </div>
                   </div>
 
                   <div className="mb-3">
-                    <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
+                    <label
+                      className="form-label"
+                      style={{ fontWeight: "600", color: "#333" }}
+                    >
                       Additional Information
                     </label>
                     <textarea
@@ -650,33 +880,49 @@ const TransferService = () => {
                       rows="4"
                       value={contactForm.message}
                       onChange={handleFormChange}
-                      placeholder="Special requests, flight details, etc."
-                      style={{ padding: '12px' }}
+                      placeholder="Uçak saati, özel istekler, vb."
+                      style={{ padding: "12px" }}
                     />
                   </div>
 
                   <div className="text-center">
                     <button
                       type="submit"
-                      className="btn btn-primary"
+                      className="btn"
                       disabled={contactFormSubmitting}
-                      style={{ 
-                        padding: '12px 40px', 
-                        fontSize: '1.1rem', 
-                        fontWeight: '600',
-                        backgroundColor: '#007bff',
-                        border: 'none'
+                      style={{
+                        padding: "12px 40px",
+                        fontSize: "1.1rem",
+                        fontWeight: "600",
+                        backgroundColor: "#25D366",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "8px",
+                        transition: "all 0.3s ease",
                       }}
+                      onMouseOver={(e) =>
+                        (e.target.style.backgroundColor = "#128C7E")
+                      }
+                      onMouseOut={(e) =>
+                        (e.target.style.backgroundColor = "#25D366")
+                      }
                     >
                       {contactFormSubmitting ? (
                         <>
-                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                          Submitting...
+                          <span
+                            className="spinner-border spinner-border-sm me-2"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                          WhatsApp Açılıyor...
                         </>
                       ) : (
                         <>
-                          <i className="fa fa-envelope" style={{ marginRight: '8px' }}></i>
-                          Request Transfer
+                          <i
+                            className="fa fa-whatsapp"
+                            style={{ marginRight: "8px" }}
+                          ></i>
+                          WhatsApp ile Transfer Rezervasyonu
                         </>
                       )}
                     </button>

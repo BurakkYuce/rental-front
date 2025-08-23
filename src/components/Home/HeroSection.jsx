@@ -372,39 +372,83 @@ const HeroSection = () => {
                         />
                       </div>
 
-                      {/* Submit Button */}
+                      {/* Submit Buttons */}
                       <div className="col-lg-12 text-center mt-4">
-                        <button
-                          type="submit"
+                        <div
                           style={{
-                            backgroundColor: "#00ff88",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "50px",
-                            padding: "15px 40px",
-                            fontSize: "1.1rem",
-                            fontWeight: "700",
-                            cursor: "pointer",
-                            transition: "all 0.3s ease",
-                            boxShadow: "0 4px 15px rgba(0, 255, 136, 0.4)",
-                            textTransform: "uppercase",
-                            letterSpacing: "1px",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = "#00cc6a";
-                            e.target.style.transform = "translateY(-2px)";
-                            e.target.style.boxShadow =
-                              "0 6px 20px rgba(0, 255, 136, 0.6)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#00ff88";
-                            e.target.style.transform = "translateY(0)";
-                            e.target.style.boxShadow =
-                              "0 4px 15px rgba(0, 255, 136, 0.4)";
+                            display: "flex",
+                            gap: "20px",
+                            justifyContent: "center",
+                            flexWrap: "wrap",
                           }}
                         >
-                          🚗 Size En Uygun Aracı Bulunuz
-                        </button>
+                          <button
+                            type="submit"
+                            style={{
+                              backgroundColor: "#00ff88",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "50px",
+                              padding: "15px 40px",
+                              fontSize: "1.1rem",
+                              fontWeight: "700",
+                              cursor: "pointer",
+                              transition: "all 0.3s ease",
+                              boxShadow: "0 4px 15px rgba(0, 255, 136, 0.4)",
+                              textTransform: "uppercase",
+                              letterSpacing: "1px",
+                              minWidth: "250px",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.backgroundColor = "#00cc6a";
+                              e.target.style.transform = "translateY(-2px)";
+                              e.target.style.boxShadow =
+                                "0 6px 20px rgba(0, 255, 136, 0.6)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.backgroundColor = "#00ff88";
+                              e.target.style.transform = "translateY(0)";
+                              e.target.style.boxShadow =
+                                "0 4px 15px rgba(0, 255, 136, 0.4)";
+                            }}
+                          >
+                            🚗 Araç Kiralama
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => navigate("/transfer-service")}
+                            style={{
+                              backgroundColor: "#667eea",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "50px",
+                              padding: "15px 40px",
+                              fontSize: "1.1rem",
+                              fontWeight: "700",
+                              cursor: "pointer",
+                              transition: "all 0.3s ease",
+                              boxShadow: "0 4px 15px rgba(102, 126, 234, 0.4)",
+                              textTransform: "uppercase",
+                              letterSpacing: "1px",
+                              minWidth: "250px",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.backgroundColor = "#5a67d8";
+                              e.target.style.transform = "translateY(-2px)";
+                              e.target.style.boxShadow =
+                                "0 6px 20px rgba(102, 126, 234, 0.6)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.backgroundColor = "#667eea";
+                              e.target.style.transform = "translateY(0)";
+                              e.target.style.boxShadow =
+                                "0 4px 15px rgba(102, 126, 234, 0.4)";
+                            }}
+                          >
+                            🚐 Transfer Hizmeti
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </form>

@@ -73,10 +73,39 @@ const Admin = () => {
     },
   ];
 
+  const loadDashboardData = useCallback(async () => {
+    try {
+      setLoadingStates((prev) => ({ ...prev, dashboard: true }));
+      setError(""); // Clear any previous errors
+      console.log("🔄 Loading dashboard data...");
+      const response = await adminAPI.getDashboardStats();
+      console.log("✅ Dashboard data loaded:", response.data.data);
+      setDashboardStats(response.data.data);
+    } catch (error) {
+      console.error("❌ Failed to load dashboard stats:", error);
+      setError("Failed to load dashboard statistics.");
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, dashboard: false }));
+    }
+  }, []);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadInitialData = async () => {
+    setLoading(true);
+    try {
+      await loadDashboardData();
+    } catch (error) {
+      console.error("Failed to load initial data:", error);
+      setError("Failed to load data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Load data from API on component mount
   useEffect(() => {
     loadInitialData();
-  }, [loadInitialData]);
+  }, []);
 
   // Load data when section changes
   useEffect(() => {
@@ -116,40 +145,6 @@ const Admin = () => {
       }
     }
   }, [activeSection, loadDashboardData, location.state]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadInitialData = async () => {
-    setLoading(true);
-    try {
-      await loadDashboardData();
-    } catch (error) {
-      console.error("Failed to load initial data:", error);
-      setError("Failed to load data. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadDashboardData = useCallback(async () => {
-    if (loadingStates.dashboard) {
-      console.log("⏳ Dashboard already loading, skipping...");
-      return;
-    }
-
-    try {
-      setLoadingStates((prev) => ({ ...prev, dashboard: true }));
-      setError(""); // Clear any previous errors
-      console.log("🔄 Loading dashboard data...");
-      const response = await adminAPI.getDashboardStats();
-      console.log("✅ Dashboard data loaded:", response.data.data);
-      setDashboardStats(response.data.data);
-    } catch (error) {
-      console.error("❌ Failed to load dashboard stats:", error);
-      setError("Failed to load dashboard statistics.");
-    } finally {
-      setLoadingStates((prev) => ({ ...prev, dashboard: false }));
-    }
-  }, []);
 
   const loadCarsData = async () => {
     try {

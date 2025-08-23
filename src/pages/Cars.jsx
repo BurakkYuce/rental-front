@@ -1,6 +1,6 @@
 // src/pages/CarsPage.jsx
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Users, Calendar, Settings, CalendarIcon } from "lucide-react";
 import Header from "../components/Header.jsx";
 import BackToHomeButton from "../components/BackToHomeButton.jsx";
@@ -11,6 +11,7 @@ import "./CarsPage.css"; // CSS'i ayrı dosyaya taşı
 
 const CarsPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   // Get currency context - sadece kullanılan değişkenler
   const { convertAndFormatPrice, getCurrentCurrencyInfo } = useCurrency();
@@ -26,6 +27,20 @@ const CarsPage = () => {
   });
 
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Initialize filters from URL parameters
+  useEffect(() => {
+    const pickupDateParam = searchParams.get('pickupDate');
+    const returnDateParam = searchParams.get('returnDate');
+    
+    if (pickupDateParam || returnDateParam) {
+      setFilters(prev => ({
+        ...prev,
+        pickupDate: pickupDateParam || "",
+        dropoffDate: returnDateParam || "",
+      }));
+    }
+  }, [searchParams]);
   const carsPerPage = 15;
 
   // State for real car data
@@ -33,6 +48,7 @@ const CarsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [imageLoadErrors, setImageLoadErrors] = useState(new Set());
+  const [filtersVisible, setFiltersVisible] = useState(false);
 
   // Transform API car data to match component expected format
   const transformCarData = useCallback((apiCar) => {
@@ -425,8 +441,29 @@ const CarsPage = () => {
 
       <div className="container">
         <div className="cars-content">
+          {/* Mobile Filter Toggle Button */}
+          <div className="filter-toggle-container">
+            <button
+              className="filter-toggle-btn"
+              onClick={() => setFiltersVisible(!filtersVisible)}
+              type="button"
+            >
+              <Settings size={20} />
+              Filtreler ({
+                filters.fuelType.length + 
+                filters.bodyType.length + 
+                filters.brand.length + 
+                filters.transmission.length + 
+                (filters.pickupDate ? 1 : 0) + 
+                (filters.dropoffDate ? 1 : 0) +
+                ((filters.priceRange.min > 0 || filters.priceRange.max < 2000) ? 1 : 0)
+              })
+              <span className={`toggle-arrow ${filtersVisible ? 'open' : ''}`}>▼</span>
+            </button>
+          </div>
+
           {/* Filters Sidebar */}
-          <div className="filters-sidebar">
+          <div className={`filters-sidebar ${filtersVisible ? 'visible' : ''}`}>
             <div className="filters-header">
               <h2>Filtreler</h2>
             </div>

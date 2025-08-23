@@ -2,19 +2,10 @@
 import React from "react";
 const MovingTextSlider = () => {
   const carTypes = [
-    "SUV",
-    "HATCHBACK",
-    "CONVERTIBLE",
-    "SEDAN",
-    "SPORTS CAR",
-    "COUPE",
-    "MINIVAN",
-    "TRUCK",
-    "CROSSOVER",
-    "EXOTIC CARS",
-    "STATION WAGON",
-    "PICKUP",
-    "LUXURY CARS",
+    "EK İŞİMİZ DEĞİL TEK İŞİMİZ",
+    "EK İŞİMİZ DEĞİL TEK İŞİMİZ",
+    "EK İŞİMİZ DEĞİL TEK İŞİMİZ",
+    "EK İŞİMİZ DEĞİL TEK İŞİMİZ",
   ];
 
   return (

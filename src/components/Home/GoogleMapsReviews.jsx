@@ -47,9 +47,6 @@ const GoogleMapsReviews = () => {
               {/* Google Maps iframe */}
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d797.7384654839356!2d30.735125999999998!3d36.891452!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14c385ced440d121%3A0x6d4faf414ac05dee!2sM%C4%B0TCAR%20RENTAL!5e0!3m2!1str!2str!4v1755206717251!5m2!1str!2str"
-                width="600"
-                height="450"
-                style="border:0;"
                 allowfullscreen=""
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
@@ -57,7 +54,6 @@ const GoogleMapsReviews = () => {
                 height="100%"
                 style={{ border: 0 }}
                 allowFullScreen=""
-                loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 title="MITCAR RENTAL Konumu"
               ></iframe>
@@ -161,7 +157,7 @@ const GoogleMapsReviews = () => {
                       fontSize: "0.9rem",
                     }}
                   >
-                    Mon-Sun: 08:00 - 22:00
+                    pztsi - pazar: 08:00 - 22:00
                   </p>
                 </div>
               </div>
@@ -171,7 +167,7 @@ const GoogleMapsReviews = () => {
             <button
               onClick={() =>
                 window.open(
-                  "https://www.google.com/search?q=MITCAR+RENTAL+Yorumlar&rflfq=1&tbm=lcl",
+                  "                  https://www.google.com/maps?q=M%C4%B0TCAR+RENTAL,+K%C4%B1z%C4%B1ltoprak,+939.+Sk.+6/B,+07300+Muratpa%C5%9Fa/Antalya&ftid=0x14c385ced440d121:0x6d4faf414ac05dee&entry=gps&lucs=,94284475,94224825,94227247,94227248,94231188,47071704,47069508,94218641,94282134,94203019,47084304,94286863&g_ep=CAISEjI1LjMzLjIuNzkzNTkyNzA0MBgAIIgnKmwsOTQyODQ0NzUsOTQyMjQ4MjUsOTQyMjcyNDcsOTQyMjcyNDgsOTQyMzExODgsNDcwNzE3MDQsNDcwNjk1MDgsOTQyMTg2NDEsOTQyODIxMzQsOTQyMDMwMTksNDcwODQzMDQsOTQyODY4NjNCAlRS&skid=6118a968-e1e8-4dfa-83b6-6ed0b6808a2d&g_st=ipc",
                   "_blank"
                 )
               }

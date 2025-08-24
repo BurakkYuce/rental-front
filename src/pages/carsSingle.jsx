@@ -127,14 +127,69 @@ const CarsSingle = () => {
     return options;
   }, []);
 
-  // Calculate additional options total in current currency
+  // Calculate rental days between pickup and return dates
+  const calculateRentalDays = useCallback(() => {
+    if (!formData.pickupDate || !formData.returnDate) return 0;
+    
+    const pickupDate = new Date(formData.pickupDate);
+    const returnDate = new Date(formData.returnDate);
+    const diffTime = returnDate - pickupDate;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return Math.max(1, diffDays); // Minimum 1 day
+  }, [formData.pickupDate, formData.returnDate]);
+
+  // Calculate optimized car rental price (weekly + daily breakdown)
+  const calculateCarRentalTotal = useCallback(() => {
+    if (!car || !currencyLoaded || !convertAmount) return 0;
+    
+    const rentalDays = calculateRentalDays();
+    if (rentalDays === 0) return 0;
+    
+    // Use effective pricing (seasonal) if available, otherwise use base pricing
+    const pricing = car.effectivePricing || car.pricing || {};
+    const baseCurrency = pricing.currency || car.currency || "EUR";
+    
+    const dailyRate = pricing.daily || car.dailyRate || 50;
+    const weeklyRate = pricing.weekly || (dailyRate * 7);
+    
+    // Calculate optimized pricing: weekly + remaining daily
+    const weeks = Math.floor(rentalDays / 7);
+    const remainingDays = rentalDays % 7;
+    
+    const totalEUR = (weeks * weeklyRate) + (remainingDays * dailyRate);
+    
+    console.log('🧮 Car rental calculation:', {
+      rentalDays,
+      weeks,
+      remainingDays,
+      weeklyRate,
+      dailyRate,
+      totalEUR,
+      baseCurrency
+    });
+    
+    return convertAmount(totalEUR, baseCurrency, currentCurrency);
+  }, [car, currencyLoaded, convertAmount, currentCurrency, calculateRentalDays]);
+
+  // Calculate additional options total for rental period
   const calculateAdditionalOptionsTotal = useCallback(() => {
     if (!currencyLoaded || !convertAmount) return 0;
 
+    const rentalDays = calculateRentalDays();
+    if (rentalDays === 0) return 0;
+
     const { cocukKoltugu, ekSurucu, gencSurucu } = additionalOptions;
-    const totalEUR = cocukKoltugu * 5 + ekSurucu * 8 + gencSurucu * 15;
+    const dailyOptionsTotal = cocukKoltugu * 5 + ekSurucu * 8 + gencSurucu * 15;
+    const totalEUR = dailyOptionsTotal * rentalDays;
+    
     return convertAmount(totalEUR, "EUR", currentCurrency);
-  }, [additionalOptions, convertAmount, currencyLoaded, currentCurrency]);
+  }, [additionalOptions, convertAmount, currencyLoaded, currentCurrency, calculateRentalDays]);
+
+  // Calculate grand total (car + additional options)
+  const calculateGrandTotal = useCallback(() => {
+    return calculateCarRentalTotal() + calculateAdditionalOptionsTotal();
+  }, [calculateCarRentalTotal, calculateAdditionalOptionsTotal]);
 
   // Handle additional options change
   const handleAdditionalOptionChange = useCallback((option, increment) => {
@@ -1149,17 +1204,68 @@ const CarsSingle = () => {
                         </div>
                       </div>
 
-                      {/* Total Additional Options */}
-                      {calculateAdditionalOptionsTotal() > 0 && (
+                      {/* Rental Summary */}
+                      {(formData.pickupDate && formData.returnDate) && (
+                        <div className="rental-summary">
+                          <div className="summary-title">Kiralama Özeti</div>
+                          
+                          <div className="summary-row">
+                            <span className="summary-label">Kiralama Süresi:</span>
+                            <span className="summary-value">{calculateRentalDays()} gün</span>
+                          </div>
+                          
+                          {calculateCarRentalTotal() > 0 && (
+                            <div className="summary-row">
+                              <span className="summary-label">Araç Kiralama:</span>
+                              <span className="summary-value">
+                                {formatPrice
+                                  ? formatPrice(calculateCarRentalTotal())
+                                  : `${getCurrencySymbol()}${calculateCarRentalTotal().toFixed(2)}`}
+                              </span>
+                            </div>
+                          )}
+                          
+                          {calculateAdditionalOptionsTotal() > 0 && (
+                            <div className="summary-row">
+                              <span className="summary-label">Ek Opsiyonlar:</span>
+                              <span className="summary-value">
+                                {formatPrice
+                                  ? formatPrice(calculateAdditionalOptionsTotal())
+                                  : `${getCurrencySymbol()}${calculateAdditionalOptionsTotal().toFixed(2)}`}
+                              </span>
+                            </div>
+                          )}
+                          
+                          {calculateGrandTotal() > 0 && (
+                            <div className="summary-row total-row">
+                              <span className="summary-label"><strong>Toplam Tutar:</strong></span>
+                              <span className="summary-value total-amount">
+                                <strong>
+                                  {formatPrice
+                                    ? formatPrice(calculateGrandTotal())
+                                    : `${getCurrencySymbol()}${calculateGrandTotal().toFixed(2)}`}
+                                </strong>
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Additional Options Per Day Display */}
+                      {(additionalOptions.cocukKoltugu > 0 || additionalOptions.ekSurucu > 0 || additionalOptions.gencSurucu > 0) && (
                         <div className="total-options">
                           <div className="total-label">
-                            Additional Options Total
+                            Ek Opsiyonlar (Günlük)
                           </div>
                           <div className="total-amount">
-                            {formatPrice
-                              ? formatPrice(calculateAdditionalOptionsTotal())
-                              : `${getCurrencySymbol()}${calculateAdditionalOptionsTotal()}`}{" "}
-                            per day
+                            {(() => {
+                              const { cocukKoltugu, ekSurucu, gencSurucu } = additionalOptions;
+                              const dailyTotal = cocukKoltugu * 5 + ekSurucu * 8 + gencSurucu * 15;
+                              const convertedDaily = convertAmount ? convertAmount(dailyTotal, "EUR", currentCurrency) : dailyTotal;
+                              return formatPrice
+                                ? formatPrice(convertedDaily)
+                                : `${getCurrencySymbol()}${convertedDaily.toFixed(2)}`;
+                            })()} / gün
                           </div>
                         </div>
                       )}

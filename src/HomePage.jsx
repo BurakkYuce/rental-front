@@ -8,6 +8,7 @@ import VehicleFleet from "./components/Home/VehicleFleet";
 import LatestNews from "./components/Home/LatestNews";
 import GoogleMapsReviews from "./components/Home/GoogleMapsReviews";
 import FAQContactFooter from "./components/Home/FAQContactFooter";
+import GooglePanorama from "./components/Home/GooglePanorama";
 
 // CSS imports
 import "./assets/css/bootstrap.min.css";
@@ -36,7 +37,7 @@ const HomePage = () => {
 
       {/* Latest News */}
       <LatestNews />
-
+      <GooglePanorama />
       {/* Google Maps Reviews */}
       <GoogleMapsReviews />
 

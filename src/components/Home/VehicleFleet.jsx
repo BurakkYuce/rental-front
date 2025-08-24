@@ -1,10 +1,9 @@
-// src/components/Home/VehicleFleet.jsx
+// src/components/Home/VehicleFleet.jsx - Blue Theme
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { publicAPI } from "../../services/api";
 import { useCurrency } from "../../contexts/CurrencyContext";
-// import "../../assets/css/vehicle-fleet.css"; // CSS handled by main stylesheets
-import "../../assets/css/bootstrap.min.css"; // Importing Bootstrap for styling
+import "../../assets/css/bootstrap.min.css";
 
 const VehicleFleet = () => {
   const navigate = useNavigate();
@@ -13,11 +12,24 @@ const VehicleFleet = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const sliderRef = useRef(null);
 
   // Load all cars on component mount
   useEffect(() => {
     loadAllCars();
+  }, []);
+
+  // Check if mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const loadAllCars = async () => {
@@ -26,14 +38,12 @@ const VehicleFleet = () => {
       setError(null);
       console.log("🔄 Loading all cars...");
       const response = await publicAPI.getCars({
-        limit: 50, // Get more cars for slider
+        limit: 50,
         page: 1,
         status: "active",
       });
       console.log("🚗 Cars API response:", response);
-      console.log("🚗 Response structure:", response.data);
 
-      // Handle both possible response structures
       let carsData = [];
       if (response.data && response.data.success) {
         carsData =
@@ -42,8 +52,6 @@ const VehicleFleet = () => {
           response.data.listings ||
           [];
       }
-      console.log("🚗 Processed cars data:", carsData);
-      console.log("🚗 Sample car data (first car):", carsData[0]);
 
       setCars(carsData);
 
@@ -69,13 +77,13 @@ const VehicleFleet = () => {
 
   // Slider navigation
   const nextSlide = () => {
-    if (cars.length > 0) {
+    if (cars.length > 0 && !isMobile) {
       setCurrentSlide((prev) => (prev + 1) % Math.ceil(cars.length / 3));
     }
   };
 
   const prevSlide = () => {
-    if (cars.length > 0) {
+    if (cars.length > 0 && !isMobile) {
       setCurrentSlide(
         (prev) =>
           (prev - 1 + Math.ceil(cars.length / 3)) % Math.ceil(cars.length / 3)
@@ -83,22 +91,20 @@ const VehicleFleet = () => {
     }
   };
 
-  // Auto-slide effect
+  // Auto-slide effect (disabled on mobile)
   useEffect(() => {
-    if (cars.length > 3) {
-      const interval = setInterval(nextSlide, 5000); // Auto slide every 5 seconds
+    if (cars.length > 3 && !isMobile) {
+      const interval = setInterval(nextSlide, 6000);
       return () => clearInterval(interval);
     }
-  }, [cars.length]);
-
-  console.log("🚗 VehicleFleet component rendering...");
+  }, [cars.length, isMobile]);
 
   return (
     <>
       {/* Adventure Section with Background */}
       <section
         style={{
-          backgroundImage: "url(/images/background/3.jpg)",
+          backgroundImage: "url('/images/background/16.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center center",
           backgroundAttachment: "fixed",
@@ -154,13 +160,13 @@ const VehicleFleet = () => {
                       style={{
                         width: "80px",
                         height: "80px",
-                        backgroundColor: "#1ecb15",
+                        backgroundColor: "#4A90E2",
                         borderRadius: "15px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         flexShrink: 0,
-                        boxShadow: "0 4px 20px rgba(30, 203, 21, 0.3)",
+                        boxShadow: "0 4px 20px rgba(74, 144, 226, 0.3)",
                       }}
                     >
                       {/* Trophy Icon */}
@@ -196,7 +202,7 @@ const VehicleFleet = () => {
                       >
                         Lüksün olağanüstü özenle buluştuğu yerde,
                         beklentilerinizi aşan ve unutulmaz anlar yaratan bir
-                        deneyim.{" "}
+                        deneyim.
                       </p>
                     </div>
                   </div>
@@ -215,13 +221,13 @@ const VehicleFleet = () => {
                       style={{
                         width: "80px",
                         height: "80px",
-                        backgroundColor: "#1ecb15",
+                        backgroundColor: "#4A90E2",
                         borderRadius: "15px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         flexShrink: 0,
-                        boxShadow: "0 4px 20px rgba(30, 203, 21, 0.3)",
+                        boxShadow: "0 4px 20px rgba(74, 144, 226, 0.3)",
                       }}
                     >
                       {/* Warning/Support Icon */}
@@ -256,7 +262,7 @@ const VehicleFleet = () => {
                         }}
                       >
                         En çok ihtiyaç duyduğunuz anda yanınızda; güvenle ve
-                        huzurla yola devam etmenizi sağlar.{" "}
+                        huzurla yola devam etmenizi sağlar.
                       </p>
                     </div>
                   </div>
@@ -275,13 +281,13 @@ const VehicleFleet = () => {
                       style={{
                         width: "80px",
                         height: "80px",
-                        backgroundColor: "#1ecb15",
+                        backgroundColor: "#4A90E2",
                         borderRadius: "15px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         flexShrink: 0,
-                        boxShadow: "0 4px 20px rgba(30, 203, 21, 0.3)",
+                        boxShadow: "0 4px 20px rgba(74, 144, 226, 0.3)",
                       }}
                     >
                       {/* Key Icon */}
@@ -304,7 +310,7 @@ const VehicleFleet = () => {
                           textShadow: "1px 1px 3px rgba(0,0,0,0.7)",
                         }}
                       >
-                        Ücretsiz Alım ve Teslimat
+                        Ön Ödemesiz Rezervasyon
                       </h4>
                       <p
                         style={{
@@ -315,8 +321,9 @@ const VehicleFleet = () => {
                           textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
                         }}
                       >
-                        Ücretsiz araç teslim alma ve bırakma hizmetiyle kiralama
-                        deneyiminizi daha da kolaylaştırın.{" "}
+                        Planlarınızı özgürce yapın! Hiçbir ön ödeme yapmadan
+                        kolayca rezervasyon oluşturun, esnek ve risksiz bir
+                        deneyimin keyfini çıkarın.
                       </p>
                     </div>
                   </div>
@@ -330,7 +337,6 @@ const VehicleFleet = () => {
       {/* Cars Slider Section */}
       <section style={{ backgroundColor: "#f8f9fa", padding: "100px 0" }}>
         <div className="container-fluid px-5">
-          {/* Cars Slider */}
           <div className="row">
             <div className="col-12">
               <div
@@ -395,7 +401,7 @@ const VehicleFleet = () => {
                         <button
                           onClick={loadAllCars}
                           style={{
-                            backgroundColor: "#1ecb15",
+                            backgroundColor: "#4A90E2",
                             color: "white",
                             border: "none",
                             borderRadius: "6px",
@@ -406,10 +412,10 @@ const VehicleFleet = () => {
                             transition: "all 0.3s ease",
                           }}
                           onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = "#00cc6a";
+                            e.target.style.backgroundColor = "#2E86C1";
                           }}
                           onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#1ecb15";
+                            e.target.style.backgroundColor = "#4A90E2";
                           }}
                         >
                           Try Again
@@ -450,7 +456,7 @@ const VehicleFleet = () => {
                         <button
                           onClick={loadAllCars}
                           style={{
-                            backgroundColor: "#1ecb15",
+                            backgroundColor: "#4A90E2",
                             color: "white",
                             border: "none",
                             borderRadius: "6px",
@@ -461,10 +467,10 @@ const VehicleFleet = () => {
                             transition: "all 0.3s ease",
                           }}
                           onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = "#00cc6a";
+                            e.target.style.backgroundColor = "#2E86C1";
                           }}
                           onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#1ecb15";
+                            e.target.style.backgroundColor = "#4A90E2";
                           }}
                         >
                           Refresh
@@ -477,299 +483,473 @@ const VehicleFleet = () => {
                     {/* Slider Container */}
                     <div
                       ref={sliderRef}
+                      className="cars-carousel-slides"
                       style={{
-                        display: "flex",
-                        transition: "transform 0.5s ease",
-                        transform: `translateX(-${currentSlide * 100}%)`,
+                        display: isMobile ? "block" : "flex",
+                        transition: isMobile ? "none" : "transform 0.5s ease",
+                        transform: isMobile
+                          ? "none"
+                          : `translateX(-${currentSlide * 100}%)`,
                       }}
                     >
                       {/* Group cars into slides of 3 */}
-                      {Array.from({ length: Math.ceil(cars.length / 3) }).map(
-                        (_, slideIndex) => (
-                          <div
-                            key={slideIndex}
-                            style={{
-                              minWidth: "100%",
-                              display: "flex",
-                              gap: "40px",
-                              padding: "0 20px",
-                            }}
-                          >
-                            {cars
-                              .slice(slideIndex * 3, slideIndex * 3 + 3)
-                              .map((car) => {
-                                // Debug car image data
-                                console.log(
-                                  `🖼️ Car ${car.brand} ${car.model} image data:`,
-                                  {
-                                    mainImage: car.mainImage,
-                                    main_image: car.main_image,
-                                    image: car.image,
-                                    images: car.images,
-                                  }
-                                );
+                      {isMobile ? (
+                        // Mobile: Show all cars in a single column
+                        <div className="cars-slide">
+                          {cars.map((car) => {
+                            console.log(
+                              `🖼️ Car ${car.brand} ${car.model} image data:`,
+                              {
+                                mainImage: car.mainImage,
+                                main_image: car.main_image,
+                                image: car.image,
+                                images: car.images,
+                              }
+                            );
 
-                                return (
+                            return (
+                              <div
+                                key={car.id || car._id}
+                                className="cars-card-item"
+                                style={{
+                                  marginBottom: "2rem",
+                                  width: "100%",
+                                }}
+                              >
+                                <div
+                                  className="cars-card-content"
+                                  style={{
+                                    backgroundColor: "white",
+                                    borderRadius: "12px",
+                                    overflow: "hidden",
+                                    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                                    cursor: "pointer",
+                                    height: "auto",
+                                  }}
+                                  onClick={() =>
+                                    navigate(`/cars/${car.id || car._id}`)
+                                  }
+                                >
+                                  {/* Car Image */}
                                   <div
-                                    key={car.id || car._id}
                                     style={{
-                                      flex: "1",
-                                      maxWidth: "calc(33.333% - 27px)",
-                                      minHeight: "420px",
+                                      position: "relative",
+                                      overflow: "hidden",
                                     }}
                                   >
+                                    {car.mainImage?.url ||
+                                    car.main_image?.url ||
+                                    car.image?.url ||
+                                    car.image ||
+                                    car.images?.main?.url ? (
+                                      <img
+                                        src={
+                                          car.mainImage?.url ||
+                                          car.main_image?.url ||
+                                          car.image?.url ||
+                                          car.image ||
+                                          car.images?.main?.url
+                                        }
+                                        alt={
+                                          car.mainImage?.alt ||
+                                          car.main_image?.alt ||
+                                          car.image?.alt ||
+                                          `${car.brand} ${car.model}`
+                                        }
+                                        onError={(e) => {
+                                          e.target.style.display = "none";
+                                          e.target.parentNode.querySelector(
+                                            ".fallback-image"
+                                          ).style.display = "flex";
+                                        }}
+                                        style={{
+                                          width: "100%",
+                                          height: "200px",
+                                          objectFit: "cover",
+                                        }}
+                                      />
+                                    ) : null}
+
+                                    {/* Fallback Image */}
                                     <div
+                                      className="fallback-image"
                                       style={{
-                                        backgroundColor: "white",
-                                        borderRadius: "15px",
-                                        overflow: "hidden",
-                                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                                        transition:
-                                          "transform 0.3s ease, box-shadow 0.3s ease",
-                                        cursor: "pointer",
-                                        height: "100%",
-                                      }}
-                                      onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform =
-                                          "translateY(-10px)";
-                                        e.currentTarget.style.boxShadow =
-                                          "0 8px 30px rgba(0,0,0,0.15)";
-                                      }}
-                                      onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform =
-                                          "translateY(0)";
-                                        e.currentTarget.style.boxShadow =
-                                          "0 4px 20px rgba(0,0,0,0.1)";
+                                        display:
+                                          car.mainImage?.url ||
+                                          car.main_image?.url ||
+                                          car.image?.url ||
+                                          car.image ||
+                                          car.images?.main?.url
+                                            ? "none"
+                                            : "flex",
+                                        width: "100%",
+                                        height: "200px",
+                                        backgroundColor: "#4A90E2",
+                                        color: "white",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: "1rem",
+                                        fontWeight: "600",
+                                        textAlign: "center",
+                                        padding: "15px",
                                       }}
                                     >
-                                      {/* Car Image */}
+                                      {car.brand} {car.model}
+                                    </div>
+
+                                    {/* Price Badge */}
+                                    <div
+                                      style={{
+                                        position: "absolute",
+                                        top: "15px",
+                                        left: "15px",
+                                        backgroundColor: "#4A90E2",
+                                        borderRadius: "8px",
+                                        padding: "6px 10px",
+                                        textAlign: "center",
+                                      }}
+                                    >
                                       <div
                                         style={{
-                                          position: "relative",
-                                          overflow: "hidden",
+                                          color: "white",
+                                          fontSize: "1rem",
+                                          fontWeight: "700",
                                         }}
                                       >
-                                        {car.mainImage?.url ||
-                                        car.main_image?.url ||
-                                        car.image?.url ||
-                                        car.image ||
-                                        car.images?.main?.url ? (
-                                          <img
-                                            src={
-                                              car.mainImage?.url ||
-                                              car.main_image?.url ||
-                                              car.image?.url ||
-                                              car.image ||
-                                              car.images?.main?.url
-                                            }
-                                            alt={
-                                              car.mainImage?.alt ||
-                                              car.main_image?.alt ||
-                                              car.image?.alt ||
-                                              `${car.brand} ${car.model}`
-                                            }
-                                            onError={(e) => {
-                                              console.warn(
-                                                `🖼️ Image failed to load for ${car.brand} ${car.model}:`,
-                                                e.target.src
-                                              );
-                                              // Hide the image and show the fallback div instead
-                                              e.target.style.display = "none";
-                                              e.target.parentNode.querySelector(
-                                                ".fallback-image"
-                                              ).style.display = "flex";
-                                            }}
-                                            style={{
-                                              width: "100%",
-                                              height: "250px",
-                                              objectFit: "cover",
-                                              transition: "transform 0.3s ease",
-                                            }}
-                                          />
-                                        ) : null}
+                                        {car.pricing?.daily
+                                          ? convertAndFormatPrice(
+                                              car.pricing.daily,
+                                              car.pricing?.currency || "EUR"
+                                            )
+                                          : "Contact"}
+                                      </div>
+                                      <div
+                                        style={{
+                                          color: "white",
+                                          fontSize: "0.7rem",
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        PER DAY
+                                      </div>
+                                    </div>
+                                  </div>
 
-                                        {/* Fallback Image Div */}
+                                  <div style={{ padding: "1.5rem" }}>
+                                    <h4
+                                      style={{
+                                        color: "#2c3e50",
+                                        fontSize: "1.1rem",
+                                        fontWeight: "700",
+                                        marginBottom: "1rem",
+                                        lineHeight: "1.4",
+                                      }}
+                                    >
+                                      {car.brand} {car.model}
+                                    </h4>
+
+                                    <p
+                                      style={{
+                                        color: "#6c757d",
+                                        fontSize: "0.9rem",
+                                        lineHeight: "1.5",
+                                        marginBottom: "1.5rem",
+                                      }}
+                                    >
+                                      {car.seats || "5"} seats •{" "}
+                                      {car.transmission || "Auto"} •{" "}
+                                      {car.doors || "4"} doors
+                                    </p>
+
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/cars/${car.id || car._id}`);
+                                      }}
+                                      style={{
+                                        backgroundColor: "#4A90E2",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "6px",
+                                        padding: "0.75rem 1rem",
+                                        fontSize: "0.85rem",
+                                        fontWeight: "600",
+                                        cursor: "pointer",
+                                        width: "100%",
+                                        textTransform: "uppercase",
+                                      }}
+                                    >
+                                      View Details
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        // Desktop: Show carousel slides
+                        Array.from({ length: Math.ceil(cars.length / 3) }).map(
+                          (_, slideIndex) => (
+                            <div
+                              key={slideIndex}
+                              className="cars-slide"
+                              style={{
+                                minWidth: "100%",
+                                display: "flex",
+                                gap: "40px",
+                                padding: "0 20px",
+                              }}
+                            >
+                              {cars
+                                .slice(slideIndex * 3, slideIndex * 3 + 3)
+                                .map((car) => {
+                                  console.log(
+                                    `🖼️ Car ${car.brand} ${car.model} image data:`,
+                                    {
+                                      mainImage: car.mainImage,
+                                      main_image: car.main_image,
+                                      image: car.image,
+                                      images: car.images,
+                                    }
+                                  );
+
+                                  return (
+                                    <div
+                                      key={car.id || car._id}
+                                      style={{
+                                        flex: "1",
+                                        maxWidth: "calc(33.333% - 27px)",
+                                        minHeight: "420px",
+                                      }}
+                                    >
+                                      <div
+                                        style={{
+                                          backgroundColor: "white",
+                                          borderRadius: "15px",
+                                          overflow: "hidden",
+                                          boxShadow:
+                                            "0 4px 20px rgba(0,0,0,0.1)",
+                                          transition:
+                                            "transform 0.3s ease, box-shadow 0.3s ease",
+                                          cursor: "pointer",
+                                          height: "100%",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                          e.currentTarget.style.transform =
+                                            "translateY(-10px)";
+                                          e.currentTarget.style.boxShadow =
+                                            "0 8px 30px rgba(0,0,0,0.15)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                          e.currentTarget.style.transform =
+                                            "translateY(0)";
+                                          e.currentTarget.style.boxShadow =
+                                            "0 4px 20px rgba(0,0,0,0.1)";
+                                        }}
+                                      >
+                                        {/* Car Image */}
                                         <div
-                                          className="fallback-image"
                                           style={{
-                                            display:
-                                              car.mainImage?.url ||
-                                              car.main_image?.url ||
-                                              car.image?.url ||
-                                              car.image ||
-                                              car.images?.main?.url
-                                                ? "none"
-                                                : "flex",
-                                            width: "100%",
-                                            height: "250px",
-                                            backgroundColor: "#1ecb15",
-                                            color: "white",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontSize: "1.2rem",
-                                            fontWeight: "600",
-                                            textAlign: "center",
-                                            padding: "20px",
-                                            boxSizing: "border-box",
+                                            position: "relative",
+                                            overflow: "hidden",
                                           }}
                                         >
-                                          {car.brand} {car.model}
+                                          {car.mainImage?.url ||
+                                          car.main_image?.url ||
+                                          car.image?.url ||
+                                          car.image ||
+                                          car.images?.main?.url ? (
+                                            <img
+                                              src={
+                                                car.mainImage?.url ||
+                                                car.main_image?.url ||
+                                                car.image?.url ||
+                                                car.image ||
+                                                car.images?.main?.url
+                                              }
+                                              alt={
+                                                car.mainImage?.alt ||
+                                                car.main_image?.alt ||
+                                                car.image?.alt ||
+                                                `${car.brand} ${car.model}`
+                                              }
+                                              onError={(e) => {
+                                                console.warn(
+                                                  `🖼️ Image failed to load for ${car.brand} ${car.model}:`,
+                                                  e.target.src
+                                                );
+                                                e.target.style.display = "none";
+                                                e.target.parentNode.querySelector(
+                                                  ".fallback-image"
+                                                ).style.display = "flex";
+                                              }}
+                                              style={{
+                                                width: "100%",
+                                                height: "250px",
+                                                objectFit: "cover",
+                                                transition:
+                                                  "transform 0.3s ease",
+                                              }}
+                                            />
+                                          ) : null}
+
+                                          {/* Fallback Image Div */}
+                                          <div
+                                            className="fallback-image"
+                                            style={{
+                                              display:
+                                                car.mainImage?.url ||
+                                                car.main_image?.url ||
+                                                car.image?.url ||
+                                                car.image ||
+                                                car.images?.main?.url
+                                                  ? "none"
+                                                  : "flex",
+                                              width: "100%",
+                                              height: "250px",
+                                              backgroundColor: "#4A90E2",
+                                              color: "white",
+                                              alignItems: "center",
+                                              justifyContent: "center",
+                                              fontSize: "1.2rem",
+                                              fontWeight: "600",
+                                              textAlign: "center",
+                                              padding: "20px",
+                                              boxSizing: "border-box",
+                                            }}
+                                          >
+                                            {car.brand} {car.model}
+                                          </div>
                                         </div>
 
-                                        {/* Status Badge */}
-                                        {car.status === "active" && (
+                                        {/* Car Content */}
+                                        <div style={{ padding: "20px" }}>
+                                          <h5
+                                            style={{
+                                              color: "#2c3e50",
+                                              fontSize: "1.1rem",
+                                              fontWeight: "700",
+                                              marginBottom: "8px",
+                                              lineHeight: "1.4",
+                                            }}
+                                          >
+                                            {car.brand} {car.model}
+                                          </h5>
+
+                                          <p
+                                            style={{
+                                              color: "#6c757d",
+                                              fontSize: "0.8rem",
+                                              marginBottom: "12px",
+                                            }}
+                                          >
+                                            Year: {car.year}
+                                          </p>
+
+                                          {/* Car Features */}
                                           <div
                                             style={{
-                                              position: "absolute",
-                                              top: "15px",
-                                              left: "15px",
-                                              backgroundColor:
-                                                "rgba(30, 203, 21, 0.9)",
-                                              borderRadius: "6px",
-                                              padding: "3px 6px",
-                                              textAlign: "center",
+                                              display: "grid",
+                                              gridTemplateColumns: "1fr 1fr",
+                                              gap: "8px",
+                                              marginBottom: "15px",
+                                              fontSize: "0.75rem",
+                                              color: "#6c757d",
+                                              padding: "12px",
+                                              backgroundColor: "#f8f9fa",
+                                              borderRadius: "8px",
                                             }}
                                           >
                                             <div
                                               style={{
-                                                color: "white",
-                                                fontSize: "0.6rem",
-                                                fontWeight: "600",
-                                                textTransform: "uppercase",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "5px",
+                                                padding: "4px 0",
                                               }}
                                             >
-                                              Available
+                                              👥 {car.seats || "5"} Seats
+                                            </div>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "5px",
+                                                padding: "4px 0",
+                                              }}
+                                            >
+                                              ⚙️ {car.transmission || "Auto"}
+                                            </div>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "5px",
+                                                padding: "4px 0",
+                                              }}
+                                            >
+                                              🚪 {car.doors || "4"} Doors
+                                            </div>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "5px",
+                                                padding: "4px 0",
+                                              }}
+                                            >
+                                              ⛽ {car.fuelType || "Petrol"}
                                             </div>
                                           </div>
-                                        )}
-                                      </div>
 
-                                      {/* Car Content */}
-                                      <div style={{ padding: "20px" }}>
-                                        <h5
-                                          style={{
-                                            color: "#2c3e50",
-                                            fontSize: "1.1rem",
-                                            fontWeight: "700",
-                                            marginBottom: "8px",
-                                            lineHeight: "1.4",
-                                          }}
-                                        >
-                                          {car.brand} {car.model}
-                                        </h5>
-
-                                        <p
-                                          style={{
-                                            color: "#6c757d",
-                                            fontSize: "0.8rem",
-                                            marginBottom: "12px",
-                                          }}
-                                        >
-                                          Year: {car.year}
-                                        </p>
-
-                                        {/* Car Features */}
-                                        <div
-                                          style={{
-                                            display: "grid",
-                                            gridTemplateColumns: "1fr 1fr",
-                                            gap: "8px",
-                                            marginBottom: "15px",
-                                            fontSize: "0.75rem",
-                                            color: "#6c757d",
-                                            padding: "12px",
-                                            backgroundColor: "#f8f9fa",
-                                            borderRadius: "8px",
-                                          }}
-                                        >
-                                          <div
+                                          {/* View Details Button */}
+                                          <button
+                                            onClick={() =>
+                                              handleViewCar(car._id || car.id)
+                                            }
                                             style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                              gap: "5px",
-                                              padding: "4px 0",
+                                              backgroundColor: "#4A90E2",
+                                              color: "white",
+                                              border: "none",
+                                              borderRadius: "6px",
+                                              padding: "8px 16px",
+                                              fontSize: "0.8rem",
+                                              fontWeight: "600",
+                                              cursor: "pointer",
+                                              transition: "all 0.3s ease",
+                                              textTransform: "uppercase",
+                                              letterSpacing: "0.5px",
+                                              width: "100%",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                              e.target.style.backgroundColor =
+                                                "#2E86C1";
+                                              e.target.style.transform =
+                                                "translateY(-2px)";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                              e.target.style.backgroundColor =
+                                                "#4A90E2";
+                                              e.target.style.transform =
+                                                "translateY(0)";
                                             }}
                                           >
-                                            👥 {car.seats || "5"} Seats
-                                          </div>
-                                          <div
-                                            style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                              gap: "5px",
-                                              padding: "4px 0",
-                                            }}
-                                          >
-                                            ⚙️ {car.transmission || "Auto"}
-                                          </div>
-                                          <div
-                                            style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                              gap: "5px",
-                                              padding: "4px 0",
-                                            }}
-                                          >
-                                            🚪 {car.doors || "4"} Doors
-                                          </div>
-                                          <div
-                                            style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                              gap: "5px",
-                                              padding: "4px 0",
-                                            }}
-                                          >
-                                            ⛽ {car.fuelType || "Petrol"}
-                                          </div>
+                                            View Details
+                                          </button>
                                         </div>
-
-                                        {/* View Details Button */}
-                                        <button
-                                          onClick={() =>
-                                            handleViewCar(car._id || car.id)
-                                          }
-                                          style={{
-                                            backgroundColor: "#1ecb15",
-                                            color: "white",
-                                            border: "none",
-                                            borderRadius: "6px",
-                                            padding: "8px 16px",
-                                            fontSize: "0.8rem",
-                                            fontWeight: "600",
-                                            cursor: "pointer",
-                                            transition: "all 0.3s ease",
-                                            textTransform: "uppercase",
-                                            letterSpacing: "0.5px",
-                                            width: "100%",
-                                          }}
-                                          onMouseEnter={(e) => {
-                                            e.target.style.backgroundColor =
-                                              "#00cc6a";
-                                            e.target.style.transform =
-                                              "translateY(-2px)";
-                                          }}
-                                          onMouseLeave={(e) => {
-                                            e.target.style.backgroundColor =
-                                              "#1ecb15";
-                                            e.target.style.transform =
-                                              "translateY(0)";
-                                          }}
-                                        >
-                                          View Details
-                                        </button>
                                       </div>
                                     </div>
-                                  </div>
-                                );
-                              })}
-                          </div>
+                                  );
+                                })}
+                            </div>
+                          )
                         )
                       )}
                     </div>
 
                     {/* Navigation Arrows */}
-                    {cars.length > 3 && (
+                    {cars.length > 3 && !isMobile && (
                       <>
                         <button
                           onClick={prevSlide}
@@ -778,7 +958,7 @@ const VehicleFleet = () => {
                             left: "-70px",
                             top: "50%",
                             transform: "translateY(-50%)",
-                            backgroundColor: "#1ecb15",
+                            backgroundColor: "#4A90E2",
                             border: "none",
                             borderRadius: "50%",
                             width: "60px",
@@ -787,17 +967,17 @@ const VehicleFleet = () => {
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            boxShadow: "0 6px 20px rgba(30, 203, 21, 0.4)",
+                            boxShadow: "0 6px 20px rgba(74, 144, 226, 0.4)",
                             transition: "all 0.3s ease",
                             zIndex: 10,
                           }}
                           onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = "#179510";
+                            e.target.style.backgroundColor = "#0077BE";
                             e.target.style.transform =
                               "translateY(-50%) scale(1.1)";
                           }}
                           onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#1ecb15";
+                            e.target.style.backgroundColor = "#4A90E2";
                             e.target.style.transform =
                               "translateY(-50%) scale(1)";
                           }}
@@ -819,7 +999,7 @@ const VehicleFleet = () => {
                             right: "-70px",
                             top: "50%",
                             transform: "translateY(-50%)",
-                            backgroundColor: "#1ecb15",
+                            backgroundColor: "#4A90E2",
                             border: "none",
                             borderRadius: "50%",
                             width: "60px",
@@ -828,17 +1008,17 @@ const VehicleFleet = () => {
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            boxShadow: "0 6px 20px rgba(30, 203, 21, 0.4)",
+                            boxShadow: "0 6px 20px rgba(74, 144, 226, 0.4)",
                             transition: "all 0.3s ease",
                             zIndex: 10,
                           }}
                           onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = "#179510";
+                            e.target.style.backgroundColor = "#0077BE";
                             e.target.style.transform =
                               "translateY(-50%) scale(1.1)";
                           }}
                           onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#1ecb15";
+                            e.target.style.backgroundColor = "#4A90E2";
                             e.target.style.transform =
                               "translateY(-50%) scale(1)";
                           }}
@@ -856,7 +1036,7 @@ const VehicleFleet = () => {
                     )}
 
                     {/* Slide Indicators */}
-                    {cars.length > 3 && (
+                    {cars.length > 3 && !isMobile && (
                       <div
                         style={{
                           display: "flex",
@@ -874,22 +1054,22 @@ const VehicleFleet = () => {
                                 width: currentSlide === index ? "40px" : "15px",
                                 height: "15px",
                                 borderRadius: "25px",
-                                border: "2px solid #1ecb15",
+                                border: "2px solid #4A90E2",
                                 backgroundColor:
                                   currentSlide === index
-                                    ? "#1ecb15"
+                                    ? "#4A90E2"
                                     : "transparent",
                                 cursor: "pointer",
                                 transition: "all 0.4s ease",
                                 boxShadow:
                                   currentSlide === index
-                                    ? "0 4px 12px rgba(30, 203, 21, 0.3)"
+                                    ? "0 4px 12px rgba(74, 144, 226, 0.3)"
                                     : "none",
                               }}
                               onMouseEnter={(e) => {
                                 if (currentSlide !== index) {
                                   e.target.style.backgroundColor =
-                                    "rgba(30, 203, 21, 0.1)";
+                                    "rgba(74, 144, 226, 0.1)";
                                 }
                               }}
                               onMouseLeave={(e) => {
@@ -910,6 +1090,160 @@ const VehicleFleet = () => {
           </div>
         </div>
       </section>
+
+      {/* Responsive Styles */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .cars-carousel-slides {
+            display: block !important;
+            transform: none !important;
+          }
+
+          .cars-slide {
+            min-width: 100% !important;
+            display: block !important;
+            gap: 20px !important;
+            padding: 0 !important;
+          }
+
+          .cars-card-item {
+            flex: none !important;
+            max-width: 100% !important;
+            min-height: auto !important;
+            margin-bottom: 2rem !important;
+          }
+
+          .cars-card-content {
+            border-radius: 12px !important;
+          }
+
+          .cars-card-content img {
+            height: 200px !important;
+          }
+
+          .fallback-image {
+            height: 200px !important;
+            font-size: 1rem !important;
+            padding: 15px !important;
+          }
+
+          .cars-card-content > div:last-child {
+            padding: 1.5rem !important;
+          }
+
+          .cars-card-content h4 {
+            font-size: 1.1rem !important;
+            margin-bottom: 1rem !important;
+          }
+
+          .cars-card-content p {
+            font-size: 0.9rem !important;
+            line-height: 1.5 !important;
+            margin-bottom: 1.5rem !important;
+          }
+
+          .cars-card-content button {
+            padding: 0.75rem 1rem !important;
+            font-size: 0.85rem !important;
+          }
+
+          .cars-card-content > div:first-child > div:last-child {
+            top: 15px !important;
+            left: 15px !important;
+            padding: 6px 10px !important;
+          }
+
+          .cars-card-content
+            > div:first-child
+            > div:last-child
+            > div:first-child {
+            font-size: 1rem !important;
+          }
+
+          .cars-card-content
+            > div:first-child
+            > div:last-child
+            > div:last-child {
+            font-size: 0.7rem !important;
+          }
+        }
+
+        @media (max-width: 576px) {
+          .cars-card-content img,
+          .fallback-image {
+            height: 180px !important;
+          }
+
+          .cars-card-content > div:last-child {
+            padding: 1.25rem !important;
+          }
+
+          .cars-card-content h4 {
+            font-size: 1rem !important;
+            line-height: 1.3 !important;
+          }
+
+          .cars-card-content p {
+            font-size: 0.85rem !important;
+          }
+
+          .cars-card-content button {
+            padding: 0.6rem 0.8rem !important;
+            font-size: 0.8rem !important;
+            border-radius: 6px !important;
+          }
+
+          .cars-card-content > div:first-child > div:last-child {
+            padding: 5px 8px !important;
+          }
+
+          .cars-card-content
+            > div:first-child
+            > div:last-child
+            > div:first-child {
+            font-size: 0.9rem !important;
+          }
+
+          .cars-card-content
+            > div:first-child
+            > div:last-child
+            > div:last-child {
+            font-size: 0.65rem !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .cars-card-content {
+            border-radius: 10px !important;
+          }
+
+          .cars-card-content img,
+          .fallback-image {
+            height: 160px !important;
+          }
+
+          .cars-card-content > div:last-child {
+            padding: 1rem !important;
+          }
+
+          .cars-card-content h4 {
+            font-size: 0.95rem !important;
+            margin-bottom: 0.75rem !important;
+          }
+
+          .cars-card-content p {
+            font-size: 0.8rem !important;
+            margin-bottom: 1rem !important;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .cars-card-item {
+            flex: none !important;
+            max-width: 100% !important;
+          }
+        }
+      `}</style>
     </>
   );
 };

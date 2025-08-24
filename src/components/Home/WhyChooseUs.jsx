@@ -7,7 +7,7 @@ const WhyChooseUs = () => {
         {/* Section Header */}
         <div className="row">
           <div className="col-lg-12 text-center mb-5">
-            <h2 className="section-title">Özelliklerimiz</h2>
+            <h2 style={{ color: "white" }}>Özelliklerimiz</h2>
             <p className="section-subtitle">
               Kolaylık, güvenlik ve kişiselleştirme dünyasını keşfedin;
               unutulmaz maceralar ve sorunsuz mobilite çözümleri için yol açın.

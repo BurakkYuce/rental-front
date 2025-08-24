@@ -1,50 +1,41 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, Users, Settings, Calendar, Star } from "lucide-react";
 import { publicAPI } from "../../services/api";
 import { useCurrency } from "../../contexts/CurrencyContext";
 
 const CarsPartInHome = () => {
   const navigate = useNavigate();
-  const {
-    currentCurrency,
-    exchangeRates,
-    convertAndFormatPrice,
-    formatPrice,
-    convertAmount,
-    isLoaded: currencyLoaded,
-  } = useCurrency();
+  const sliderRef = useRef();
+  const { convertAndFormatPrice } = useCurrency();
 
   const [loading, setLoading] = useState(true);
   const [latestCars, setLatestCars] = useState([]);
-  const [error, setError] = useState("");
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const loadLatestCars = useCallback(async () => {
     try {
       setLoading(true);
-      setError("");
-
-      console.log("🚀 Loading latest cars...");
 
       const response = await publicAPI.getCars({
-        limit: 3,
+        limit: 6,
         sort: "created_at",
         order: "desc",
       });
 
-      console.log("📡 Cars API response:", response);
-      console.log("📊 Response data:", response.data);
-
-      const carData = response.data?.data?.listings || response.data?.listings || response.data?.data?.cars || response.data?.cars || [];
-      console.log("🚗 Extracted car data:", carData);
-
-      const cars = Array.isArray(carData) ? carData.slice(0, 3) : [];
-
-      console.log("🏁 Final latest cars to display:", cars);
+      const carData =
+        response.data?.data?.listings ||
+        response.data?.listings ||
+        response.data?.data?.cars ||
+        response.data?.cars ||
+        response.data?.data?.fleet ||
+        response.data?.fleet ||
+        response.data?.data?.vehicles ||
+        response.data?.vehicles ||
+        [];
+      const cars = Array.isArray(carData) ? carData.slice(0, 6) : [];
       setLatestCars(cars);
     } catch (error) {
       console.error("❌ Failed to load cars:", error);
-      setError("Failed to load latest cars");
       setLatestCars([]);
     } finally {
       setLoading(false);
@@ -55,20 +46,6 @@ const CarsPartInHome = () => {
     loadLatestCars();
   }, [loadLatestCars]);
 
-  const renderStars = (rating) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        size={12}
-        style={{
-          color: i < rating ? "#ffd700" : "#e4e5e9",
-          marginRight: "2px",
-          fill: i < rating ? "#ffd700" : "none",
-        }}
-      />
-    ));
-  };
-
   const handleViewCar = (carId) => {
     navigate(`/cars/${carId}`);
   };
@@ -77,364 +54,860 @@ const CarsPartInHome = () => {
     navigate("/cars");
   };
 
-  if (error && latestCars.length === 0 && !loading) {
-    return (
-      <section className="py-5" style={{ backgroundColor: "#f8f9fa" }}>
-        <div className="container">
-          <div
-            className="card border-0 shadow-sm text-center p-5"
-            style={{ borderRadius: "25px" }}
-          >
-            <h2 className="h3 fw-bold text-dark mb-4">Latest Vehicles</h2>
-            <p className="text-muted mb-4 fs-5">
-              Unable to load latest vehicles at the moment.
-            </p>
-            <button
-              onClick={handleViewAllCars}
-              className="btn btn-lg px-5 py-3 fw-bold text-white border-0"
+  // Check if mobile viewport (EXACTLY like LatestNews)
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Slider navigation (EXACTLY like LatestNews)
+  const nextSlide = () => {
+    if (latestCars.length > 0 && !isMobile) {
+      setCurrentSlide((prev) => (prev + 1) % Math.ceil(latestCars.length / 3));
+    }
+  };
+
+  const prevSlide = () => {
+    if (latestCars.length > 0 && !isMobile) {
+      setCurrentSlide(
+        (prev) =>
+          (prev - 1 + Math.ceil(latestCars.length / 3)) %
+          Math.ceil(latestCars.length / 3)
+      );
+    }
+  };
+
+  // Auto-slide effect (disabled on mobile, EXACTLY like LatestNews)
+  useEffect(() => {
+    if (latestCars.length > 3 && !isMobile) {
+      const interval = setInterval(nextSlide, 6000);
+      return () => clearInterval(interval);
+    }
+  }, [latestCars.length, isMobile]);
+
+  return (
+    <section style={{ backgroundColor: "#f8f9fa", padding: "100px 0" }}>
+      <div className="container-fluid px-5">
+        {/* Section Header - Same as LatestNews */}
+        <div className="row">
+          <div className="col-12 text-center mb-5">
+            <h2
               style={{
-                background: "linear-gradient(135deg, #00ff88 0%, #00cc6a 100%)",
-                borderRadius: "50px",
-                boxShadow: "0 8px 25px rgba(0, 255, 136, 0.3)",
-                transition: "all 0.3s ease",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = "translateY(-3px)";
-                e.target.style.boxShadow = "0 12px 35px rgba(0, 255, 136, 0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 8px 25px rgba(0, 255, 136, 0.3)";
+                fontSize: "2.5rem",
+                fontWeight: "700",
+                color: "#2c3e50",
+                marginBottom: "20px",
               }}
             >
-              Browse All Cars
+              En Yeni Araçlarımız
+            </h2>
+            <p
+              style={{
+                fontSize: "1.1rem",
+                color: "#6c757d",
+                maxWidth: "700px",
+                margin: "0 auto",
+                lineHeight: "1.6",
+              }}
+            >
+              Premium filomuzdan seçilen en yeni ve en kaliteli araçlarımızla
+              konforlu yolculuğunuzu planlayın.
+            </p>
+          </div>
+        </div>
+
+        {/* Car Carousel - EXACTLY same structure as LatestNews */}
+        <div className="row">
+          <div className="col-12">
+            <div
+              className="cars-carousel-container"
+              style={{
+                position: "relative",
+                overflow: isMobile ? "visible" : "hidden",
+                minHeight: isMobile ? "auto" : "500px",
+              }}
+            >
+              {loading ? (
+                // Loading state - Same as LatestNews
+                <div className="row">
+                  {[1, 2, 3].map((index) => (
+                    <div
+                      key={index}
+                      className="col-lg-4 col-md-6 col-sm-12 mb-4 cars-loading-card"
+                    >
+                      <div
+                        style={{
+                          backgroundColor: "white",
+                          borderRadius: "15px",
+                          overflow: "hidden",
+                          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                          padding: "25px",
+                          textAlign: "center",
+                          color: "#6c757d",
+                        }}
+                      >
+                        <div
+                          className="spinner-border text-primary"
+                          role="status"
+                        >
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
+                        <p style={{ marginTop: "15px", marginBottom: 0 }}>
+                          Loading cars...
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <>
+                  {/* Slider Container - EXACTLY same as LatestNews */}
+                  <div
+                    ref={sliderRef}
+                    className="cars-carousel-slides"
+                    style={{
+                      display: isMobile ? "block" : "flex",
+                      transition: isMobile ? "none" : "transform 0.5s ease",
+                      transform: isMobile
+                        ? "none"
+                        : `translateX(-${currentSlide * 100}%)`,
+                    }}
+                  >
+                    {/* Group cars into slides of 3 - EXACTLY same as LatestNews */}
+                    {isMobile ? (
+                      // Mobile: Show all cars in a single column (EXACTLY same as LatestNews)
+                      <div className="cars-slide">
+                        {latestCars.map((car) => {
+                          return (
+                            <div
+                              key={car.id || car._id}
+                              className="cars-card-item"
+                              style={{
+                                marginBottom: "2rem",
+                                width: "100%",
+                              }}
+                            >
+                              <div
+                                className="cars-card-content"
+                                style={{
+                                  backgroundColor: "white",
+                                  borderRadius: "12px",
+                                  overflow: "hidden",
+                                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                                  cursor: "pointer",
+                                  height: "auto",
+                                }}
+                                onClick={() => handleViewCar(car.id || car._id)}
+                              >
+                                {/* Car Image - Same structure as blog post */}
+                                <div
+                                  style={{
+                                    position: "relative",
+                                    overflow: "hidden",
+                                  }}
+                                >
+                                  <img
+                                    src={
+                                      car.mainImage?.url ||
+                                      car.main_image?.url ||
+                                      car.images?.[0]?.url ||
+                                      car.image?.url ||
+                                      "/images/cars/default-car.jpg"
+                                    }
+                                    alt={car.title}
+                                    style={{
+                                      width: "100%",
+                                      height: "200px",
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                  <div
+                                    style={{
+                                      position: "absolute",
+                                      top: "15px",
+                                      left: "15px",
+                                      backgroundColor: "#1ecb15",
+                                      borderRadius: "8px",
+                                      padding: "6px 10px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        color: "white",
+                                        fontSize: "1rem",
+                                        fontWeight: "700",
+                                      }}
+                                    >
+                                      {car.pricing?.daily
+                                        ? convertAndFormatPrice(
+                                            car.pricing.daily,
+                                            car.pricing?.currency || "EUR"
+                                          )
+                                        : "Contact"}
+                                    </div>
+                                    <div
+                                      style={{
+                                        color: "white",
+                                        fontSize: "0.7rem",
+                                        fontWeight: "600",
+                                      }}
+                                    >
+                                      PER DAY
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div style={{ padding: "1.5rem" }}>
+                                  <h4
+                                    style={{
+                                      color: "#2c3e50",
+                                      fontSize: "1.1rem",
+                                      fontWeight: "700",
+                                      marginBottom: "1rem",
+                                      lineHeight: "1.4",
+                                    }}
+                                  >
+                                    {car.title}
+                                  </h4>
+
+                                  <p
+                                    style={{
+                                      color: "#6c757d",
+                                      fontSize: "0.9rem",
+                                      lineHeight: "1.5",
+                                      marginBottom: "1.5rem",
+                                    }}
+                                  >
+                                    {car.seats || "5"} seats • {car.transmission || "Auto"} • {car.doors || "4"} doors
+                                  </p>
+
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleViewCar(car.id || car._id);
+                                    }}
+                                    style={{
+                                      backgroundColor: "#1ecb15",
+                                      color: "white",
+                                      border: "none",
+                                      borderRadius: "6px",
+                                      padding: "0.75rem 1rem",
+                                      fontSize: "0.85rem",
+                                      fontWeight: "600",
+                                      cursor: "pointer",
+                                      width: "100%",
+                                      textTransform: "uppercase",
+                                    }}
+                                  >
+                                    View Details
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      // Desktop: Show carousel slides (EXACTLY same structure as LatestNews)
+                      Array.from({
+                        length: Math.ceil(latestCars.length / 3),
+                      }).map((_, slideIndex) => (
+                        <div
+                          key={slideIndex}
+                          className="cars-slide"
+                          style={{
+                            minWidth: "100%",
+                            display: "flex",
+                            gap: "40px",
+                            padding: "0 20px",
+                          }}
+                        >
+                          {latestCars
+                            .slice(slideIndex * 3, slideIndex * 3 + 3)
+                            .map((car) => {
+                              return (
+                                <div
+                                  key={car.id || car._id}
+                                  className="cars-card-item"
+                                  style={{
+                                    flex: "1",
+                                    maxWidth: "calc(33.333% - 27px)",
+                                    minHeight: "480px",
+                                  }}
+                                >
+                                  <div
+                                    className="cars-card-content"
+                                    style={{
+                                      backgroundColor: "white",
+                                      borderRadius: "15px",
+                                      overflow: "hidden",
+                                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                                      transition:
+                                        "transform 0.3s ease, box-shadow 0.3s ease",
+                                      cursor: "pointer",
+                                      height: "100%",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.transform =
+                                        "translateY(-10px)";
+                                      e.currentTarget.style.boxShadow =
+                                        "0 8px 30px rgba(0,0,0,0.15)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.transform =
+                                        "translateY(0)";
+                                      e.currentTarget.style.boxShadow =
+                                        "0 4px 20px rgba(0,0,0,0.1)";
+                                    }}
+                                    onClick={() => handleViewCar(car.id || car._id)}
+                                  >
+                                    {/* Car Image */}
+                                    <div
+                                      style={{
+                                        position: "relative",
+                                        overflow: "hidden",
+                                      }}
+                                    >
+                                      <img
+                                        src={
+                                          car.mainImage?.url ||
+                                          car.main_image?.url ||
+                                          car.images?.[0]?.url ||
+                                          car.image?.url ||
+                                          "/images/cars/default-car.jpg"
+                                        }
+                                        alt={car.title}
+                                        style={{
+                                          width: "100%",
+                                          height: "250px",
+                                          objectFit: "cover",
+                                          transition: "transform 0.3s ease",
+                                        }}
+                                      />
+
+                                      {/* Price Badge */}
+                                      <div
+                                        style={{
+                                          position: "absolute",
+                                          top: "20px",
+                                          left: "20px",
+                                          backgroundColor: "#1ecb15",
+                                          borderRadius: "10px",
+                                          padding: "8px 12px",
+                                          textAlign: "center",
+                                          boxShadow: "0 2px 10px rgba(30, 203, 21, 0.3)",
+                                        }}
+                                      >
+                                        <div
+                                          style={{
+                                            color: "white",
+                                            fontSize: "1.2rem",
+                                            fontWeight: "700",
+                                            lineHeight: "1",
+                                          }}
+                                        >
+                                          {car.pricing?.daily
+                                            ? convertAndFormatPrice(
+                                                car.pricing.daily,
+                                                car.pricing?.currency || "EUR"
+                                              )
+                                            : "Contact"}
+                                        </div>
+                                        <div
+                                          style={{
+                                            color: "white",
+                                            fontSize: "0.8rem",
+                                            fontWeight: "600",
+                                            lineHeight: "1",
+                                          }}
+                                        >
+                                          PER DAY
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Car Content */}
+                                    <div
+                                      style={{
+                                        padding: "25px",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        height: "calc(100% - 250px)",
+                                      }}
+                                    >
+                                      <h4
+                                        style={{
+                                          color: "#2c3e50",
+                                          fontSize: "1.3rem",
+                                          fontWeight: "700",
+                                          marginBottom: "15px",
+                                          lineHeight: "1.4",
+                                        }}
+                                      >
+                                        {car.title}
+                                      </h4>
+
+                                      <p
+                                        style={{
+                                          color: "#6c757d",
+                                          fontSize: "1rem",
+                                          lineHeight: "1.6",
+                                          marginBottom: "20px",
+                                          flex: "1",
+                                        }}
+                                      >
+                                        {car.seats || "5"} seats • {car.transmission || "Auto"} • {car.doors || "4"} doors
+                                      </p>
+
+                                      {/* View Details Button */}
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleViewCar(car.id || car._id);
+                                        }}
+                                        style={{
+                                          backgroundColor: "#1ecb15",
+                                          color: "white",
+                                          border: "none",
+                                          borderRadius: "8px",
+                                          padding: "10px 20px",
+                                          fontSize: "0.9rem",
+                                          fontWeight: "600",
+                                          cursor: "pointer",
+                                          transition: "all 0.3s ease",
+                                          textTransform: "uppercase",
+                                          letterSpacing: "0.5px",
+                                          width: "100%",
+                                          marginTop: "auto",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                          e.target.style.backgroundColor =
+                                            "#179510";
+                                          e.target.style.transform =
+                                            "translateY(-2px)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                          e.target.style.backgroundColor =
+                                            "#1ecb15";
+                                          e.target.style.transform =
+                                            "translateY(0)";
+                                        }}
+                                      >
+                                        View Details
+                                      </button>
+
+                                      {/* Bottom Border */}
+                                      <div
+                                        style={{
+                                          marginTop: "20px",
+                                          height: "3px",
+                                          background:
+                                            "linear-gradient(to right, #1ecb15, #179510)",
+                                          borderRadius: "2px",
+                                        }}
+                                      ></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Navigation Arrows - EXACTLY same as LatestNews */}
+                  {latestCars.length > 3 && !isMobile && (
+                    <>
+                      <button
+                        className="cars-nav-arrow"
+                        onClick={prevSlide}
+                        style={{
+                          position: "absolute",
+                          left: "-70px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          backgroundColor: "#1ecb15",
+                          border: "none",
+                          borderRadius: "50%",
+                          width: "60px",
+                          height: "60px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          boxShadow: "0 6px 20px rgba(30, 203, 21, 0.4)",
+                          transition: "all 0.3s ease",
+                          zIndex: 10,
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = "#179510";
+                          e.target.style.transform =
+                            "translateY(-50%) scale(1.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = "#1ecb15";
+                          e.target.style.transform =
+                            "translateY(-50%) scale(1)";
+                        }}
+                      >
+                        <svg
+                          width="20"
+                          height="20"
+                          fill="white"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" />
+                        </svg>
+                      </button>
+
+                      <button
+                        className="cars-nav-arrow"
+                        onClick={nextSlide}
+                        style={{
+                          position: "absolute",
+                          right: "-70px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          backgroundColor: "#1ecb15",
+                          border: "none",
+                          borderRadius: "50%",
+                          width: "60px",
+                          height: "60px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          boxShadow: "0 6px 20px rgba(30, 203, 21, 0.4)",
+                          transition: "all 0.3s ease",
+                          zIndex: 10,
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = "#179510";
+                          e.target.style.transform =
+                            "translateY(-50%) scale(1.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = "#1ecb15";
+                          e.target.style.transform =
+                            "translateY(-50%) scale(1)";
+                        }}
+                      >
+                        <svg
+                          width="20"
+                          height="20"
+                          fill="white"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
+                        </svg>
+                      </button>
+                    </>
+                  )}
+
+                  {/* Slide Indicators - EXACTLY same as LatestNews */}
+                  {latestCars.length > 3 && !isMobile && (
+                    <div
+                      className="cars-indicators"
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "15px",
+                        marginTop: "40px",
+                      }}
+                    >
+                      {Array.from({
+                        length: Math.ceil(latestCars.length / 3),
+                      }).map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentSlide(index)}
+                          style={{
+                            width: currentSlide === index ? "40px" : "15px",
+                            height: "15px",
+                            borderRadius: "25px",
+                            border: "2px solid #1ecb15",
+                            backgroundColor:
+                              currentSlide === index
+                                ? "#1ecb15"
+                                : "transparent",
+                            cursor: "pointer",
+                            transition: "all 0.4s ease",
+                            boxShadow:
+                              currentSlide === index
+                                ? "0 4px 12px rgba(30, 203, 21, 0.3)"
+                                : "none",
+                          }}
+                          onMouseEnter={(e) => {
+                            if (currentSlide !== index) {
+                              e.target.style.backgroundColor =
+                                "rgba(30, 203, 21, 0.1)";
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (currentSlide !== index) {
+                              e.target.style.backgroundColor = "transparent";
+                            }
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* View All Cars Button - EXACTLY same as LatestNews */}
+        <div className="row">
+          <div className="col-12 text-center mt-4">
+            <button
+              style={{
+                backgroundColor: "transparent",
+                color: "#1ecb15",
+                border: "2px solid #1ecb15",
+                borderRadius: "8px",
+                padding: "12px 30px",
+                fontSize: "1rem",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background =
+                  "linear-gradient(135deg, #1ecb15, #179510)";
+                e.target.style.color = "white";
+                e.target.style.transform = "translateY(-3px)";
+                e.target.style.boxShadow = "0 10px 30px rgba(30, 203, 21, 0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = "transparent";
+                e.target.style.color = "#1ecb15";
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "none";
+              }}
+              onClick={handleViewAllCars}
+            >
+              View All Cars
             </button>
           </div>
         </div>
-      </section>
-    );
-  }
-
-  return (
-    <section className="py-5" style={{ backgroundColor: "#f8f9fa" }}>
-      <div className="container">
-        {/* Car Cards */}
-        <div className="row g-4 justify-content-center">
-          {loading ? (
-            [1, 2, 3].map((index) => (
-              <div key={index} className="col-lg-4 col-md-6 mb-4">
-                <div className="card border-0 shadow-sm h-100" style={{ borderRadius: "20px" }}>
-                  <div
-                    className="placeholder-glow"
-                    style={{
-                      height: "280px",
-                      borderRadius: "20px 20px 0 0",
-                      backgroundColor: "#f8f9fa",
-                    }}
-                  >
-                    <div className="placeholder w-100 h-100" style={{ borderRadius: "20px 20px 0 0" }}></div>
-                  </div>
-                  <div className="card-body p-4">
-                    <div className="placeholder-glow">
-                      <div className="placeholder w-75 mb-3" style={{ height: "24px" }}></div>
-                      <div className="placeholder w-100 mb-2" style={{ height: "16px" }}></div>
-                      <div className="placeholder w-50 mb-3" style={{ height: "16px" }}></div>
-                      <div className="placeholder w-100" style={{ height: "45px", borderRadius: "12px" }}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : latestCars.length > 0 ? (
-            latestCars.map((car) => (
-              <div key={car.id || car._id} className="col-xl-4 col-lg-6 col-md-6 mb-4">
-                <div
-                  className="card border-0 shadow-sm h-100 position-relative"
-                  style={{
-                    borderRadius: "20px",
-                    transition: "all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                    cursor: "pointer",
-                    overflow: "hidden",
-                    maxWidth: "400px",
-                    margin: "0 auto",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-5px)";
-                    e.currentTarget.style.boxShadow = "0 15px 35px rgba(0,0,0,0.15)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.1)";
-                  }}
-                >
-                  {/* Car Image */}
-                  <div
-                    className="position-relative overflow-hidden"
-                    style={{ borderRadius: "20px 20px 0 0" }}
-                  >
-                    <img
-                      src={
-                        car.mainImage?.url ||
-                        car.main_image?.url ||
-                        "/images/cars/default-car.jpg"
-                      }
-                      alt={car.title}
-                      className="card-img-top"
-                      style={{
-                        height: "280px",
-                        objectFit: "cover",
-                        transition: "transform 0.3s ease",
-                      }}
-                    />
-
-                    {/* Price Badge */}
-                    <div
-                      className="position-absolute top-0 start-0 m-3 px-3 py-2 rounded-3 text-white fw-bold text-center"
-                      style={{
-                        background: "linear-gradient(135deg, #1ecb15, #179510)",
-                        boxShadow: "0 4px 15px rgba(30, 203, 21, 0.3)",
-                        minWidth: "90px",
-                        fontSize: "0.85rem",
-                      }}
-                    >
-                      <div className="fs-6 lh-1 fw-bold">
-                        {car.pricing?.daily
-                          ? convertAndFormatPrice(
-                              car.pricing.daily,
-                              car.pricing?.currency || "EUR"
-                            )
-                          : "Contact Us"}
-                      </div>
-                      <small
-                        className="opacity-75 text-uppercase"
-                        style={{ fontSize: "0.7rem" }}
-                      >
-                        PER DAY
-                      </small>
-                    </div>
-
-                    {/* Like Button */}
-                    <button
-                      className="btn position-absolute top-0 end-0 m-3 rounded-circle p-2"
-                      style={{
-                        width: "45px",
-                        height: "45px",
-                        background: "rgba(255,255,255,0.9)",
-                        backdropFilter: "blur(10px)",
-                        border: "none",
-                        transition: "all 0.3s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.background = "#1ecb15";
-                        e.target.style.transform = "scale(1.05)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.background = "rgba(255,255,255,0.9)";
-                        e.target.style.transform = "scale(1)";
-                      }}
-                    >
-                      <Heart size={20} style={{ color: "#666" }} />
-                    </button>
-
-                    {/* Rating Badge */}
-                    <div
-                      className="position-absolute bottom-0 end-0 m-3 px-3 py-1 rounded-pill d-flex align-items-center gap-1"
-                      style={{
-                        background: "rgba(255,255,255,0.95)",
-                        backdropFilter: "blur(10px)",
-                      }}
-                    >
-                      {renderStars(car.rating || 4)}
-                      <small className="fw-bold ms-1 text-muted">
-                        {car.reviews || "5+"}
-                      </small>
-                    </div>
-                  </div>
-
-                  {/* Card Body */}
-                  <div className="card-body p-4 d-flex flex-column">
-                    <h5
-                      className="card-title fw-bold text-dark mb-3"
-                      style={{ fontSize: "1.3rem", lineHeight: "1.4" }}
-                    >
-                      {car.title}
-                    </h5>
-
-                    {/* Car Features */}
-                    <div className="row g-0 mb-4 p-3 bg-light rounded-3">
-                      <div className="col-4 text-center">
-                        <Users
-                          size={20}
-                          className="text-primary mb-2 d-block mx-auto"
-                          style={{ color: "#1ecb15" }}
-                        />
-                        <div className="small fw-semibold text-dark">
-                          {car.seats || "5"} Seats
-                        </div>
-                      </div>
-                      <div className="col-4 text-center border-start border-end">
-                        <Settings
-                          size={20}
-                          className="text-primary mb-2 d-block mx-auto"
-                          style={{ color: "#1ecb15" }}
-                        />
-                        <div className="small fw-semibold text-dark">
-                          {car.transmission || "Auto"}
-                        </div>
-                      </div>
-                      <div className="col-4 text-center">
-                        <Calendar
-                          size={20}
-                          className="text-primary mb-2 d-block mx-auto"
-                          style={{ color: "#1ecb15" }}
-                        />
-                        <div className="small fw-semibold text-dark">
-                          {car.doors || "4"} Doors
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Car Category */}
-                    <div className="mb-4">
-                      <span
-                        className="badge px-3 py-2 rounded-pill fw-semibold text-uppercase"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, #667eea, #764ba2)",
-                          color: "white",
-                          fontSize: "0.75rem",
-                          letterSpacing: "0.5px",
-                        }}
-                      >
-                        {car.category || car.body_type || car.bodyType || "Car"}
-                      </span>
-                    </div>
-
-                    {/* View Details Button */}
-                    <button
-                      onClick={() => handleViewCar(car.id || car._id)}
-                      className="btn w-100 py-3 fw-bold text-white border-0 mt-auto"
-                      style={{
-                        background: "linear-gradient(135deg, #1ecb15, #179510)",
-                        borderRadius: "12px",
-                        transition: "all 0.3s ease",
-                        fontSize: "0.9rem",
-                        fontWeight: "600",
-                        boxShadow: "0 4px 15px rgba(30, 203, 21, 0.3)",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.transform = "translateY(-2px)";
-                        e.target.style.boxShadow = "0 8px 25px rgba(30, 203, 21, 0.4)";
-                        e.target.style.background = "linear-gradient(135deg, #179510, #0f6b0c)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.transform = "translateY(0)";
-                        e.target.style.boxShadow = "0 4px 15px rgba(30, 203, 21, 0.3)";
-                        e.target.style.background = "linear-gradient(135deg, #1ecb15, #179510)";
-                      }}
-                    >
-                      View Details
-                    </button>
-
-                    {/* Bottom accent line */}
-                    <div
-                      className="mt-3"
-                      style={{
-                        height: "3px",
-                        background: "linear-gradient(to right, #1ecb15, #179510)",
-                        borderRadius: "2px",
-                        opacity: "0.7",
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="col-12">
-              <div className="text-center p-5 bg-white rounded-4 shadow-sm border">
-                <div className="mb-4">
-                  <div
-                    className="mx-auto mb-3 d-flex align-items-center justify-content-center"
-                    style={{
-                      width: "120px",
-                      height: "120px",
-                      borderRadius: "50%",
-                      background: "linear-gradient(135deg, #f8f9fa, #e9ecef)",
-                    }}
-                  >
-                    <svg
-                      width="60"
-                      height="60"
-                      fill="#1ecb15"
-                      viewBox="0 0 24 24"
-                      style={{ opacity: "0.7" }}
-                    >
-                      <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z" />
-                    </svg>
-                  </div>
-                </div>
-                <h4 className="text-dark mb-3 fw-bold">No Featured Cars Yet</h4>
-                <p className="text-muted lead mb-4">
-                  {error ? "We're having trouble loading cars right now." : "Check back soon for our latest additions!"}
-                </p>
-                <button
-                  onClick={handleViewAllCars}
-                  className="btn px-4 py-2 fw-semibold"
-                  style={{
-                    background: "linear-gradient(135deg, #1ecb15, #179510)",
-                    color: "white",
-                    borderRadius: "25px",
-                    border: "none",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  Browse All Cars
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* View All Cars Button */}
-        {latestCars.length > 0 && (
-          <div className="row mt-5">
-            <div className="col-12 text-center">
-              <button
-                onClick={handleViewAllCars}
-                className="btn btn-lg px-5 py-3 fw-bold border-0"
-                style={{
-                  background: "transparent",
-                  color: "#1ecb15",
-                  border: "2px solid #1ecb15",
-                  borderRadius: "50px",
-                  transition: "all 0.3s ease",
-                  textTransform: "uppercase",
-                  letterSpacing: "1px",
-                  minWidth: "250px",
-                  fontWeight: "600",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = "linear-gradient(135deg, #1ecb15, #179510)";
-                  e.target.style.color = "white";
-                  e.target.style.transform = "translateY(-3px)";
-                  e.target.style.boxShadow = "0 10px 30px rgba(30, 203, 21, 0.4)";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = "transparent";
-                  e.target.style.color = "#1ecb15";
-                  e.target.style.transform = "translateY(0)";
-                  e.target.style.boxShadow = "none";
-                }}
-              >
-                View All Cars
-              </button>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Responsive Styles - EXACTLY same as LatestNews */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          /* Section header adjustments */
+          .container-fluid {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+          }
+
+          /* Convert carousel to stack layout on mobile */
+          .cars-carousel-container {
+            overflow: visible !important;
+            min-height: auto !important;
+          }
+
+          .cars-carousel-slides {
+            display: block !important;
+            transform: none !important;
+          }
+
+          .cars-slide {
+            min-width: 100% !important;
+            display: block !important;
+            gap: 20px !important;
+            padding: 0 !important;
+          }
+
+          .cars-card-item {
+            flex: none !important;
+            max-width: 100% !important;
+            min-height: auto !important;
+            margin-bottom: 2rem !important;
+          }
+
+          .cars-card-content {
+            border-radius: 12px !important;
+          }
+
+          /* Image adjustments */
+          .cars-card-content img {
+            height: 200px !important;
+          }
+
+          /* Content padding adjustments */
+          .cars-card-content > div:last-child {
+            padding: 1.5rem !important;
+          }
+
+          /* Title size adjustments */
+          .cars-card-content h4 {
+            font-size: 1.1rem !important;
+            margin-bottom: 1rem !important;
+          }
+
+          /* Content text adjustments */
+          .cars-card-content p {
+            font-size: 0.9rem !important;
+            line-height: 1.5 !important;
+            margin-bottom: 1.5rem !important;
+          }
+
+          /* Button adjustments */
+          .cars-card-content button {
+            padding: 0.75rem 1rem !important;
+            font-size: 0.85rem !important;
+          }
+
+          /* Price badge adjustments */
+          .cars-card-content > div:first-child > div:last-child {
+            top: 15px !important;
+            left: 15px !important;
+            padding: 6px 10px !important;
+          }
+
+          .cars-card-content
+            > div:first-child
+            > div:last-child
+            > div:first-child {
+            font-size: 1rem !important;
+          }
+
+          .cars-card-content
+            > div:first-child
+            > div:last-child
+            > div:last-child {
+            font-size: 0.7rem !important;
+          }
+
+          /* Hide navigation arrows on mobile */
+          .cars-nav-arrow {
+            display: none !important;
+          }
+
+          /* Hide indicators on mobile */
+          .cars-indicators {
+            display: none !important;
+          }
+
+          /* Loading cards */
+          .cars-loading-card > div {
+            padding: 1.5rem !important;
+            border-radius: 12px !important;
+          }
+        }
+
+        @media (max-width: 576px) {
+          /* Section title */
+          h2 {
+            font-size: 2rem !important;
+            margin-bottom: 15px !important;
+          }
+
+          /* Section description */
+          p {
+            font-size: 1rem !important;
+          }
+
+          /* Card image smaller on very small screens */
+          .cars-card-content img {
+            height: 180px !important;
+          }
+
+          /* More compact content */
+          .cars-card-content > div:last-child {
+            padding: 1.25rem !important;
+          }
+
+          .cars-card-content h4 {
+            font-size: 1rem !important;
+            line-height: 1.3 !important;
+          }
+
+          .cars-card-content p {
+            font-size: 0.85rem !important;
+          }
+
+          .cars-card-content button {
+            padding: 0.6rem 0.8rem !important;
+            font-size: 0.8rem !important;
+            border-radius: 6px !important;
+          }
+
+          /* Price badge even smaller */
+          .cars-card-content > div:first-child > div:last-child {
+            padding: 5px 8px !important;
+          }
+
+          .cars-card-content
+            > div:first-child
+            > div:last-child
+            > div:first-child {
+            font-size: 0.9rem !important;
+          }
+
+          .cars-card-content
+            > div:first-child
+            > div:last-child
+            > div:last-child {
+            font-size: 0.65rem !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          /* Even more compact for very small devices */
+          .cars-card-content {
+            border-radius: 10px !important;
+          }
+
+          .cars-card-content img {
+            height: 160px !important;
+          }
+
+          .cars-card-content > div:last-child {
+            padding: 1rem !important;
+          }
+
+          .cars-card-content h4 {
+            font-size: 0.95rem !important;
+            margin-bottom: 0.75rem !important;
+          }
+
+          .cars-card-content p {
+            font-size: 0.8rem !important;
+            margin-bottom: 1rem !important;
+          }
+
+          /* View All button adjustments */
+          button:last-child {
+            padding: 10px 20px !important;
+            font-size: 0.9rem !important;
+            border-radius: 6px !important;
+          }
+        }
+
+        /* Override inline styles for mobile */
+        @media (max-width: 768px) {
+          .cars-card-item {
+            flex: none !important;
+            max-width: 100% !important;
+          }
+        }
+      `}</style>
     </section>
   );
 };

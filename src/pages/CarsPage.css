@@ -1,10 +1,20 @@
+/* Tropical Blue Theme - CarsPage.css */
 .cars-page {
   min-height: 100vh;
-  background-color: #fff;
+  background: linear-gradient(135deg, #e6f3ff 0%, #f0f8ff 100%);
 }
 
 .cars-hero {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+  background: linear-gradient(rgba(0, 119, 190, 0.8), rgba(74, 144, 226, 0.7)),
+    url("/images/background/subheader.jpg");
+  background-size: cover;
+  background-position: center;
+  padding: 120px 0 80px;
+  color: white;
+  text-align: center;
+}
+.cars-hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3)),
     url("/images/background/subheader.jpg");
   background-size: cover;
   background-position: center;
@@ -17,12 +27,14 @@
   font-size: 4rem;
   font-weight: 700;
   margin: 0 0 10px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .cars-hero p {
   font-size: 1.2rem;
   margin: 0;
-  opacity: 0.9;
+  opacity: 0.95;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .container {
@@ -39,11 +51,11 @@
 }
 
 .filters-sidebar {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(30, 203, 21, 0.15);
-  border: 1px solid rgba(30, 203, 21, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 119, 190, 0.15);
+  border: 1px solid rgba(0, 119, 190, 0.1);
   height: fit-content;
   position: sticky;
   top: 20px;
@@ -56,7 +68,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #1ecb15, #179510);
+  background: linear-gradient(90deg, #0077be, #4a90e2);
   border-radius: 12px 12px 0 0;
 }
 
@@ -66,20 +78,20 @@
   align-items: center;
   margin-bottom: 25px;
   padding-bottom: 15px;
-  border-bottom: 2px solid rgba(30, 203, 21, 0.1);
+  border-bottom: 2px solid rgba(0, 119, 190, 0.1);
 }
 
 .filters-header h2 {
   margin: 0;
-  color: #179510;
+  color: #0077be;
   font-size: 1.4rem;
   font-weight: 700;
 }
 
 .clear-filters-btn {
   background: transparent;
-  border: 1px solid #1ecb15;
-  color: #1ecb15;
+  border: 1px solid #4a90e2;
+  color: #4a90e2;
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 0.8rem;
@@ -89,12 +101,12 @@
 }
 
 .clear-filters-btn:hover {
-  background: #1ecb15;
+  background: #4a90e2;
   color: white;
 }
 
 .clear-filters-btn.secondary {
-  background: linear-gradient(135deg, #1ecb15, #179510);
+  background: linear-gradient(135deg, #4a90e2, #0077be);
   color: white;
   padding: 12px 20px;
   font-size: 1rem;
@@ -103,21 +115,21 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(30, 203, 21, 0.3);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .clear-filters-btn.secondary:hover {
-  background: linear-gradient(135deg, #179510, #0d6b0d);
+  background: linear-gradient(135deg, #0077be, #2e86c1);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(30, 203, 21, 0.4);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
 }
 
 .filter-section {
   margin-bottom: 30px;
   padding-bottom: 25px;
-  border-bottom: 1px solid rgba(30, 203, 21, 0.1);
+  border-bottom: 1px solid rgba(0, 119, 190, 0.1);
   transition: all 0.3s ease;
   position: relative;
 }
@@ -125,14 +137,14 @@
 .filter-section:hover {
   background: linear-gradient(
     135deg,
-    rgba(30, 203, 21, 0.05) 0%,
-    rgba(23, 149, 16, 0.03) 100%
+    rgba(74, 144, 226, 0.05) 0%,
+    rgba(0, 119, 190, 0.03) 100%
   );
   border-radius: 8px;
   padding: 15px;
   margin: -15px;
   margin-bottom: 15px;
-  border-left: 3px solid #1ecb15;
+  border-left: 3px solid #4a90e2;
 }
 
 .filter-section:last-child {
@@ -144,7 +156,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 15px;
-  color: #179510;
+  color: #0077be;
   position: relative;
   display: flex;
   align-items: center;
@@ -155,7 +167,7 @@
   content: "";
   width: 4px;
   height: 18px;
-  background: linear-gradient(135deg, #1ecb15, #179510);
+  background: linear-gradient(135deg, #4a90e2, #0077be);
   border-radius: 2px;
 }
 
@@ -177,23 +189,23 @@
 }
 
 .filter-checkbox:hover {
-  color: #1ecb15;
-  background: rgba(30, 203, 21, 0.05);
+  color: #4a90e2;
+  background: rgba(74, 144, 226, 0.05);
   padding-left: 8px;
 }
 
 .filter-checkbox input[type="checkbox"] {
   margin-right: 8px;
-  accent-color: #1ecb15;
+  accent-color: #4a90e2;
   width: 16px;
   height: 16px;
-  border: 2px solid #1ecb15;
+  border: 2px solid #4a90e2;
   border-radius: 3px;
 }
 
 .filter-checkbox input[type="checkbox"]:checked {
-  background: #1ecb15;
-  border-color: #179510;
+  background: #4a90e2;
+  border-color: #0077be;
 }
 
 .price-range {
@@ -210,19 +222,19 @@
 
 .price-inputs input {
   padding: 8px 12px;
-  border: 2px solid rgba(30, 203, 21, 0.2);
+  border: 2px solid rgba(74, 144, 226, 0.2);
   border-radius: 6px;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-  background: rgba(30, 203, 21, 0.02);
+  background: rgba(74, 144, 226, 0.02);
   color: #333 !important;
 }
 
 .price-inputs input:focus {
   outline: none;
-  border-color: #1ecb15;
-  box-shadow: 0 0 0 3px rgba(30, 203, 21, 0.15);
-  background: rgba(30, 203, 21, 0.05);
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+  background: rgba(74, 144, 226, 0.05);
 }
 
 .slider-container {
@@ -230,12 +242,12 @@
   height: 8px;
   background: linear-gradient(
     90deg,
-    rgba(30, 203, 21, 0.1),
-    rgba(23, 149, 16, 0.1)
+    rgba(74, 144, 226, 0.1),
+    rgba(0, 119, 190, 0.1)
   );
   border-radius: 4px;
   margin-bottom: 10px;
-  border: 1px solid rgba(30, 203, 21, 0.15);
+  border: 1px solid rgba(74, 144, 226, 0.15);
 }
 
 .slider {
@@ -254,28 +266,28 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1ecb15, #179510);
+  background: linear-gradient(135deg, #4a90e2, #0077be);
   cursor: pointer;
   pointer-events: all;
   border: 3px solid white;
-  box-shadow: 0 3px 8px rgba(30, 203, 21, 0.4);
+  box-shadow: 0 3px 8px rgba(74, 144, 226, 0.4);
   transition: all 0.2s ease;
 }
 
 .slider::-webkit-slider-thumb:hover {
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(30, 203, 21, 0.6);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.6);
 }
 
 .slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1ecb15, #179510);
+  background: linear-gradient(135deg, #4a90e2, #0077be);
   cursor: pointer;
   pointer-events: all;
   border: 3px solid white;
-  box-shadow: 0 3px 8px rgba(30, 203, 21, 0.4);
+  box-shadow: 0 3px 8px rgba(74, 144, 226, 0.4);
 }
 
 .price-range-display {
@@ -283,12 +295,12 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
-  color: #179510;
+  color: #0077be;
   font-weight: 600;
-  background: rgba(30, 203, 21, 0.05);
+  background: rgba(74, 144, 226, 0.05);
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid rgba(30, 203, 21, 0.1);
+  border: 1px solid rgba(74, 144, 226, 0.1);
 }
 
 .cars-grid {
@@ -313,7 +325,7 @@
 
 .car-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(30, 203, 21, 0.15);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.15);
 }
 
 .car-card.loading {
@@ -513,7 +525,7 @@
 .period-price {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1ecb15;
+  color: #4a90e2;
 }
 
 .price-label {
@@ -529,7 +541,7 @@
 }
 
 .rent-btn {
-  background: linear-gradient(135deg, #1ecb15, #179510);
+  background: linear-gradient(135deg, #4a90e2, #0077be);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -537,14 +549,14 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(30, 203, 21, 0.3);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
   white-space: nowrap;
 }
 
 .rent-btn:hover {
-  background: linear-gradient(135deg, #179510, #1ecb15);
+  background: linear-gradient(135deg, #0077be, #2e86c1);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(30, 203, 21, 0.4);
+  box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
 }
 
 .error-container {
@@ -569,7 +581,7 @@
 }
 
 .retry-btn {
-  background: #1ecb15;
+  background: #4a90e2;
   color: white;
   border: none;
   border-radius: 6px;
@@ -580,7 +592,7 @@
 }
 
 .retry-btn:hover {
-  background: #179510;
+  background: #0077be;
 }
 
 .no-results {
@@ -625,17 +637,17 @@
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #1ecb15, #179510);
+  background: linear-gradient(135deg, #4a90e2, #0077be);
   color: white;
-  border-color: #1ecb15;
-  box-shadow: 0 2px 8px rgba(30, 203, 21, 0.3);
+  border-color: #4a90e2;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
 }
 
 .pagination-btn.active {
-  background: linear-gradient(135deg, #1ecb15, #179510);
+  background: linear-gradient(135deg, #4a90e2, #0077be);
   color: white;
-  border-color: #1ecb15;
-  box-shadow: 0 2px 8px rgba(30, 203, 21, 0.3);
+  border-color: #4a90e2;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
 }
 
 .pagination-btn:disabled {
@@ -649,9 +661,11 @@
   padding: 10px 5px;
   color: #666;
 }
+
 .hero-section {
   color: white;
 }
+
 .results-summary {
   text-align: center;
   margin-top: 20px;
@@ -663,78 +677,6 @@
   color: #666;
   font-size: 0.9rem;
   margin: 0;
-}
-
-@media (max-width: 768px) {
-  .car-card {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .car-image {
-    width: 100%;
-    height: 200px;
-  }
-}
-
-@media (max-width: 768px) {
-  .cars-content {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .cars-hero h1 {
-    font-size: 2.5rem;
-  }
-
-  .cars-hero p {
-    font-size: 1rem;
-  }
-
-  .filters-sidebar {
-    padding: 20px;
-    position: static;
-  }
-
-  .pagination {
-    flex-wrap: wrap;
-    gap: 5px;
-  }
-
-  .pagination-btn {
-    padding: 8px 12px;
-    font-size: 0.9rem;
-  }
-
-  .car-price {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 15px;
-  }
-
-  .pricing-periods {
-    gap: 10px;
-  }
-
-  .pricing-item {
-    padding: 8px 0;
-    border-bottom: 1px solid #e9ecef;
-  }
-
-  .period-label {
-    font-size: 0.9rem;
-  }
-
-  .period-price {
-    font-size: 1.2rem;
-  }
-
-  .rent-btn {
-    width: 100%;
-    text-align: center;
-    padding: 12px 20px;
-    font-size: 1rem;
-  }
 }
 
 /* Date picker styles */
@@ -772,7 +714,7 @@
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #1ecb15;
+  color: #4a90e2;
   pointer-events: auto;
   z-index: 3;
   background: white;
@@ -780,17 +722,17 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .date-input-wrapper:hover .calendar-icon {
-  color: #179510;
+  color: #0077be;
   transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 2px 6px rgba(30, 203, 21, 0.3);
+  box-shadow: 0 2px 6px rgba(74, 144, 226, 0.3);
 }
 
 .calendar-icon:hover {
-  background: #f0f8ff;
+  background: #e6f3ff;
   transform: translateY(-50%) scale(1.15);
 }
 
@@ -854,16 +796,16 @@
 .date-input-group input[type="datetime-local"]:focus,
 .date-input-group input[type="text"]:focus {
   outline: none;
-  border-color: #1ecb15;
+  border-color: #4a90e2;
   background: white;
-  box-shadow: 0 0 0 3px rgba(30, 203, 21, 0.15);
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
   transform: translateY(-1px);
 }
 
 .date-input-group input[type="date"]:hover,
 .date-input-group input[type="datetime-local"]:hover,
 .date-input-group input[type="text"]:hover {
-  border-color: #1ecb15;
+  border-color: #4a90e2;
   background: white;
 }
 
@@ -899,7 +841,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 20px;
-  background: linear-gradient(135deg, #1ecb15, #179510);
+  background: linear-gradient(135deg, #4a90e2, #0077be);
   color: white;
   border: none;
   border-radius: 12px;
@@ -907,14 +849,14 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(30, 203, 21, 0.3);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
   gap: 10px;
 }
 
 .filter-toggle-btn:hover {
-  background: linear-gradient(135deg, #179510, #1ecb15);
+  background: linear-gradient(135deg, #0077be, #2e86c1);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(30, 203, 21, 0.4);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
 }
 
 .toggle-arrow {
@@ -941,11 +883,11 @@
   .filters-sidebar {
     display: none;
     position: static;
-    background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(30, 203, 21, 0.15);
-    border: 1px solid rgba(30, 203, 21, 0.1);
+    box-shadow: 0 8px 25px rgba(0, 119, 190, 0.15);
+    border: 1px solid rgba(0, 119, 190, 0.1);
     height: fit-content;
     transition: all 0.3s ease;
     animation: slideDown 0.3s ease;
@@ -961,12 +903,12 @@
     align-items: center;
     margin-bottom: 25px;
     padding-bottom: 15px;
-    border-bottom: 2px solid rgba(30, 203, 21, 0.1);
+    border-bottom: 2px solid rgba(0, 119, 190, 0.1);
   }
 
   .filters-header h2 {
     margin: 0;
-    color: #179510;
+    color: #0077be;
     font-size: 1.4rem;
     font-weight: 700;
     cursor: default;

@@ -187,7 +187,7 @@ const NewsLeftGrid = () => {
     <div className="news-page">
       {/* Header */}
       <Header />
-      
+
       {/* Back to Home Button */}
       <BackToHomeButton />
 
@@ -218,7 +218,14 @@ const NewsLeftGrid = () => {
           <div className="container">
             <div className="row">
               <div className="col-md-12">
-                <h1 style={{ fontSize: "3rem", fontWeight: "bold", margin: 0 }}>
+                <h1
+                  style={{
+                    fontSize: "3rem",
+                    color: "white",
+                    fontWeight: "bold",
+                    margin: 0,
+                  }}
+                >
                   Haberler
                 </h1>
               </div>
@@ -233,25 +240,29 @@ const NewsLeftGrid = () => {
           {/* Blog & News Header */}
           <div className="row" style={{ marginBottom: "50px" }}>
             <div className="col-12 text-center">
-              <h2 style={{ 
-                fontSize: "2.5rem", 
-                fontWeight: "700", 
-                color: "#2c3e50",
-                marginBottom: "15px"
-              }}>
+              <h2
+                style={{
+                  fontSize: "2.5rem",
+                  fontWeight: "700",
+                  color: "#2c3e50",
+                  marginBottom: "15px",
+                }}
+              >
                 Blog & News
               </h2>
-              <p style={{ 
-                fontSize: "1.1rem", 
-                color: "#6c757d",
-                maxWidth: "600px",
-                margin: "0 auto"
-              }}>
+              <p
+                style={{
+                  fontSize: "1.1rem",
+                  color: "#6c757d",
+                  maxWidth: "600px",
+                  margin: "0 auto",
+                }}
+              >
                 Son haberler, blog yazıları ve güncellemelerden haberdar olun
               </p>
             </div>
           </div>
-          
+
           <div className="row">
             {/* Left Sidebar */}
             <div className="col-lg-4">
@@ -404,84 +415,6 @@ const NewsLeftGrid = () => {
                   ))}
                 </div>
               </div>
-
-              {/* Testimonials Widget */}
-              <div className="widget">
-                <h4
-                  style={{
-                    fontSize: "1.4rem",
-                    fontWeight: "600",
-                    marginBottom: "20px",
-                    color: "#333",
-                  }}
-                >
-                  Testimonials
-                </h4>
-                <div
-                  style={{
-                    width: "50px",
-                    height: "3px",
-                    backgroundColor: "#1ECB15",
-                    marginBottom: "25px",
-                  }}
-                ></div>
-                <div>
-                  {testimonials.slice(0, 1).map((testimonial) => (
-                    <div
-                      key={testimonial.id}
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        padding: "25px",
-                        borderRadius: "10px",
-                        border: "1px solid #e9ecef",
-                      }}
-                    >
-                      <h4
-                        style={{
-                          fontSize: "1.1rem",
-                          fontWeight: "600",
-                          marginBottom: "15px",
-                          color: "#333",
-                        }}
-                      >
-                        Excellent Service!
-                      </h4>
-                      <p
-                        style={{
-                          fontSize: "0.9rem",
-                          lineHeight: "1.6",
-                          color: "#666",
-                          marginBottom: "20px",
-                        }}
-                      >
-                        {testimonial.text}
-                      </p>
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <img
-                          src={testimonial.image}
-                          alt={testimonial.name}
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            borderRadius: "50%",
-                            objectFit: "cover",
-                            marginRight: "15px",
-                          }}
-                        />
-                        <span
-                          style={{
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            color: "#333",
-                          }}
-                        >
-                          {testimonial.name}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
 
             {/* Main Content Area */}
@@ -507,7 +440,6 @@ const NewsLeftGrid = () => {
                 </div>
               ) : (
                 <>
-
                   <div className="row">
                     {blogs.map((article) => {
                       return (

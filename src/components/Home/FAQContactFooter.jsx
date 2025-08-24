@@ -1,4 +1,4 @@
-// src/components/Home/FAQContactFooter.jsx
+// src/components/Home/FAQContactFooter.jsx - Blue Theme
 import React, { useState } from "react";
 
 const FAQContactFooter = () => {
@@ -79,7 +79,7 @@ const FAQContactFooter = () => {
                       boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
                       border:
                         openFAQ === faq.id
-                          ? "2px solid #00ff88"
+                          ? "2px solid #4A90E2"
                           : "2px solid transparent",
                       transition: "all 0.3s ease",
                     }}
@@ -105,7 +105,7 @@ const FAQContactFooter = () => {
                         style={{
                           width: "30px",
                           height: "30px",
-                          backgroundColor: "#00ff88",
+                          backgroundColor: "#4A90E2",
                           borderRadius: "50%",
                           display: "flex",
                           alignItems: "center",
@@ -158,7 +158,7 @@ const FAQContactFooter = () => {
                       boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
                       border:
                         openFAQ === faq.id
-                          ? "2px solid #00ff88"
+                          ? "2px solid #4A90E2"
                           : "2px solid transparent",
                       transition: "all 0.3s ease",
                     }}
@@ -184,7 +184,7 @@ const FAQContactFooter = () => {
                         style={{
                           width: "30px",
                           height: "30px",
-                          backgroundColor: "#00ff88",
+                          backgroundColor: "#4A90E2",
                           borderRadius: "50%",
                           display: "flex",
                           alignItems: "center",
@@ -226,8 +226,13 @@ const FAQContactFooter = () => {
         </div>
       </section>
 
-      {/* Green Contact Section */}
-      <section style={{ backgroundColor: "#00ff88", padding: "60px 0" }}>
+      {/* Blue Contact Section */}
+      <section
+        style={{
+          background: "linear-gradient(135deg, #4A90E2 0%, #0077BE 100%)",
+          padding: "60px 0",
+        }}
+      >
         <div className="container">
           <div className="row align-items-center">
             {/* Sol Taraf - Text */}
@@ -249,6 +254,7 @@ const FAQContactFooter = () => {
                   fontWeight: "700",
                   lineHeight: "1.3",
                   margin: "0",
+                  textShadow: "0 2px 4px rgba(0,0,0,0.2)",
                 }}
               >
                 Rentaly customer care
@@ -286,6 +292,7 @@ const FAQContactFooter = () => {
                     fontSize: "2.5rem",
                     fontWeight: "700",
                     margin: "0 0 20px 0",
+                    textShadow: "0 2px 4px rgba(0,0,0,0.2)",
                   }}
                 >
                   0 (536) 603 9907
@@ -293,7 +300,7 @@ const FAQContactFooter = () => {
                 <button
                   style={{
                     backgroundColor: "white",
-                    color: "#00ff88",
+                    color: "#4A90E2",
                     border: "none",
                     borderRadius: "8px",
                     padding: "12px 30px",
@@ -301,14 +308,17 @@ const FAQContactFooter = () => {
                     fontWeight: "600",
                     cursor: "pointer",
                     transition: "all 0.3s ease",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = "rgba(255,255,255,0.9)";
+                    e.target.style.backgroundColor = "rgba(255,255,255,0.95)";
                     e.target.style.transform = "translateY(-2px)";
+                    e.target.style.boxShadow = "0 6px 20px rgba(0,0,0,0.2)";
                   }}
                   onMouseLeave={(e) => {
                     e.target.style.backgroundColor = "white";
                     e.target.style.transform = "translateY(0)";
+                    e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
                   }}
                 >
                   Bizi Arayın
@@ -409,7 +419,7 @@ const FAQContactFooter = () => {
                         fontSize: "0.95rem",
                         transition: "color 0.3s ease",
                       }}
-                      onMouseEnter={(e) => (e.target.style.color = "#00ff88")}
+                      onMouseEnter={(e) => (e.target.style.color = "#4A90E2")}
                       onMouseLeave={(e) => (e.target.style.color = "#bbb")}
                     >
                       {link}
@@ -455,7 +465,7 @@ const FAQContactFooter = () => {
                       transition: "all 0.3s ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = "#00ff88";
+                      e.target.style.backgroundColor = "#4A90E2";
                       e.target.style.transform = "translateY(-3px)";
                     }}
                     onMouseLeave={(e) => {

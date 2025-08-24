@@ -118,7 +118,7 @@ const HeroSection = () => {
           padding: "50px",
           minHeight: "90vh",
           position: "relative",
-          backgroundImage: "url(/images/background/1.jpg)",
+          backgroundImage: "url(/images/background/16.jpg)",
           backgroundSize: "cover",
           backgroundPosition: "center center",
           backgroundAttachment: "fixed",
@@ -174,7 +174,7 @@ const HeroSection = () => {
                   Size en uygun
                   <span
                     style={{
-                      color: "#00ff88",
+                      color: "#db6161ff",
                       padding: "10px ",
                       marginTop: "20px",
                     }}
@@ -193,8 +193,8 @@ const HeroSection = () => {
                     margin: "0 auto 30px auto",
                   }}
                 >
-                  Araçlarmızın Tamamı Kaskoludur. Her Bütçeye Uygun Araç
-                  Kiralama Hizmeti
+                  ANTALYA YILLIK ARAÇ KİRALAMA | FİLO KİRALAMA ANTALYA
+                  AYLIK ARAÇ KİRALAMA
                 </p>
               </div>
 
@@ -385,7 +385,7 @@ const HeroSection = () => {
                           <button
                             type="submit"
                             style={{
-                              backgroundColor: "#00ff88",
+                              backgroundColor: "#667eea",
                               color: "white",
                               border: "none",
                               borderRadius: "50px",
@@ -394,22 +394,22 @@ const HeroSection = () => {
                               fontWeight: "700",
                               cursor: "pointer",
                               transition: "all 0.3s ease",
-                              boxShadow: "0 4px 15px rgba(0, 255, 136, 0.4)",
+                              boxShadow: "0 4px 15px rgba(102, 126, 234, 0.4)",
                               textTransform: "uppercase",
                               letterSpacing: "1px",
                               minWidth: "250px",
                             }}
                             onMouseEnter={(e) => {
-                              e.target.style.backgroundColor = "#00cc6a";
+                              e.target.style.backgroundColor = "#5a67d8";
                               e.target.style.transform = "translateY(-2px)";
                               e.target.style.boxShadow =
-                                "0 6px 20px rgba(0, 255, 136, 0.6)";
+                                "0 6px 20px rgba(102, 126, 234, 0.6)";
                             }}
                             onMouseLeave={(e) => {
-                              e.target.style.backgroundColor = "#00ff88";
+                              e.target.style.backgroundColor = "#667eea";
                               e.target.style.transform = "translateY(0)";
                               e.target.style.boxShadow =
-                                "0 4px 15px rgba(0, 255, 136, 0.4)";
+                                "0 4px 15px rgba(102, 126, 234, 0.4)";
                             }}
                           >
                             🚗 Araç Kiralama
@@ -486,7 +486,7 @@ const HeroSection = () => {
                           style={{
                             width: "60px",
                             height: "60px",
-                            backgroundColor: "#00ff88",
+                            backgroundColor: "#667eea",
                             borderRadius: "50%",
                             display: "flex",
                             alignItems: "center",
@@ -494,7 +494,7 @@ const HeroSection = () => {
                             margin: "0 auto 15px auto",
                             fontSize: "1.5rem",
                             fontWeight: "bold",
-                            boxShadow: "0 4px 15px rgba(0, 255, 136, 0.4)",
+                            boxShadow: "0 4px 15px rgba(0, 94, 255, 0.4)",
                           }}
                         >
                           {step.number}

@@ -722,6 +722,39 @@ const AdminEditCar = () => {
         }
       }
 
+      // Upload gallery images to Cloudinary if any new files were selected
+      let processedGallery = [];
+      
+      if (galleryImages && galleryImages.length > 0) {
+        console.log("🔄 Processing gallery images...");
+        setUploadingImages(true);
+        
+        for (const galleryImage of galleryImages) {
+          if (galleryImage.file) {
+            // New file needs to be uploaded
+            try {
+              console.log("🔄 Uploading gallery image to Cloudinary...", galleryImage.file.name);
+              const uploadResponse = await adminAPI.uploadCarImage(galleryImage.file);
+              if (uploadResponse.data && uploadResponse.data.imageUrl) {
+                processedGallery.push({ url: uploadResponse.data.imageUrl });
+                console.log("✅ Gallery image uploaded successfully:", uploadResponse.data.imageUrl);
+              } else {
+                throw new Error("Invalid gallery upload response");
+              }
+            } catch (galleryError) {
+              console.error("❌ Gallery image upload failed:", galleryError);
+              setError("Failed to upload gallery image. Please try again.");
+              return;
+            }
+          } else if (galleryImage.url && !galleryImage.url.startsWith("data:")) {
+            // Existing URL, keep it
+            processedGallery.push({ url: galleryImage.url });
+          }
+        }
+        
+        setUploadingImages(false);
+      }
+
       // Prepare data for API (SAME STRUCTURE AS BLOG)
       const saveData = {
         ...formData,
@@ -732,10 +765,8 @@ const AdminEditCar = () => {
           url: mainImageUrl,
           alt: formData.mainImage?.alt || `${formData.brand} ${formData.model}`
         } : null,
-        // Keep gallery for now (simplified)
-        gallery: galleryImages
-          .filter((img) => img.url && !img.url.startsWith("data:"))
-          .map((img) => ({ url: img.url })),
+        // Use processed gallery images
+        gallery: processedGallery,
         // Add seasonal pricing if exists
         seasonalPricing: scheduledPricing.map((pricing) => ({
           startDate: pricing.startDate,

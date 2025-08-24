@@ -1,5 +1,6 @@
 // src/components/Home/MovingTextSlider.jsx
 import React from "react";
+import "../../assets/css/MovingTextSlider.css";
 const MovingTextSlider = () => {
   const carTypes = [
     "EK İŞİMİZ DEĞİL TEK İŞİMİZ",

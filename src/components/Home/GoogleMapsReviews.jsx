@@ -47,14 +47,13 @@ const GoogleMapsReviews = () => {
               {/* Google Maps iframe */}
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d797.7384654839356!2d30.735125999999998!3d36.891452!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14c385ced440d121%3A0x6d4faf414ac05dee!2sM%C4%B0TCAR%20RENTAL!5e0!3m2!1str!2str!4v1755206717251!5m2!1str!2str"
-                allowfullscreen=""
+                allowFullScreen=""
                 loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
+                allow="accelerometer; gyroscope; camera; microphone; fullscreen"
+                referrerPolicy="no-referrer-when-downgrade"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
-                allowFullScreen=""
-                referrerPolicy="no-referrer-when-downgrade"
                 title="MITCAR RENTAL Konumu"
               ></iframe>
             </div>
@@ -207,7 +206,7 @@ const GoogleMapsReviews = () => {
           <div className="col-12 text-center">
             <div
               style={{
-                backgroundColor: "#00ff88",
+                backgroundColor: "#00aeffff",
                 borderRadius: "10px",
                 padding: "20px",
                 color: "white",

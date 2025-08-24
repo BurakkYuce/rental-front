@@ -84,6 +84,20 @@ const imageUploadFunctions = {
     });
   },
 
+  // Çoklu resim yükleme
+  uploadCarImages: async (files) => {
+    const formData = new FormData();
+    files.forEach((file, index) => {
+      formData.append("images", file);
+    });
+
+    return api.post("/images/upload-multiple", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+
   // Resim silme
   deleteCarImage: (imagePath) => {
     return api.delete("/images/delete", {

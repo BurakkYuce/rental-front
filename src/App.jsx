@@ -21,6 +21,9 @@ import AdminBookings from "./pages/admin/AdminBookings.jsx";
 import TransferZones from "./pages/admin/TransferZones.jsx";
 import TransferService from "./pages/TransferService.jsx";
 import DebugAuth from "./pages/DebugAuth.jsx";
+
+// Components
+import FloatingContactButton from "./components/FloatingContactButton.jsx";
 const App = () => {
   return (
     <CurrencyProvider>
@@ -101,6 +104,9 @@ const App = () => {
           />
           {/* Add more routes as needed */}
         </Routes>
+        
+        {/* Floating Contact Button - Available on all pages */}
+        <FloatingContactButton />
       </BrowserRouter>
     </CurrencyProvider>
   );

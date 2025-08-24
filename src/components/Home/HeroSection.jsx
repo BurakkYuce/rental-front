@@ -5,13 +5,15 @@ import { useNavigate } from "react-router-dom";
 // Location options for pickup and dropoff
 const locationOptions = [
   "Antalya Havalimanı (AYT)",
-  "Antalya Belek Otel Teslimi",
+  "Antalya Belek Otel Bölgesi",
+  "Antalya Kadriye Otel Bölgesi",
   "Antalya Merkez Ofis",
   "Antalya Otogar",
   "Antalya Lara",
   "Antalya Konyaaltı",
   "Antalya Kemer",
   "Antalya Alanya",
+  "Dalaman Havalimanı",
 ];
 
 const HeroSection = () => {
@@ -161,6 +163,28 @@ const HeroSection = () => {
           >
             <div className="row align-items-center">
               <div className="col-lg-12 text-center text-light mb-5">
+                {/* Logo */}
+                <div
+                  style={{
+                    marginBottom: "30px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <img
+                    src="/images/logo/UMİT-2.png"
+                    alt="Ümit a rent car"
+                    className="hero-section-logo"
+                    style={{
+                      maxWidth: "300px",
+                      width: "100%",
+                      height: "auto",
+                      transition: "transform 0.3 ease",
+                    }}
+                  />
+                </div>
+
                 <h1
                   style={{
                     color: "white",
@@ -171,17 +195,7 @@ const HeroSection = () => {
                     lineHeight: "1.2",
                   }}
                 >
-                  Size en uygun
-                  <span
-                    style={{
-                      color: "#db6161ff",
-                      padding: "10px ",
-                      marginTop: "20px",
-                    }}
-                  >
-                    aracı
-                  </span>
-                  bulalım.
+                  Size en uygun aracı bulalım.
                 </h1>
                 <p
                   style={{
@@ -385,7 +399,7 @@ const HeroSection = () => {
                           <button
                             type="submit"
                             style={{
-                              backgroundColor: "#667eea",
+                              backgroundColor: "#002efcff",
                               color: "white",
                               border: "none",
                               borderRadius: "50px",
@@ -400,13 +414,13 @@ const HeroSection = () => {
                               minWidth: "250px",
                             }}
                             onMouseEnter={(e) => {
-                              e.target.style.backgroundColor = "#5a67d8";
+                              e.target.style.backgroundColor = "#002efcff";
                               e.target.style.transform = "translateY(-2px)";
                               e.target.style.boxShadow =
                                 "0 6px 20px rgba(102, 126, 234, 0.6)";
                             }}
                             onMouseLeave={(e) => {
-                              e.target.style.backgroundColor = "#667eea";
+                              e.target.style.backgroundColor = "#002efcff";
                               e.target.style.transform = "translateY(0)";
                               e.target.style.boxShadow =
                                 "0 4px 15px rgba(102, 126, 234, 0.4)";
@@ -419,7 +433,7 @@ const HeroSection = () => {
                             type="button"
                             onClick={() => navigate("/transfer-service")}
                             style={{
-                              backgroundColor: "#667eea",
+                              backgroundColor: "#002efcff",
                               color: "white",
                               border: "none",
                               borderRadius: "50px",
@@ -434,13 +448,13 @@ const HeroSection = () => {
                               minWidth: "250px",
                             }}
                             onMouseEnter={(e) => {
-                              e.target.style.backgroundColor = "#5a67d8";
+                              e.target.style.backgroundColor = "#002efcff";
                               e.target.style.transform = "translateY(-2px)";
                               e.target.style.boxShadow =
                                 "0 6px 20px rgba(102, 126, 234, 0.6)";
                             }}
                             onMouseLeave={(e) => {
-                              e.target.style.backgroundColor = "#667eea";
+                              e.target.style.backgroundColor = "#002efcff";
                               e.target.style.transform = "translateY(0)";
                               e.target.style.boxShadow =
                                 "0 4px 15px rgba(102, 126, 234, 0.4)";
@@ -486,7 +500,7 @@ const HeroSection = () => {
                           style={{
                             width: "60px",
                             height: "60px",
-                            backgroundColor: "#667eea",
+                            backgroundColor: "#002efcff",
                             borderRadius: "50%",
                             display: "flex",
                             alignItems: "center",

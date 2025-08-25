@@ -31,26 +31,38 @@ const TransferService = () => {
   const capacityOptions = [
     {
       key: "capacity_1_4",
-      label: "1-4 Passengers",
-      description: "Sedan / Standard Car",
+      label: "1-4 Yolcu",
+      description: "Sedan / Standard Araba",
       icon: "🚗",
       maxPassengers: 4,
     },
     {
       key: "capacity_1_6",
-      label: "1-6 Passengers",
+      label: "1-6 Yolcu",
       description: "MPV / Minivan",
       icon: "🚐",
       maxPassengers: 6,
     },
     {
       key: "capacity_1_16",
-      label: "1-16 Passengers",
-      description: "Minibus / Coach",
+      label: "1-16 Yolcu",
+      description: "Minibüs",
       icon: "🚌",
       maxPassengers: 16,
     },
   ];
+
+  // Helper function to format date to Turkish format (DD/MM/YYYY)
+  const formatDateToTurkish = (dateString) => {
+    if (!dateString) return "";
+
+    const date = new Date(dateString + "T00:00:00"); // Add time to avoid timezone issues
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
 
   // Fetch transfer zones
   useEffect(() => {
@@ -110,7 +122,7 @@ const TransferService = () => {
     message += `Araç Tipi: ${selectedCapacityInfo?.label} - ${selectedCapacityInfo?.description}\n`;
     message += `Alış Yeri: ${contactForm.pickupLocation}\n`;
     message += `Varış Yeri: ${contactForm.dropoffLocation}\n`;
-    message += `Tarih: ${contactForm.date}\n`;
+    message += `Tarih: ${formatDateToTurkish(contactForm.date)}\n`;
     message += `Saat: ${contactForm.time}\n\n`;
 
     if (selectedZoneData) {
@@ -247,7 +259,7 @@ const TransferService = () => {
             <span className="sr-only">Loading...</span>
           </div>
           <p style={{ marginTop: "20px", color: "#666" }}>
-            Loading transfer services...
+            Transfer Hizmetimiz Yükleniyor
           </p>
         </div>
         <Footer />
@@ -281,12 +293,11 @@ const TransferService = () => {
                   marginBottom: "20px",
                 }}
               >
-                Transfer Services
+                Transfer Hizmetlerimiz
               </h1>
               <p style={{ fontSize: "1.2rem", opacity: 0.9, lineHeight: 1.6 }}>
-                Professional and reliable transfer services to your destination.
-                Comfortable vehicles with experienced drivers for all passenger
-                capacities.
+                Hedefinize profesyonel ve güvenilir transfer hizmetleri. Her
+                yolcu kapasitesine uygun, deneyimli şoförlü konforlu araçlar.
               </p>
             </div>
           </div>
@@ -305,10 +316,10 @@ const TransferService = () => {
                 marginBottom: "15px",
               }}
             >
-              Choose Your Vehicle
+              Aracınızı Seçin
             </h2>
             <p style={{ fontSize: "1.1rem", color: "#666" }}>
-              Select the vehicle type that best fits your group size
+              Size ve Grubunuza en uygun araç boyutunu seçin
             </p>
           </div>
 
@@ -363,7 +374,7 @@ const TransferService = () => {
                       }}
                     >
                       <i className="fa fa-users"></i>
-                      Max {option.maxPassengers} passengers
+                      Maksimum {option.maxPassengers} Yolcu
                     </div>
                     {selectedCapacity === option.key && (
                       <div style={{ marginTop: "15px" }}>
@@ -393,7 +404,7 @@ const TransferService = () => {
                 marginBottom: "15px",
               }}
             >
-              Destinations & Pricing
+              Varış Yeriniz & Fiyatlandırmalar
             </h2>
             <p style={{ fontSize: "1.1rem", color: "#666" }}>
               Pricing for {getSelectedCapacityInfo()?.label} -{" "}
@@ -509,7 +520,7 @@ const TransferService = () => {
             <h2
               style={{ fontSize: "2.5rem", fontWeight: "600", color: "#333" }}
             >
-              Why Choose Our Transfer Service?
+              Neden bizim Transfer Hizmetlerimizi seçmelisiniz?
             </h2>
           </div>
 
@@ -538,11 +549,11 @@ const TransferService = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  Professional Drivers
+                  Profesyonel Sürücüler
                 </h5>
                 <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Experienced, licensed drivers who know the local routes and
-                  speak multiple languages.
+                  Yerel güzergahları bilen ve birden fazla dil konuşabilen
+                  deneyimli, lisanslı sürücüler.
                 </p>
               </div>
             </div>
@@ -571,11 +582,11 @@ const TransferService = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  Reliable Service
+                  Güvenilir Hizmet
                 </h5>
                 <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Punctual pickups and drop-offs with real-time tracking and
-                  24/7 customer support.
+                  Gerçek zamanlı takip ve 7/24 müşteri desteğiyle zamanında
+                  teslim alma ve bırakma.
                 </p>
               </div>
             </div>
@@ -604,11 +615,11 @@ const TransferService = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  Comfortable Vehicles
+                  Konforlu Araçlar
                 </h5>
                 <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Modern, clean, and well-maintained vehicles with air
-                  conditioning and spacious interiors.
+                  Klimalı, ferah iç mekanlara sahip, modern, temiz ve bakımlı
+                  araçlar..
                 </p>
               </div>
             </div>
@@ -637,11 +648,11 @@ const TransferService = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  Easy Booking
+                  Kolay Rezervasyon
                 </h5>
                 <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Simple online booking process with instant confirmation and
-                  flexible payment options.
+                  Anında onay ve esnek ödeme seçenekleriyle basit çevrimiçi
+                  rezervasyon süreci.
                 </p>
               </div>
             </div>
@@ -663,7 +674,7 @@ const TransferService = () => {
                     marginBottom: "15px",
                   }}
                 >
-                  Book Your Transfer
+                  Transferinizi Rezerve Edin
                 </h2>
                 <p style={{ fontSize: "1.1rem", color: "#666" }}>
                   Bilgilerinizi doldurun ve WhatsApp üzerinden transfer
@@ -717,7 +728,7 @@ const TransferService = () => {
                         value={contactForm.name}
                         onChange={handleFormChange}
                         required
-                        placeholder="Burak Yüce"
+                        placeholder="John Doe"
                         style={{ padding: "12px" }}
                       />
                     </div>
@@ -735,7 +746,7 @@ const TransferService = () => {
                         value={contactForm.email}
                         onChange={handleFormChange}
                         required
-                        placeholder="20230808006@ogr.akdeniz.edu.tr"
+                        placeholder="example@domain.com"
                         style={{ padding: "12px" }}
                       />
                     </div>
@@ -756,7 +767,7 @@ const TransferService = () => {
                         value={contactForm.phone}
                         onChange={handleFormChange}
                         required
-                        placeholder="5530755678"
+                        placeholder="(555) 555 55 55"
                         style={{ padding: "12px" }}
                       />
                     </div>
@@ -835,7 +846,7 @@ const TransferService = () => {
                         className="form-label"
                         style={{ fontWeight: "600", color: "#333" }}
                       >
-                        Date *
+                        Tarih *
                       </label>
                       <input
                         type="date"
@@ -847,6 +858,11 @@ const TransferService = () => {
                         min={new Date().toISOString().split("T")[0]}
                         style={{ padding: "12px" }}
                       />
+                      {contactForm.date && (
+                        <small style={{ color: "#666", fontSize: "0.8rem" }}>
+                          Seçilen tarih: {formatDateToTurkish(contactForm.date)}
+                        </small>
+                      )}
                     </div>
                     <div className="col-md-6 mb-3">
                       <label

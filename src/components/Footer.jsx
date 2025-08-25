@@ -19,9 +19,9 @@ const Footer = () => {
               MITCAR RENTAL
             </h5>
             <p style={{ color: "#bdc3c7", lineHeight: 1.6 }}>
-              Professional car rental and transfer services in İzmir and
-              surrounding areas. Experience comfort and reliability with our
-              modern fleet and experienced drivers.
+              Antalya'da profesyonel araç kiralama ve transfer hizmetleri
+              çevredeki alanlar. Konforu ve güvenilirliği deneyimleyin modern
+              filo ve deneyimli sürücüler.
             </p>
             <div style={{ display: "flex", gap: "15px", marginTop: "20px" }}>
               <a
@@ -79,7 +79,7 @@ const Footer = () => {
                   href="#"
                   style={{ color: "#bdc3c7", textDecoration: "none" }}
                 >
-                  Long Term Rental
+                  Uzun Dönem Kiralama
                 </a>
               </li>
             </ul>
@@ -87,7 +87,7 @@ const Footer = () => {
 
           <div className="col-lg-3 col-md-6 mb-4">
             <h6 style={{ fontWeight: "600", marginBottom: "20px" }}>
-              Contact Info
+              İletişim Bilgileri
             </h6>
             <div style={{ color: "#bdc3c7" }}>
               <div
@@ -110,7 +110,7 @@ const Footer = () => {
                 }}
               >
                 <i className="fa fa-envelope"></i>
-                <span>contact@rentaly.com</span>
+                <span>info@mitcarrental.com</span>
               </div>
               <div
                 style={{
@@ -124,55 +124,15 @@ const Footer = () => {
                   className="fa fa-map-marker"
                   style={{ marginTop: "3px" }}
                 ></i>
-                <span>İzmir, Turkey</span>
+                <span>Antalya, Turkey</span>
               </div>
               <div
                 style={{ display: "flex", alignItems: "center", gap: "10px" }}
               >
                 <i className="fa fa-clock-o"></i>
-                <span>Mon - Fri: 08:00 - 18:00</span>
+                <span>Pztsi - Cuma: 08:00 - 18:00</span>
               </div>
             </div>
-          </div>
-
-          <div className="col-lg-3 col-md-6 mb-4">
-            <h6 style={{ fontWeight: "600", marginBottom: "20px" }}>
-              Quick Links
-            </h6>
-            <ul style={{ listStyle: "none", padding: 0 }}>
-              <li style={{ marginBottom: "8px" }}>
-                <Link
-                  to="/"
-                  style={{ color: "#bdc3c7", textDecoration: "none" }}
-                >
-                  Home
-                </Link>
-              </li>
-              <li style={{ marginBottom: "8px" }}>
-                <Link
-                  to="/cars"
-                  style={{ color: "#bdc3c7", textDecoration: "none" }}
-                >
-                  Our Fleet
-                </Link>
-              </li>
-              <li style={{ marginBottom: "8px" }}>
-                <Link
-                  to="/news"
-                  style={{ color: "#bdc3c7", textDecoration: "none" }}
-                >
-                  News & Blog
-                </Link>
-              </li>
-              <li style={{ marginBottom: "8px" }}>
-                <a
-                  href="#"
-                  style={{ color: "#bdc3c7", textDecoration: "none" }}
-                >
-                  About Us
-                </a>
-              </li>
-            </ul>
           </div>
         </div>
 

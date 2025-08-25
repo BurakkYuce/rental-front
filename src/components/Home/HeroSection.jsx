@@ -25,11 +25,41 @@ const HeroSection = () => {
     returnDate: "",
   });
 
+  // Date format helper - convert DD/MM/YYYY to YYYY-MM-DD
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("/");
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    }
+    return dateString;
+  };
+
+  // Format date from YYYY-MM-DD to DD/MM/YYYY
+  const formatDateFromInput = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("-");
+    if (parts.length === 3) {
+      const [year, month, day] = parts;
+      return `${day}/${month}/${year}`;
+    }
+    return dateString;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  // Handle date input changes
+  const handleDateChange = (fieldName, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [fieldName]: value,
     }));
   };
 
@@ -77,36 +107,31 @@ const HeroSection = () => {
     <>
       <style>
         {`
-          input[type="date"] {
-            background-color: #ffffff !important;
-            color: #333 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            -webkit-appearance: none !important;
-            -moz-appearance: textfield !important;
-            appearance: none !important;
-            -webkit-text-fill-color: #333 !important;
+          .date-input-wrapper {
+            position: relative;
+            width: 100%;
           }
-          input[type="date"]::-webkit-calendar-picker-indicator {
-            opacity: 1 !important;
-            filter: invert(1) !important;
+          .date-picker-hidden {
+            position: absolute !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+          }
+          .calendar-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
             cursor: pointer;
+            color: #666;
+            font-size: 16px;
           }
-          input[type="date"]::-webkit-datetime-edit {
-            color: #333 !important;
-            background-color: transparent !important;
-          }
-          input[type="date"]::-webkit-datetime-edit-text {
-            color: #333 !important;
-          }
-          input[type="date"]::-webkit-datetime-edit-month-field {
-            color: #333 !important;
-          }
-          input[type="date"]::-webkit-datetime-edit-day-field {
-            color: #333 !important;
-          }
-          input[type="date"]::-webkit-datetime-edit-year-field {
-            color: #333 !important;
+          .calendar-icon:hover {
+            color: #002efcff;
           }
         `}
       </style>
@@ -115,8 +140,8 @@ const HeroSection = () => {
         aria-label="section"
         className="hero-static jarallax"
         style={{
-          width: "100%", // ✅
-          maxWidth: "100%", // ✅
+          width: "100%",
+          maxWidth: "100%",
           padding: "50px",
           minHeight: "90vh",
           position: "relative",
@@ -131,7 +156,6 @@ const HeroSection = () => {
           style={{
             display: "flex",
             position: "absolute",
-
             top: 0,
             left: 0,
             right: 0,
@@ -207,8 +231,8 @@ const HeroSection = () => {
                     margin: "0 auto 30px auto",
                   }}
                 >
-                  ANTALYA YILLIK ARAÇ KİRALAMA | FİLO KİRALAMA ANTALYA
-                  AYLIK ARAÇ KİRALAMA
+                  ANTALYA YILLIK ARAÇ KİRALAMA | FİLO KİRALAMA ANTALYA AYLIK
+                  ARAÇ KİRALAMA
                 </p>
               </div>
 
@@ -319,32 +343,68 @@ const HeroSection = () => {
                         >
                           Alış Tarihi
                         </label>
-                        <input
-                          type="date"
-                          name="pickupDate"
-                          value={formData.pickupDate}
-                          onChange={handleInputChange}
-                          min={getTodayDate()}
-                          style={{
-                            width: "100%",
-                            padding: "12px 15px",
-                            border: "2px solid #e9ecef",
-                            borderRadius: "10px",
-                            fontSize: "1rem",
-                            backgroundColor: "#ffffff",
-                            color: "#333",
-                            transition: "border-color 0.3s ease",
-                            opacity: "1",
-                            visibility: "visible",
-                            zIndex: "10",
-                            position: "relative",
-                            boxShadow: "inset 0 0 0 1000px #ffffff",
-                            WebkitBoxShadow: "inset 0 0 0 1000px #ffffff",
-                            MozBoxShadow: "inset 0 0 0 1000px #ffffff",
-                            WebkitTextFillColor: "#333",
-                            filter: "none",
-                          }}
-                        />
+                        <div className="date-input-wrapper">
+                          <input
+                            type="text"
+                            value={
+                              formData.pickupDate
+                                ? formatDateFromInput(formData.pickupDate)
+                                : ""
+                            }
+                            onChange={(e) => {
+                              let value = e.target.value;
+                              // Auto-format while typing
+                              value = value.replace(/[^\d]/g, ""); // Only numbers
+                              if (value.length >= 2) {
+                                value =
+                                  value.slice(0, 2) + "/" + value.slice(2);
+                              }
+                              if (value.length >= 5) {
+                                value =
+                                  value.slice(0, 5) + "/" + value.slice(5, 9);
+                              }
+                              if (value.length <= 10) {
+                                const formattedForAPI =
+                                  formatDateForInput(value);
+                                handleDateChange("pickupDate", formattedForAPI);
+                              }
+                            }}
+                            placeholder="GG/AA/YYYY"
+                            maxLength="10"
+                            style={{
+                              width: "100%",
+                              padding: "12px 15px",
+                              paddingRight: "45px",
+                              border: "2px solid #e9ecef",
+                              borderRadius: "10px",
+                              fontSize: "1rem",
+                              backgroundColor: "white",
+                              color: "#333",
+                              transition: "border-color 0.3s ease",
+                              fontFamily: "monospace",
+                            }}
+                          />
+                          <input
+                            type="date"
+                            className="date-picker-hidden"
+                            onChange={(e) => {
+                              handleDateChange("pickupDate", e.target.value);
+                            }}
+                            value={formData.pickupDate || ""}
+                            min={getTodayDate()}
+                          />
+                          <i
+                            className="fa fa-calendar calendar-icon"
+                            onClick={() => {
+                              const hiddenInput = document.querySelector(
+                                ".date-input-wrapper .date-picker-hidden"
+                              );
+                              if (hiddenInput) {
+                                hiddenInput.showPicker();
+                              }
+                            }}
+                          />
+                        </div>
                       </div>
 
                       <div className="col-lg-3 col-md-6 mb-3">
@@ -358,32 +418,68 @@ const HeroSection = () => {
                         >
                           İade Tarihi
                         </label>
-                        <input
-                          type="date"
-                          name="returnDate"
-                          value={formData.returnDate}
-                          onChange={handleInputChange}
-                          min={getMinReturnDate()}
-                          style={{
-                            width: "100%",
-                            padding: "12px 15px",
-                            border: "2px solid #e9ecef",
-                            borderRadius: "10px",
-                            fontSize: "1rem",
-                            backgroundColor: "#ffffff",
-                            color: "#333",
-                            transition: "border-color 0.3s ease",
-                            opacity: "1",
-                            visibility: "visible",
-                            zIndex: "10",
-                            position: "relative",
-                            boxShadow: "inset 0 0 0 1000px #ffffff",
-                            WebkitBoxShadow: "inset 0 0 0 1000px #ffffff",
-                            MozBoxShadow: "inset 0 0 0 1000px #ffffff",
-                            WebkitTextFillColor: "#333",
-                            filter: "none",
-                          }}
-                        />
+                        <div className="date-input-wrapper">
+                          <input
+                            type="text"
+                            value={
+                              formData.returnDate
+                                ? formatDateFromInput(formData.returnDate)
+                                : ""
+                            }
+                            onChange={(e) => {
+                              let value = e.target.value;
+                              // Auto-format while typing
+                              value = value.replace(/[^\d]/g, ""); // Only numbers
+                              if (value.length >= 2) {
+                                value =
+                                  value.slice(0, 2) + "/" + value.slice(2);
+                              }
+                              if (value.length >= 5) {
+                                value =
+                                  value.slice(0, 5) + "/" + value.slice(5, 9);
+                              }
+                              if (value.length <= 10) {
+                                const formattedForAPI =
+                                  formatDateForInput(value);
+                                handleDateChange("returnDate", formattedForAPI);
+                              }
+                            }}
+                            placeholder="GG/AA/YYYY"
+                            maxLength="10"
+                            style={{
+                              width: "100%",
+                              padding: "12px 15px",
+                              paddingRight: "45px",
+                              border: "2px solid #e9ecef",
+                              borderRadius: "10px",
+                              fontSize: "1rem",
+                              backgroundColor: "white",
+                              color: "#333",
+                              transition: "border-color 0.3s ease",
+                              fontFamily: "monospace",
+                            }}
+                          />
+                          <input
+                            type="date"
+                            className="date-picker-hidden"
+                            onChange={(e) => {
+                              handleDateChange("returnDate", e.target.value);
+                            }}
+                            value={formData.returnDate || ""}
+                            min={getMinReturnDate()}
+                          />
+                          <i
+                            className="fa fa-calendar calendar-icon"
+                            onClick={() => {
+                              const hiddenInputs = document.querySelectorAll(
+                                ".date-picker-hidden"
+                              );
+                              if (hiddenInputs.length > 1) {
+                                hiddenInputs[1].showPicker();
+                              }
+                            }}
+                          />
+                        </div>
                       </div>
 
                       {/* Submit Buttons */}

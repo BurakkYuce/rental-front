@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { MessageCircle, Phone, X, Mail } from 'lucide-react';
+import React, { useState } from "react";
+import { MessageCircle, Phone, X, Mail } from "lucide-react";
 
 const FloatingContactButton = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,25 +7,33 @@ const FloatingContactButton = () => {
   const contactOptions = [
     {
       icon: <MessageCircle size={20} />,
-      label: 'WhatsApp',
-      action: () => window.open('https://wa.me/905551234567?text=Merhaba, araç kiralama hakkında bilgi almak istiyorum.', '_blank'),
-      color: '#25D366',
-      hoverColor: '#128C7E'
+      label: "WhatsApp",
+      action: () =>
+        window.open(
+          "https://wa.me/905366039907?text=Merhaba, araç kiralama hakkında bilgi almak istiyorum.",
+          "_blank"
+        ),
+      color: "#25D366",
+      hoverColor: "#128C7E",
     },
     {
       icon: <Phone size={20} />,
-      label: 'Telefon',
-      action: () => window.open('tel:+905551234567', '_self'),
-      color: '#007bff',
-      hoverColor: '#0056b3'
+      label: "Telefon",
+      action: () => window.open("tel:+905366039907", "_self"),
+      color: "#007bff",
+      hoverColor: "#0056b3",
     },
     {
       icon: <Mail size={20} />,
-      label: 'E-posta',
-      action: () => window.open('mailto:info@mitcar.com?subject=Araç Kiralama Talebi', '_self'),
-      color: '#dc3545',
-      hoverColor: '#c82333'
-    }
+      label: "E-posta",
+      action: () =>
+        window.open(
+          "mailto:info@mitcar.com?subject=Araç Kiralama Talebi",
+          "_self"
+        ),
+      color: "#dc3545",
+      hoverColor: "#c82333",
+    },
   ];
 
   return (
@@ -39,9 +47,9 @@ const FloatingContactButton = () => {
                 key={index}
                 className="contact-option"
                 onClick={option.action}
-                style={{ 
+                style={{
                   backgroundColor: option.color,
-                  animationDelay: `${index * 0.1}s`
+                  animationDelay: `${index * 0.1}s`,
                 }}
                 onMouseEnter={(e) => {
                   e.target.style.backgroundColor = option.hoverColor;
@@ -59,7 +67,7 @@ const FloatingContactButton = () => {
 
         {/* Main Toggle Button */}
         <button
-          className={`floating-contact-btn ${isOpen ? 'open' : ''}`}
+          className={`floating-contact-btn ${isOpen ? "open" : ""}`}
           onClick={() => setIsOpen(!isOpen)}
           aria-label="İletişim seçenekleri"
         >
@@ -140,13 +148,17 @@ const FloatingContactButton = () => {
         }
 
         .floating-contact-btn::before {
-          content: '';
+          content: "";
           position: absolute;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+          background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.2),
+            transparent
+          );
           border-radius: 50%;
           opacity: 0;
           transition: opacity 0.3s ease;

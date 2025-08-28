@@ -9,6 +9,7 @@ const Header = () => {
       {/* Add mobile-specific CSS */}
       <style>
         {`
+          /* Mobile responsive fixes */
           @media (max-width: 768px) {
             .topbar-widget:nth-child(2) {
               display: none !important;
@@ -22,9 +23,49 @@ const Header = () => {
             #topbar .topbar-widget {
               margin-right: 10px !important;
             }
+            
+            /* Header visibility fixes for mobile */
+            header {
+              position: relative !important;
+              display: block !important;
+              width: 100% !important;
+              z-index: 999 !important;
+              min-height: 60px !important;
+            }
+            
+            #topbar {
+              display: block !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              min-height: 50px !important;
+              padding: 8px 0 !important;
+            }
+            
+            .topbar-left {
+              flex-direction: column !important;
+              gap: 5px !important;
+            }
+            
+            .topbar-right {
+              margin-top: 10px !important;
+            }
+            
+            .container {
+              padding: 0 15px !important;
+            }
           }
-          #menu-btn {
-            display: none !important;
+
+          /* Ensure header is always visible */
+          header.transparent {
+            background: rgba(0, 0, 0, 0.8) !important;
+          }
+          
+          @media (max-width: 768px) {
+            header.transparent {
+              background: rgba(0, 0, 0, 0.9) !important;
+              position: sticky !important;
+              top: 0 !important;
+            }
           }
         `}
       </style>
@@ -34,18 +75,15 @@ const Header = () => {
           <div className="container">
             <div className="topbar-left">
               <div className="topbar-widget">
-                <div className="topbar-widget">
-                  <a href="#">
-                    <i className="fa fa-phone"></i>0 (536) 603 9907
-                  </a>
-                </div>
-                <div className="topbar-widget"></div>
-                <div className="topbar-widget">
-                  <a href="#">
-                    <i className="fa fa-clock-o"></i>Pazartesi - Cuma 08.00 -
-                    18.00
-                  </a>
-                </div>
+                <a href="tel:+905366039907">
+                  <i className="fa fa-phone"></i>0 (536) 603 9907
+                </a>
+              </div>
+              <div className="topbar-widget">
+                <a href="#">
+                  <i className="fa fa-clock-o"></i>Pazartesi - Cuma 08.00 -
+                  18.00
+                </a>
               </div>
             </div>
 

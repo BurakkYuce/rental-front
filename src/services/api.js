@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -71,6 +70,7 @@ export const authAPI = {
     return Promise.resolve();
   },
 };
+
 const imageUploadFunctions = {
   // Tek resim yükleme
   uploadCarImage: (file) => {
@@ -166,14 +166,24 @@ export const adminAPI = {
     }
   },
 
-  // Booking management
+  // Booking management - GÜNCELLENDİ
   getBookings: (params = {}) => api.get("/admin/bookings", { params }),
   getBookingById: (id) => api.get(`/admin/bookings/${id}`),
   createBooking: (bookingData) => api.post("/admin/bookings", bookingData),
   updateBooking: (id, bookingData) =>
     api.put(`/admin/bookings/${id}`, bookingData),
   deleteBooking: (id) => api.delete(`/admin/bookings/${id}`),
+  updateBookingStatus: (id, statusData) =>
+    api.put(`/admin/bookings/${id}/status`, statusData),
   getBookingStatistics: () => api.get("/admin/bookings/statistics"),
+
+  // Transfer management - YENİ EKLENDI
+  getTransfers: () => api.get("/admin/transfers"),
+  getTransferById: (id) => api.get(`/admin/transfers/${id}`),
+  createTransfer: (transferData) => api.post("/admin/transfers", transferData),
+  updateTransfer: (id, transferData) =>
+    api.put(`/admin/transfers/${id}`, transferData),
+  deleteTransfer: (id) => api.delete(`/admin/transfers/${id}`),
 
   // News management
   getNews: (params = {}) => api.get("/news/admin", { params }),
@@ -215,6 +225,10 @@ export const publicAPI = {
   getNewsById: (slug) => api.get(`/blogs/${slug}`),
   getBlogPosts: (params = {}) => api.get("/blogs", { params }),
   createBooking: (bookingData) => api.post("/bookings", bookingData),
+
+  // Transfer endpoints - YENİ EKLENDI
+  getTransfers: () => api.get("/transfers"),
+  getTransferById: (id) => api.get(`/transfers/${id}`),
 
   // Currency/Exchange Rate functions (automated system)
   getCurrentExchangeRates: () => api.get("/exchange-rates/current"),
@@ -275,4 +289,3 @@ export const isAuthenticated = () => {
 };
 
 export default api;
-// API dosyanıza (api.js) bu fonksiyonları ekleyin:

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import BackToHomeButton from "../components/BackToHomeButton.jsx";
+import api from "../services/api.js";
 
 const TransferService = () => {
   const [zones, setZones] = useState([]);
@@ -53,21 +54,20 @@ const TransferService = () => {
   ];
 
   // Fetch transfer zones
+
   useEffect(() => {
     const fetchZones = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:4000/api/transfers");
+        // api.js'deki konfigürasyonu kullan
+        const response = await api.get("/transfers");
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch transfer zones");
-        }
-
-        const data = await response.json();
-        if (data.success) {
-          setZones(data.data || []);
+        if (response.data.success) {
+          setZones(response.data.data || []);
         } else {
-          throw new Error(data.error || "Failed to load transfer zones");
+          throw new Error(
+            response.data.error || "Failed to load transfer zones"
+          );
         }
       } catch (err) {
         console.error("❌ Failed to load transfer zones:", err);

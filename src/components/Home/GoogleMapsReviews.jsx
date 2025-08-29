@@ -113,7 +113,7 @@ const GoogleMapsReviews = () => {
                 <p
                   style={{ color: "#6c757d", fontSize: "0.9rem", margin: "0" }}
                 >
-                  30+ Google Reviews
+                  30+ Google Değerlendirmesi
                 </p>
               </div>
 
@@ -130,12 +130,12 @@ const GoogleMapsReviews = () => {
                       fontSize: "0.9rem",
                     }}
                   >
-                    Alsancak, İzmir, Turkey
+                    Antalya , Muratpaşa , Türkiye
                   </p>
                 </div>
 
                 <div style={{ marginBottom: "10px" }}>
-                  <strong style={{ color: "#2c3e50" }}>📞 Phone:</strong>
+                  <strong style={{ color: "#2c3e50" }}>📞 Telefon:</strong>
                   <p
                     style={{
                       color: "#6c757d",
@@ -143,7 +143,7 @@ const GoogleMapsReviews = () => {
                       fontSize: "0.9rem",
                     }}
                   >
-                    +90 555 123 45 67
+                    +90 536 603 99 07
                   </p>
                 </div>
 
@@ -156,7 +156,7 @@ const GoogleMapsReviews = () => {
                       fontSize: "0.9rem",
                     }}
                   >
-                    pztsi - pazar: 08:00 - 22:00
+                    Pazartesi - Pazar: 08:00 - 18:00
                   </p>
                 </div>
               </div>
@@ -196,7 +196,7 @@ const GoogleMapsReviews = () => {
               }}
             >
               <span style={{ fontSize: "1.2rem" }}>📱</span>
-              View All Google Reviews
+              Tüm Değerlendirmeleri Görüntüleyin
             </button>
           </div>
         </div>

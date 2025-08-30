@@ -1,6 +1,7 @@
 // src/pages/admin/AdminBookings.jsx - Modern Bookings Management Page
 import React, { useState, useEffect, useCallback } from "react";
 import AdminLayout from "../../components/AdminLayout";
+import { adminAPI } from "../../services/api";
 import "./AdminBookings.css";
 
 const AdminBookings = () => {
@@ -58,88 +59,63 @@ const AdminBookings = () => {
   const fetchBookings = useCallback(async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("admin_token");
-      const queryParams = new URLSearchParams();
+      setError("");
 
-      if (filters.search) queryParams.append("search", filters.search);
-      if (filters.status !== "all")
-        queryParams.append("status", filters.status);
+      const params = {
+        page: filters.page,
+        limit: 20,
+      };
+
+      if (filters.search) params.search = filters.search;
+      if (filters.status !== "all") params.status = filters.status;
       if (filters.serviceType !== "all")
-        queryParams.append("serviceType", filters.serviceType);
-      queryParams.append("page", filters.page);
-      queryParams.append("limit", "20");
+        params.serviceType = filters.serviceType;
 
-      const response = await fetch(
-        `http://localhost:4000/api/admin/bookings?${queryParams}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      console.log("📚 Fetching bookings with params:", params);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch bookings");
-      }
+      const response = await adminAPI.getBookings(params);
 
-      const data = await response.json();
-      if (data.success) {
-        setBookings(data.data.bookings || []);
+      if (response.data.success) {
+        setBookings(response.data.data.bookings || []);
       } else {
-        throw new Error(data.error || "Failed to load bookings");
+        throw new Error(response.data.error || "Failed to load bookings");
       }
     } catch (err) {
       console.error("❌ Fetch bookings error:", err);
-      setError(err.message);
+      setError(
+        err.response?.data?.error || err.message || "Failed to fetch bookings"
+      );
     } finally {
       setLoading(false);
     }
   }, [filters]);
 
-  // Load bookings on component mount and filter changes
-  useEffect(() => {
-    fetchBookings();
-    loadCarsAndTransfers();
-  }, [fetchBookings]);
-
   // Load available cars and transfers
-  const loadCarsAndTransfers = async () => {
+  const loadCarsAndTransfers = useCallback(async () => {
     try {
-      const token = localStorage.getItem("admin_token");
+      console.log("🚗🚌 Loading cars and transfers...");
 
       // Load cars
-      const carsResponse = await fetch("http://localhost:4000/api/admin/cars", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (carsResponse.ok) {
-        const carsData = await carsResponse.json();
-        setAvailableCars(carsData.data?.cars || []);
+      const carsResponse = await adminAPI.getCars();
+      if (carsResponse.data.success) {
+        setAvailableCars(carsResponse.data.data?.cars || []);
       }
 
       // Load transfer zones
-      const transfersResponse = await fetch(
-        "http://localhost:4000/api/admin/transfers",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (transfersResponse.ok) {
-        const transfersData = await transfersResponse.json();
-        setAvailableTransfers(transfersData.data || []);
+      const transfersResponse = await adminAPI.getTransfers();
+      if (transfersResponse.data.success) {
+        setAvailableTransfers(transfersResponse.data.data || []);
       }
     } catch (err) {
       console.error("❌ Failed to load cars/transfers:", err);
     }
-  };
+  }, []);
+
+  // Load bookings on component mount and filter changes
+  useEffect(() => {
+    fetchBookings();
+    loadCarsAndTransfers();
+  }, [fetchBookings, loadCarsAndTransfers]);
 
   // Handle filter changes
   const handleFilterChange = (key, value) => {
@@ -243,35 +219,27 @@ const AdminBookings = () => {
     }
 
     try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch(
-        `http://localhost:4000/api/admin/bookings/${editingBooking.id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
+      console.log("📝 Updating booking:", editingBooking.id, formData);
+
+      const response = await adminAPI.updateBooking(
+        editingBooking.id,
+        formData
       );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update booking");
-      }
-
-      const data = await response.json();
-      if (data.success) {
+      if (response.data.success) {
         await fetchBookings(); // Refresh the bookings list
         setShowAddForm(false);
         setEditingBooking(null);
         resetForm();
         alert("Booking updated successfully!");
+      } else {
+        throw new Error(response.data.error || "Failed to update booking");
       }
     } catch (err) {
       console.error("❌ Update booking error:", err);
-      alert(`Error updating booking: ${err.message}`);
+      alert(
+        `Error updating booking: ${err.response?.data?.error || err.message}`
+      );
     }
   };
 
@@ -280,31 +248,23 @@ const AdminBookings = () => {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch("http://localhost:4000/api/admin/bookings", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      console.log("📚 Creating new booking:", formData);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create booking");
-      }
+      const response = await adminAPI.createBooking(formData);
 
-      const data = await response.json();
-      if (data.success) {
+      if (response.data.success) {
         await fetchBookings(); // Refresh the bookings list
         setShowAddForm(false);
         resetForm();
         alert("Booking created successfully!");
+      } else {
+        throw new Error(response.data.error || "Failed to create booking");
       }
     } catch (err) {
       console.error("❌ Create booking error:", err);
-      alert(`Error creating booking: ${err.message}`);
+      alert(
+        `Error creating booking: ${err.response?.data?.error || err.message}`
+      );
     }
   };
 
@@ -318,29 +278,23 @@ const AdminBookings = () => {
   // Handle booking status update
   const updateBookingStatus = async (bookingId, newStatus) => {
     try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch(
-        `http://localhost:4000/api/admin/bookings/${bookingId}/status`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
+      console.log("📊 Updating booking status:", bookingId, newStatus);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update status");
+      const response = await adminAPI.updateBookingStatus(bookingId, {
+        status: newStatus,
+      });
+
+      if (response.data.success) {
+        await fetchBookings(); // Refresh the bookings list
+        alert("Booking status updated successfully!");
+      } else {
+        throw new Error(response.data.error || "Failed to update status");
       }
-
-      await fetchBookings(); // Refresh the bookings list
-      alert("Booking status updated successfully!");
     } catch (err) {
       console.error("❌ Update status error:", err);
-      alert(`Error updating status: ${err.message}`);
+      alert(
+        `Error updating status: ${err.response?.data?.error || err.message}`
+      );
     }
   };
 
@@ -355,28 +309,21 @@ const AdminBookings = () => {
     }
 
     try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch(
-        `http://localhost:4000/api/admin/bookings/${bookingId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      console.log("🗑️ Deleting booking:", bookingId);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to delete booking");
+      const response = await adminAPI.deleteBooking(bookingId);
+
+      if (response.data.success) {
+        await fetchBookings(); // Refresh the bookings list
+        alert("Booking deleted successfully!");
+      } else {
+        throw new Error(response.data.error || "Failed to delete booking");
       }
-
-      await fetchBookings(); // Refresh the bookings list
-      alert("Booking deleted successfully!");
     } catch (err) {
       console.error("❌ Delete booking error:", err);
-      alert(`Error deleting booking: ${err.message}`);
+      alert(
+        `Error deleting booking: ${err.response?.data?.error || err.message}`
+      );
     }
   };
 

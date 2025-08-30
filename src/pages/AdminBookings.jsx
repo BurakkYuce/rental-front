@@ -1,7 +1,7 @@
 // src/pages/admin/AdminBookings.jsx - Modern Bookings Management Page
 import React, { useState, useEffect, useCallback } from "react";
 import AdminLayout from "../../components/AdminLayout";
-import api from "../../services/api.js"; // API servisi import edildi
+import { adminAPI } from "../../services/api";
 import "./AdminBookings.css";
 
 const AdminBookings = () => {
@@ -55,22 +55,25 @@ const AdminBookings = () => {
     { value: "transfer", label: "Transfer Service" },
   ];
 
-  // Fetch bookings from API using api.js service
+  // Fetch bookings from API
   const fetchBookings = useCallback(async () => {
     try {
       setLoading(true);
-      const queryParams = new URLSearchParams();
+      setError("");
 
-      if (filters.search) queryParams.append("search", filters.search);
-      if (filters.status !== "all")
-        queryParams.append("status", filters.status);
+      const params = {
+        page: filters.page,
+        limit: 20,
+      };
+
+      if (filters.search) params.search = filters.search;
+      if (filters.status !== "all") params.status = filters.status;
       if (filters.serviceType !== "all")
-        queryParams.append("serviceType", filters.serviceType);
-      queryParams.append("page", filters.page);
-      queryParams.append("limit", "20");
+        params.serviceType = filters.serviceType;
 
-      // api.js servisini kullan
-      const response = await api.get(`/admin/bookings?${queryParams}`);
+      console.log("📚 Fetching bookings with params:", params);
+
+      const response = await adminAPI.getBookings(params);
 
       if (response.data.success) {
         setBookings(response.data.data.bookings || []);
@@ -79,36 +82,40 @@ const AdminBookings = () => {
       }
     } catch (err) {
       console.error("❌ Fetch bookings error:", err);
-      setError(err.message);
+      setError(
+        err.response?.data?.error || err.message || "Failed to fetch bookings"
+      );
     } finally {
       setLoading(false);
     }
   }, [filters]);
 
-  // Load bookings on component mount and filter changes
-  useEffect(() => {
-    fetchBookings();
-    loadCarsAndTransfers();
-  }, [fetchBookings]);
-
-  // Load available cars and transfers using api.js service
-  const loadCarsAndTransfers = async () => {
+  // Load available cars and transfers
+  const loadCarsAndTransfers = useCallback(async () => {
     try {
+      console.log("🚗🚌 Loading cars and transfers...");
+
       // Load cars
-      const carsResponse = await api.get("/admin/cars");
-      if (carsResponse.data && carsResponse.data.success) {
+      const carsResponse = await adminAPI.getCars();
+      if (carsResponse.data.success) {
         setAvailableCars(carsResponse.data.data?.cars || []);
       }
 
       // Load transfer zones
-      const transfersResponse = await api.get("/admin/transfers");
-      if (transfersResponse.data && transfersResponse.data.success) {
+      const transfersResponse = await adminAPI.getTransfers();
+      if (transfersResponse.data.success) {
         setAvailableTransfers(transfersResponse.data.data || []);
       }
     } catch (err) {
       console.error("❌ Failed to load cars/transfers:", err);
     }
-  };
+  }, []);
+
+  // Load bookings on component mount and filter changes
+  useEffect(() => {
+    fetchBookings();
+    loadCarsAndTransfers();
+  }, [fetchBookings, loadCarsAndTransfers]);
 
   // Handle filter changes
   const handleFilterChange = (key, value) => {
@@ -202,7 +209,7 @@ const AdminBookings = () => {
     setShowAddForm(true); // Reuse the same form for editing
   };
 
-  // Handle update existing booking using api.js service
+  // Handle update existing booking
   const handleUpdateBooking = async (e) => {
     e.preventDefault();
 
@@ -212,8 +219,10 @@ const AdminBookings = () => {
     }
 
     try {
-      const response = await api.put(
-        `/admin/bookings/${editingBooking.id}`,
+      console.log("📝 Updating booking:", editingBooking.id, formData);
+
+      const response = await adminAPI.updateBooking(
+        editingBooking.id,
         formData
       );
 
@@ -223,29 +232,39 @@ const AdminBookings = () => {
         setEditingBooking(null);
         resetForm();
         alert("Booking updated successfully!");
+      } else {
+        throw new Error(response.data.error || "Failed to update booking");
       }
     } catch (err) {
       console.error("❌ Update booking error:", err);
-      alert(`Error updating booking: ${err.message}`);
+      alert(
+        `Error updating booking: ${err.response?.data?.error || err.message}`
+      );
     }
   };
 
-  // Handle create new booking using api.js service
+  // Handle create new booking
   const handleCreateBooking = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await api.post("/admin/bookings", formData);
+      console.log("📚 Creating new booking:", formData);
+
+      const response = await adminAPI.createBooking(formData);
 
       if (response.data.success) {
         await fetchBookings(); // Refresh the bookings list
         setShowAddForm(false);
         resetForm();
         alert("Booking created successfully!");
+      } else {
+        throw new Error(response.data.error || "Failed to create booking");
       }
     } catch (err) {
       console.error("❌ Create booking error:", err);
-      alert(`Error creating booking: ${err.message}`);
+      alert(
+        `Error creating booking: ${err.response?.data?.error || err.message}`
+      );
     }
   };
 
@@ -256,24 +275,30 @@ const AdminBookings = () => {
     resetForm();
   };
 
-  // Handle booking status update using api.js service
+  // Handle booking status update
   const updateBookingStatus = async (bookingId, newStatus) => {
     try {
-      const response = await api.put(`/admin/bookings/${bookingId}/status`, {
+      console.log("📊 Updating booking status:", bookingId, newStatus);
+
+      const response = await adminAPI.updateBookingStatus(bookingId, {
         status: newStatus,
       });
 
       if (response.data.success) {
         await fetchBookings(); // Refresh the bookings list
         alert("Booking status updated successfully!");
+      } else {
+        throw new Error(response.data.error || "Failed to update status");
       }
     } catch (err) {
       console.error("❌ Update status error:", err);
-      alert(`Error updating status: ${err.message}`);
+      alert(
+        `Error updating status: ${err.response?.data?.error || err.message}`
+      );
     }
   };
 
-  // Handle delete booking using api.js service
+  // Handle delete booking
   const handleDeleteBooking = async (bookingId, bookingRef) => {
     if (
       !confirm(
@@ -284,15 +309,21 @@ const AdminBookings = () => {
     }
 
     try {
-      const response = await api.delete(`/admin/bookings/${bookingId}`);
+      console.log("🗑️ Deleting booking:", bookingId);
+
+      const response = await adminAPI.deleteBooking(bookingId);
 
       if (response.data.success) {
         await fetchBookings(); // Refresh the bookings list
         alert("Booking deleted successfully!");
+      } else {
+        throw new Error(response.data.error || "Failed to delete booking");
       }
     } catch (err) {
       console.error("❌ Delete booking error:", err);
-      alert(`Error deleting booking: ${err.message}`);
+      alert(
+        `Error deleting booking: ${err.response?.data?.error || err.message}`
+      );
     }
   };
 

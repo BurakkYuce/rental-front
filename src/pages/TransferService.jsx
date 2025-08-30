@@ -281,12 +281,12 @@ const TransferService = () => {
                   marginBottom: "20px",
                 }}
               >
-                Transfer Services
+                Transfer Hizmetleri
               </h1>
               <p style={{ fontSize: "1.2rem", opacity: 0.9, lineHeight: 1.6 }}>
-                Professional and reliable transfer services to your destination.
-                Comfortable vehicles with experienced drivers for all passenger
-                capacities.
+                Hedefinize profesyonel ve güvenilir transfer hizmetleri. Tüm
+                yolcu kapasitelerine uygun, deneyimli şoförlerle donatılmış
+                konforlu araçlar.
               </p>
             </div>
           </div>
@@ -305,7 +305,7 @@ const TransferService = () => {
                 marginBottom: "15px",
               }}
             >
-              Choose Your Vehicle
+              Aracıınzı Seçin
             </h2>
             <p style={{ fontSize: "1.1rem", color: "#666" }}>
               Select the vehicle type that best fits your group size
@@ -363,7 +363,7 @@ const TransferService = () => {
                       }}
                     >
                       <i className="fa fa-users"></i>
-                      Max {option.maxPassengers} passengers
+                      Maksimum {option.maxPassengers} Yolcu
                     </div>
                     {selectedCapacity === option.key && (
                       <div style={{ marginTop: "15px" }}>
@@ -393,7 +393,7 @@ const TransferService = () => {
                 marginBottom: "15px",
               }}
             >
-              Destinations & Pricing
+              Güzergâhlar ve Fiyatlandırma
             </h2>
             <p style={{ fontSize: "1.1rem", color: "#666" }}>
               Pricing for {getSelectedCapacityInfo()?.label} -{" "}
@@ -416,7 +416,10 @@ const TransferService = () => {
                 style={{ fontSize: "60px", opacity: 0.3, marginBottom: "20px" }}
               ></i>
               <h5>No transfer zones available</h5>
-              <p>Please contact us for custom transfer arrangements.</p>
+              <p>
+                Özel transfer düzenlemeleri için lütfen bizimle iletişime
+                geçin..
+              </p>
             </div>
           ) : (
             <div className="row">
@@ -495,8 +498,8 @@ const TransferService = () => {
 
           <div className="text-center" style={{ marginTop: "40px" }}>
             <p style={{ color: "#666", fontSize: "0.9rem" }}>
-              * Prices are in EUR and include VAT. Additional charges may apply
-              for waiting time, tolls, or special requests.
+              *Fiyatlar EUR cinsindendir ve KDV dahildir. Bekleme süresi, otoyol
+              ücretleri veya özel talepler için ek ücret uygulanabilir.
             </p>
           </div>
         </div>
@@ -509,7 +512,7 @@ const TransferService = () => {
             <h2
               style={{ fontSize: "2.5rem", fontWeight: "600", color: "#333" }}
             >
-              Why Choose Our Transfer Service?
+              Neden Bizim Transfer Hizmetimizi Seçmelisiniz?{" "}
             </h2>
           </div>
 
@@ -538,11 +541,11 @@ const TransferService = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  Professional Drivers
+                  Profesyonel Sürücüler
                 </h5>
                 <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Experienced, licensed drivers who know the local routes and
-                  speak multiple languages.
+                  Deneyimli, lisanslı, yerel güzergâhları bilen ve birden fazla
+                  dil konuşabilen şoförler.{" "}
                 </p>
               </div>
             </div>
@@ -571,11 +574,11 @@ const TransferService = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  Reliable Service
+                  Güvenilir Servis
                 </h5>
                 <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Punctual pickups and drop-offs with real-time tracking and
-                  24/7 customer support.
+                  Gerçek zamanlı takip ve 7/24 müşteri desteği ile dakik alma ve
+                  bırakma hizmeti..
                 </p>
               </div>
             </div>
@@ -607,8 +610,8 @@ const TransferService = () => {
                   Comfortable Vehicles
                 </h5>
                 <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Modern, clean, and well-maintained vehicles with air
-                  conditioning and spacious interiors.
+                  Klimalı ve geniş iç mekâna sahip, modern, temiz ve bakımlı
+                  araçlar.
                 </p>
               </div>
             </div>
@@ -637,11 +640,11 @@ const TransferService = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  Easy Booking
+                  Kolay Rezervasyon
                 </h5>
                 <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Simple online booking process with instant confirmation and
-                  flexible payment options.
+                  Kolay çevrimiçi rezervasyon süreci, anında onay ve esnek ödeme
+                  seçenekleri.
                 </p>
               </div>
             </div>

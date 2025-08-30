@@ -19,9 +19,9 @@ const Footer = () => {
               MITCAR RENTAL
             </h5>
             <p style={{ color: "#bdc3c7", lineHeight: 1.6 }}>
-              Professional car rental and transfer services in İzmir and
-              surrounding areas. Experience comfort and reliability with our
-              modern fleet and experienced drivers.
+              Antalya ve çevresinde profesyonel araç kiralama ve transfer
+              hizmetleri. Modern filomuz ve deneyimli şoförlerimizle konfor ve
+              güvenilirliği yaşayın.
             </p>
             <div style={{ display: "flex", gap: "15px", marginTop: "20px" }}>
               <a
@@ -43,46 +43,6 @@ const Footer = () => {
                 <i className="fa fa-twitter"></i>
               </a>
             </div>
-          </div>
-
-          <div className="col-lg-2 col-md-6 mb-4">
-            <h6 style={{ fontWeight: "600", marginBottom: "20px" }}>
-              Services
-            </h6>
-            <ul style={{ listStyle: "none", padding: 0 }}>
-              <li style={{ marginBottom: "8px" }}>
-                <Link
-                  to="/cars"
-                  style={{ color: "#bdc3c7", textDecoration: "none" }}
-                >
-                  Car Rental
-                </Link>
-              </li>
-              <li style={{ marginBottom: "8px" }}>
-                <Link
-                  to="/transfer"
-                  style={{ color: "#bdc3c7", textDecoration: "none" }}
-                >
-                  Transfer Service
-                </Link>
-              </li>
-              <li style={{ marginBottom: "8px" }}>
-                <a
-                  href="#"
-                  style={{ color: "#bdc3c7", textDecoration: "none" }}
-                >
-                  Airport Transfers
-                </a>
-              </li>
-              <li style={{ marginBottom: "8px" }}>
-                <a
-                  href="#"
-                  style={{ color: "#bdc3c7", textDecoration: "none" }}
-                >
-                  Long Term Rental
-                </a>
-              </li>
-            </ul>
           </div>
 
           <div className="col-lg-3 col-md-6 mb-4">
@@ -110,7 +70,7 @@ const Footer = () => {
                 }}
               >
                 <i className="fa fa-envelope"></i>
-                <span>contact@rentaly.com</span>
+                <span>info@mitcarrental.com</span>
               </div>
               <div
                 style={{
@@ -124,7 +84,7 @@ const Footer = () => {
                   className="fa fa-map-marker"
                   style={{ marginTop: "3px" }}
                 ></i>
-                <span>İzmir, Turkey</span>
+                <span>Antalya, Turkey</span>
               </div>
               <div
                 style={{ display: "flex", alignItems: "center", gap: "10px" }}
@@ -181,7 +141,7 @@ const Footer = () => {
         <div className="row">
           <div className="col-md-6">
             <p style={{ color: "#95a5a6", fontSize: "0.9rem", margin: 0 }}>
-              © 2024 Rentaly. All rights reserved.
+              © 2024 Mitcar Rental. All rights reserved.
             </p>
           </div>
           <div className="col-md-6 text-md-end">

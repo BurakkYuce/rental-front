@@ -1,4 +1,5 @@
 // src/components/Home/FAQContactFooter.jsx - Blue Theme
+//a
 import React, { useState } from "react";
 
 const FAQContactFooter = () => {
@@ -257,11 +258,10 @@ const FAQContactFooter = () => {
                   textShadow: "0 2px 4px rgba(0,0,0,0.2)",
                 }}
               >
-                Rentaly customer care
+                Mitcar Rental
                 <br />
-                is here to help you
+                Her Zaman Sizin Hizmetinizde
                 <br />
-                anytime.
               </h3>
             </div>
 
@@ -358,7 +358,7 @@ const FAQContactFooter = () => {
               <div style={{ marginTop: "20px" }}>
                 <img
                   src="/images/logo/UMİT-2.png"
-                  alt="Rentaly"
+                  alt="ümit"
                   style={{ height: "40px" }}
                 />
               </div>

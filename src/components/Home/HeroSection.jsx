@@ -562,9 +562,8 @@ const HeroSection = () => {
                           >
                             🚗 Araç Kiralama
                           </button>
-
                           <button
-                            type="button"
+                            type="submit"
                             onClick={() => navigate("/transfer-service")}
                             style={buttonStyle}
                             onMouseEnter={handleMouseEnter}

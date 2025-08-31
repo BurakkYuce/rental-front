@@ -629,7 +629,7 @@ const CarsPartInHome = () => {
               }}
               onClick={handleViewAllCars}
             >
-              Tüm Araçları Görüntüle
+              View All Cars
             </button>
           </div>
         </div>
@@ -702,13 +702,6 @@ const CarsPartInHome = () => {
             font-size: 0.85rem !important;
           }
 
-          /* Price badge adjustments */
-          .cars-card-content > div:first-child > div:last-child {
-            top: 15px !important;
-            left: 15px !important;
-            padding: 6px 10px !important;
-          }
-
           .cars-card-content
             > div:first-child
             > div:last-child
@@ -775,11 +768,6 @@ const CarsPartInHome = () => {
             padding: 0.6rem 0.8rem !important;
             font-size: 0.8rem !important;
             border-radius: 6px !important;
-          }
-
-          /* Price badge even smaller */
-          .cars-card-content > div:first-child > div:last-child {
-            padding: 5px 8px !important;
           }
 
           .cars-card-content

@@ -156,10 +156,10 @@ const CarsPartInHome = () => {
                           className="spinner-border text-primary"
                           role="status"
                         >
-                          <span className="visually-hidden">Loading...</span>
+                          <span className="visually-hidden">Yükleniyor...</span>
                         </div>
                         <p style={{ marginTop: "15px", marginBottom: 0 }}>
-                          Loading cars...
+                          Araçlar yükleniyor...
                         </p>
                       </div>
                     </div>
@@ -205,7 +205,7 @@ const CarsPartInHome = () => {
                                 }}
                                 onClick={() => handleViewCar(car.id || car._id)}
                               >
-                                {/* Car Image - Same structure as blog post */}
+                                {/* Car Image - NO PRICE BADGE */}
                                 <div
                                   style={{
                                     position: "relative",
@@ -250,9 +250,9 @@ const CarsPartInHome = () => {
                                       marginBottom: "1.5rem",
                                     }}
                                   >
-                                    {car.seats || "5"} seats •{" "}
-                                    {car.transmission || "Auto"} •{" "}
-                                    {car.doors || "4"} doors
+                                    {car.seats || "5"} koltuk •{" "}
+                                    {car.transmission || "Otomatik"} •{" "}
+                                    {car.doors || "4"} kapı
                                   </p>
 
                                   <button
@@ -273,7 +273,7 @@ const CarsPartInHome = () => {
                                       textTransform: "uppercase",
                                     }}
                                   >
-                                    View Details
+                                    Detayları Görüntüle
                                   </button>
                                 </div>
                               </div>
@@ -337,7 +337,7 @@ const CarsPartInHome = () => {
                                       handleViewCar(car.id || car._id)
                                     }
                                   >
-                                    {/* Car Image */}
+                                    {/* Car Image - NO PRICE BADGE */}
                                     <div
                                       style={{
                                         position: "relative",
@@ -392,9 +392,9 @@ const CarsPartInHome = () => {
                                           flex: "1",
                                         }}
                                       >
-                                        {car.seats || "5"} seats •{" "}
-                                        {car.transmission || "Auto"} •{" "}
-                                        {car.doors || "4"} doors
+                                        {car.seats || "5"} koltuk •{" "}
+                                        {car.transmission || "Otomatik"} •{" "}
+                                        {car.doors || "4"} kapı
                                       </p>
 
                                       {/* View Details Button */}
@@ -629,13 +629,13 @@ const CarsPartInHome = () => {
               }}
               onClick={handleViewAllCars}
             >
-              View All Cars
+              Tüm Araçları Görüntüle
             </button>
           </div>
         </div>
       </div>
 
-      {/* Responsive Styles - EXACTLY same as LatestNews */}
+      {/* Responsive Styles - Price badge CSS removed */}
       <style jsx>{`
         @media (max-width: 768px) {
           /* Section header adjustments */
@@ -702,20 +702,6 @@ const CarsPartInHome = () => {
             font-size: 0.85rem !important;
           }
 
-          .cars-card-content
-            > div:first-child
-            > div:last-child
-            > div:first-child {
-            font-size: 1rem !important;
-          }
-
-          .cars-card-content
-            > div:first-child
-            > div:last-child
-            > div:last-child {
-            font-size: 0.7rem !important;
-          }
-
           /* Hide navigation arrows on mobile */
           .cars-nav-arrow {
             display: none !important;
@@ -768,20 +754,6 @@ const CarsPartInHome = () => {
             padding: 0.6rem 0.8rem !important;
             font-size: 0.8rem !important;
             border-radius: 6px !important;
-          }
-
-          .cars-card-content
-            > div:first-child
-            > div:last-child
-            > div:first-child {
-            font-size: 0.9rem !important;
-          }
-
-          .cars-card-content
-            > div:first-child
-            > div:last-child
-            > div:last-child {
-            font-size: 0.65rem !important;
           }
         }
 

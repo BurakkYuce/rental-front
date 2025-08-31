@@ -748,10 +748,17 @@ const CarsSingle = () => {
                     {car?.title || car?.name || "Car Details"}
                   </h3>
                   <p className="car-description">
-                    {car?.description ||
-                      `MITCAR RENTAL ${
-                        car?.title || car?.name
-                      } Müşteri memnuniyeti ilkesiyle yola çıkan MİTCAR RENTAL şirketimiz, Antalya araç kiralama alanında en iyi hizmeti verebilmek için 7 yıldır sektörde yoğun çaba sarf etmektedir. Müşteri istekleri doğrultusunda yürütülen araç temin faaliyetleri, güncel trend dizel otomatik araçların da filoya katılımıyla yeterince geliştirilerek sürdürülmektedir. 7 yıllık süreçte yalnızca Antalya ilindeki deneyimimizle kaliteli bir hizmet sunmanın peşinde olan şirketimiz, aynı hedef doğrultusunda tüm emeklerini seferber etmeye devam etmektedir. Yaptığımız tek ve özel iş, kaliteli ve konforlu araç kiralama hizmetidir. `}
+                    MITCAR RENTAL Müşteri memnuniyeti ilkesiyle yola çıkan
+                    MİTCAR RENTAL şirketimiz, Antalya araç kiralama alanında en
+                    iyi hizmeti verebilmek için 7 yıldır sektörde yoğun çaba
+                    sarf etmektedir. Müşteri istekleri doğrultusunda yürütülen
+                    araç temin faaliyetleri, güncel trend dizel otomatik
+                    araçların da filoya katılımıyla yeterince geliştirilerek
+                    sürdürülmektedir. 7 yıllık süreçte yalnızca Antalya ilindeki
+                    deneyimimizle kaliteli bir hizmet sunmanın peşinde olan
+                    şirketimiz, aynı hedef doğrultusunda tüm emeklerini seferber
+                    etmeye devam etmektedir. Yaptığımız tek ve özel iş, kaliteli
+                    ve konforlu araç kiralama hizmetidir.
                   </p>
 
                   {/* Specifications */}

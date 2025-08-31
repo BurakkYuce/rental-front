@@ -1,4 +1,9 @@
-// src/components/Home/FAQContactFooter.jsx - Blue Themegit log --oneline -5
+// src/components/Home/FAQContactFooter.jsx
+import React, { useState } from "react";
+
+const FAQContactFooter = () => {
+  const [openFAQ, setOpenFAQ] = useState(null);
+
   // FAQ verilerini buradan kolayca değiştirebilirsin
   const faqData = [
     {
@@ -53,7 +58,7 @@
                   marginBottom: "20px",
                 }}
               >
-                Sıkça Sorular Sorular
+                Sıkça Sorulan Sorular
               </h2>
             </div>
           </div>
@@ -392,17 +397,17 @@
                   marginBottom: "20px",
                 }}
               >
-                Quick Links
+                Hızlı Linkler
               </h5>
               <ul style={{ listStyle: "none", padding: "0", margin: "0" }}>
                 {[
-                  "About",
-                  "Cars",
-                  "Booking",
-                  "FAQ",
-                  "Contact",
-                  "Terms & Conditions",
-                  "Privacy Policy",
+                  "Hakkımızda",
+                  "Araçlar",
+                  "Rezervasyon",
+                  "SSS",
+                  "İletişim",
+                  "Şartlar ve Koşullar",
+                  "Gizlilik Politikası",
                 ].map((link, index) => (
                   <li key={index} style={{ marginBottom: "8px" }}>
                     <a
@@ -433,7 +438,7 @@
                   marginBottom: "20px",
                 }}
               >
-                Social Network
+                Sosyal Medya
               </h5>
               <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
                 {[
@@ -485,7 +490,7 @@
           >
             <div className="col-12 text-center">
               <p style={{ color: "#bbb", margin: "0", fontSize: "0.9rem" }}>
-                Copyright 2025 - MITCAR RENTAL. All Rights Reserved.
+                Copyright 2025 - MITCAR RENTAL. Tüm Hakları Saklıdır.
               </p>
             </div>
           </div>

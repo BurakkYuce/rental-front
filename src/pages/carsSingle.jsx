@@ -66,7 +66,7 @@ const CarsSingle = () => {
     const parts = dateString.split("/");
     if (parts.length === 3) {
       const [day, month, year] = parts;
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     }
     return dateString;
   };
@@ -130,47 +130,53 @@ const CarsSingle = () => {
   // Calculate rental days between pickup and return dates
   const calculateRentalDays = useCallback(() => {
     if (!formData.pickupDate || !formData.returnDate) return 0;
-    
+
     const pickupDate = new Date(formData.pickupDate);
     const returnDate = new Date(formData.returnDate);
     const diffTime = returnDate - pickupDate;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     return Math.max(1, diffDays); // Minimum 1 day
   }, [formData.pickupDate, formData.returnDate]);
 
   // Calculate optimized car rental price (weekly + daily breakdown)
   const calculateCarRentalTotal = useCallback(() => {
     if (!car || !currencyLoaded || !convertAmount) return 0;
-    
+
     const rentalDays = calculateRentalDays();
     if (rentalDays === 0) return 0;
-    
+
     // Use effective pricing (seasonal) if available, otherwise use base pricing
     const pricing = car.effectivePricing || car.pricing || {};
     const baseCurrency = pricing.currency || car.currency || "EUR";
-    
+
     const dailyRate = pricing.daily || car.dailyRate || 50;
-    const weeklyRate = pricing.weekly || (dailyRate * 7);
-    
+    const weeklyRate = pricing.weekly || dailyRate * 7;
+
     // Calculate optimized pricing: weekly + remaining daily
     const weeks = Math.floor(rentalDays / 7);
     const remainingDays = rentalDays % 7;
-    
-    const totalEUR = (weeks * weeklyRate) + (remainingDays * dailyRate);
-    
-    console.log('🧮 Car rental calculation:', {
+
+    const totalEUR = weeks * weeklyRate + remainingDays * dailyRate;
+
+    console.log("🧮 Car rental calculation:", {
       rentalDays,
       weeks,
       remainingDays,
       weeklyRate,
       dailyRate,
       totalEUR,
-      baseCurrency
+      baseCurrency,
     });
-    
+
     return convertAmount(totalEUR, baseCurrency, currentCurrency);
-  }, [car, currencyLoaded, convertAmount, currentCurrency, calculateRentalDays]);
+  }, [
+    car,
+    currencyLoaded,
+    convertAmount,
+    currentCurrency,
+    calculateRentalDays,
+  ]);
 
   // Calculate additional options total for rental period
   const calculateAdditionalOptionsTotal = useCallback(() => {
@@ -182,9 +188,15 @@ const CarsSingle = () => {
     const { cocukKoltugu, ekSurucu, gencSurucu } = additionalOptions;
     const dailyOptionsTotal = cocukKoltugu * 5 + ekSurucu * 8 + gencSurucu * 15;
     const totalEUR = dailyOptionsTotal * rentalDays;
-    
+
     return convertAmount(totalEUR, "EUR", currentCurrency);
-  }, [additionalOptions, convertAmount, currencyLoaded, currentCurrency, calculateRentalDays]);
+  }, [
+    additionalOptions,
+    convertAmount,
+    currencyLoaded,
+    currentCurrency,
+    calculateRentalDays,
+  ]);
 
   // Calculate grand total (car + additional options)
   const calculateGrandTotal = useCallback(() => {
@@ -387,35 +399,45 @@ const CarsSingle = () => {
     if (!car) return "";
 
     const carName = car.title || car.name || "Araç";
-    
+
     // Format dates for display
-    const pickupDateFormatted = formData.pickupDate ? formatDateFromInput(formData.pickupDate) : "";
-    const returnDateFormatted = formData.returnDate ? formatDateFromInput(formData.returnDate) : "";
-    
+    const pickupDateFormatted = formData.pickupDate
+      ? formatDateFromInput(formData.pickupDate)
+      : "";
+    const returnDateFormatted = formData.returnDate
+      ? formatDateFromInput(formData.returnDate)
+      : "";
+
     // Prepare additional options text
     const additionalOptionsText = [];
-    
+
     if (additionalOptions.cocukKoltugu > 0) {
-      additionalOptionsText.push(`- Çocuk Koltuğu: ${additionalOptions.cocukKoltugu} adet`);
+      additionalOptionsText.push(
+        `- Çocuk Koltuğu: ${additionalOptions.cocukKoltugu} adet`
+      );
     }
     if (additionalOptions.ekSurucu > 0) {
-      additionalOptionsText.push(`- Ek Sürücü: ${additionalOptions.ekSurucu} adet`);
+      additionalOptionsText.push(
+        `- Ek Sürücü: ${additionalOptions.ekSurucu} adet`
+      );
     }
     if (additionalOptions.gencSurucu > 0) {
-      additionalOptionsText.push(`- Genç Sürücü Paketi: ${additionalOptions.gencSurucu} adet`);
+      additionalOptionsText.push(
+        `- Genç Sürücü Paketi: ${additionalOptions.gencSurucu} adet`
+      );
     }
 
     // Build the message
     let message = `Merhaba, aşağıdaki araç için rezervasyon yapmak istiyorum 🚗\n\n`;
-    
+
     message += `Araç: ${carName}\n`;
     message += `Alış Yeri: ${formData.pickupLocation} – ${pickupDateFormatted} ${formData.pickupTime}\n`;
     message += `Dönüş Yeri: ${formData.dropoffLocation} – ${returnDateFormatted} ${formData.returnTime}\n`;
-    
+
     if (additionalOptionsText.length > 0) {
-      message += `\nEk Seçenekler:\n${additionalOptionsText.join('\n')}\n`;
+      message += `\nEk Seçenekler:\n${additionalOptionsText.join("\n")}\n`;
     }
-    
+
     message += `\nLütfen müsaitliği ve fiyatı teyit eder misiniz? 🙂`;
 
     return message;
@@ -441,7 +463,7 @@ const CarsSingle = () => {
       const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
       // Open WhatsApp in new tab
-      window.open(whatsappURL, '_blank');
+      window.open(whatsappURL, "_blank");
 
       // Show success message
       alert("WhatsApp açılıyor! Rezervasyon talebiniz hazırlandı.");
@@ -462,7 +484,6 @@ const CarsSingle = () => {
           gencSurucu: 0,
         });
       }, 1000);
-
     } catch (error) {
       console.error("WhatsApp redirect failed:", error);
       alert("WhatsApp açılırken bir hata oluştu. Lütfen tekrar deneyin.");
@@ -729,7 +750,8 @@ const CarsSingle = () => {
                   <p className="car-description">
                     {car?.description ||
                       `MITCAR RENTAL ${
-                        car?.title || car?.name ||}Müşteri memnuniyeti ilkesiyle yola çıkan MİTCAR RENTAL şirketimiz, Antalya araç kiralama alanında en iyi hizmeti verebilmek için 7 yıldır sektörde yoğun çaba sarf etmektedir. Müşteri istekleri doğrultusunda yürütülen araç temin faaliyetleri, güncel trend dizel otomatik araçların da filoya katılımıyla yeterince geliştirilerek sürdürülmektedir. 7 yıllık süreçte yalnızca Antalya ilindeki deneyimimizle kaliteli bir hizmet sunmanın peşinde olan şirketimiz, aynı hedef doğrultusunda tüm emeklerini seferber etmeye devam etmektedir. Yaptığımız tek ve özel iş, kaliteli ve konforlu araç kiralama hizmetidir. `}
+                        car?.title || car?.name
+                      } Müşteri memnuniyeti ilkesiyle yola çıkan MİTCAR RENTAL şirketimiz, Antalya araç kiralama alanında en iyi hizmeti verebilmek için 7 yıldır sektörde yoğun çaba sarf etmektedir. Müşteri istekleri doğrultusunda yürütülen araç temin faaliyetleri, güncel trend dizel otomatik araçların da filoya katılımıyla yeterince geliştirilerek sürdürülmektedir. 7 yıllık süreçte yalnızca Antalya ilindeki deneyimimizle kaliteli bir hizmet sunmanın peşinde olan şirketimiz, aynı hedef doğrultusunda tüm emeklerini seferber etmeye devam etmektedir. Yaptığımız tek ve özel iş, kaliteli ve konforlu araç kiralama hizmetidir. `}
                   </p>
 
                   {/* Specifications */}
@@ -879,20 +901,27 @@ const CarsSingle = () => {
                           <input
                             name="pickupDate"
                             type="text"
-                            value={formData.pickupDate ? formatDateFromInput(formData.pickupDate) : ""}
+                            value={
+                              formData.pickupDate
+                                ? formatDateFromInput(formData.pickupDate)
+                                : ""
+                            }
                             onChange={(e) => {
                               let value = e.target.value;
                               // Auto-format while typing
-                              value = value.replace(/[^\d]/g, ''); // Only numbers
+                              value = value.replace(/[^\d]/g, ""); // Only numbers
                               if (value.length >= 2) {
-                                value = value.slice(0, 2) + '/' + value.slice(2);
+                                value =
+                                  value.slice(0, 2) + "/" + value.slice(2);
                               }
                               if (value.length >= 5) {
-                                value = value.slice(0, 5) + '/' + value.slice(5, 9);
+                                value =
+                                  value.slice(0, 5) + "/" + value.slice(5, 9);
                               }
                               if (value.length <= 10) {
-                                const formattedForAPI = formatDateForInput(value);
-                                handleDateChange('pickupDate', formattedForAPI);
+                                const formattedForAPI =
+                                  formatDateForInput(value);
+                                handleDateChange("pickupDate", formattedForAPI);
                               }
                             }}
                             placeholder="GG/AA/YYYY"
@@ -903,7 +932,7 @@ const CarsSingle = () => {
                                 ? "#dc3545"
                                 : "#e9ecef",
                               fontFamily: "monospace",
-                              paddingRight: "45px"
+                              paddingRight: "45px",
                             }}
                             className="form-input date-input"
                           />
@@ -911,16 +940,18 @@ const CarsSingle = () => {
                             type="date"
                             className="date-picker-hidden"
                             onChange={(e) => {
-                              handleDateChange('pickupDate', e.target.value);
+                              handleDateChange("pickupDate", e.target.value);
                             }}
                             value={formData.pickupDate || ""}
                             min={getTodayDate()}
                           />
-                          <Calendar 
-                            className="calendar-icon" 
-                            size={18} 
+                          <Calendar
+                            className="calendar-icon"
+                            size={18}
                             onClick={() => {
-                              const hiddenInput = document.querySelector('.datetime-inputs .date-picker-hidden');
+                              const hiddenInput = document.querySelector(
+                                ".datetime-inputs .date-picker-hidden"
+                              );
                               if (hiddenInput) {
                                 hiddenInput.showPicker();
                               }
@@ -964,20 +995,27 @@ const CarsSingle = () => {
                           <input
                             name="returnDate"
                             type="text"
-                            value={formData.returnDate ? formatDateFromInput(formData.returnDate) : ""}
+                            value={
+                              formData.returnDate
+                                ? formatDateFromInput(formData.returnDate)
+                                : ""
+                            }
                             onChange={(e) => {
                               let value = e.target.value;
                               // Auto-format while typing
-                              value = value.replace(/[^\d]/g, ''); // Only numbers
+                              value = value.replace(/[^\d]/g, ""); // Only numbers
                               if (value.length >= 2) {
-                                value = value.slice(0, 2) + '/' + value.slice(2);
+                                value =
+                                  value.slice(0, 2) + "/" + value.slice(2);
                               }
                               if (value.length >= 5) {
-                                value = value.slice(0, 5) + '/' + value.slice(5, 9);
+                                value =
+                                  value.slice(0, 5) + "/" + value.slice(5, 9);
                               }
                               if (value.length <= 10) {
-                                const formattedForAPI = formatDateForInput(value);
-                                handleDateChange('returnDate', formattedForAPI);
+                                const formattedForAPI =
+                                  formatDateForInput(value);
+                                handleDateChange("returnDate", formattedForAPI);
                               }
                             }}
                             placeholder="GG/AA/YYYY"
@@ -988,7 +1026,7 @@ const CarsSingle = () => {
                                 ? "#dc3545"
                                 : "#e9ecef",
                               fontFamily: "monospace",
-                              paddingRight: "45px"
+                              paddingRight: "45px",
                             }}
                             className="form-input date-input"
                           />
@@ -996,16 +1034,18 @@ const CarsSingle = () => {
                             type="date"
                             className="date-picker-hidden"
                             onChange={(e) => {
-                              handleDateChange('returnDate', e.target.value);
+                              handleDateChange("returnDate", e.target.value);
                             }}
                             value={formData.returnDate || ""}
                             min={getMinReturnDate()}
                           />
-                          <Calendar 
-                            className="calendar-icon" 
-                            size={18} 
+                          <Calendar
+                            className="calendar-icon"
+                            size={18}
                             onClick={() => {
-                              const hiddenInputs = document.querySelectorAll('.datetime-inputs .date-picker-hidden');
+                              const hiddenInputs = document.querySelectorAll(
+                                ".datetime-inputs .date-picker-hidden"
+                              );
                               const returnDateInput = hiddenInputs[1]; // second date input is return date
                               if (returnDateInput) {
                                 returnDateInput.showPicker();
@@ -1204,67 +1244,100 @@ const CarsSingle = () => {
                       </div>
 
                       {/* Rental Summary */}
-                      {(formData.pickupDate && formData.returnDate) && (
+                      {formData.pickupDate && formData.returnDate && (
                         <div className="rental-summary">
                           <div className="summary-title">Kiralama Özeti</div>
-                          
+
                           <div className="summary-row">
-                            <span className="summary-label">Kiralama Süresi:</span>
-                            <span className="summary-value">{calculateRentalDays()} gün</span>
+                            <span className="summary-label">
+                              Kiralama Süresi:
+                            </span>
+                            <span className="summary-value">
+                              {calculateRentalDays()} gün
+                            </span>
                           </div>
-                          
+
                           {calculateCarRentalTotal() > 0 && (
                             <div className="summary-row">
-                              <span className="summary-label">Araç Kiralama:</span>
+                              <span className="summary-label">
+                                Araç Kiralama:
+                              </span>
                               <span className="summary-value">
                                 {formatPrice
                                   ? formatPrice(calculateCarRentalTotal())
-                                  : `${getCurrencySymbol()}${calculateCarRentalTotal().toFixed(2)}`}
+                                  : `${getCurrencySymbol()}${calculateCarRentalTotal().toFixed(
+                                      2
+                                    )}`}
                               </span>
                             </div>
                           )}
-                          
+
                           {calculateAdditionalOptionsTotal() > 0 && (
                             <div className="summary-row">
-                              <span className="summary-label">Ek Opsiyonlar:</span>
+                              <span className="summary-label">
+                                Ek Opsiyonlar:
+                              </span>
                               <span className="summary-value">
                                 {formatPrice
-                                  ? formatPrice(calculateAdditionalOptionsTotal())
-                                  : `${getCurrencySymbol()}${calculateAdditionalOptionsTotal().toFixed(2)}`}
+                                  ? formatPrice(
+                                      calculateAdditionalOptionsTotal()
+                                    )
+                                  : `${getCurrencySymbol()}${calculateAdditionalOptionsTotal().toFixed(
+                                      2
+                                    )}`}
                               </span>
                             </div>
                           )}
-                          
+
                           {calculateGrandTotal() > 0 && (
                             <div className="summary-row total-row">
-                              <span className="summary-label"><strong>Toplam Tutar:</strong></span>
+                              <span className="summary-label">
+                                <strong>Toplam Tutar:</strong>
+                              </span>
                               <span className="summary-value total-amount">
                                 <strong>
                                   {formatPrice
                                     ? formatPrice(calculateGrandTotal())
-                                    : `${getCurrencySymbol()}${calculateGrandTotal().toFixed(2)}`}
+                                    : `${getCurrencySymbol()}${calculateGrandTotal().toFixed(
+                                        2
+                                      )}`}
                                 </strong>
                               </span>
                             </div>
                           )}
                         </div>
                       )}
-                      
+
                       {/* Additional Options Per Day Display */}
-                      {(additionalOptions.cocukKoltugu > 0 || additionalOptions.ekSurucu > 0 || additionalOptions.gencSurucu > 0) && (
+                      {(additionalOptions.cocukKoltugu > 0 ||
+                        additionalOptions.ekSurucu > 0 ||
+                        additionalOptions.gencSurucu > 0) && (
                         <div className="total-options">
                           <div className="total-label">
                             Ek Opsiyonlar (Günlük)
                           </div>
                           <div className="total-amount">
                             {(() => {
-                              const { cocukKoltugu, ekSurucu, gencSurucu } = additionalOptions;
-                              const dailyTotal = cocukKoltugu * 5 + ekSurucu * 8 + gencSurucu * 15;
-                              const convertedDaily = convertAmount ? convertAmount(dailyTotal, "EUR", currentCurrency) : dailyTotal;
+                              const { cocukKoltugu, ekSurucu, gencSurucu } =
+                                additionalOptions;
+                              const dailyTotal =
+                                cocukKoltugu * 5 +
+                                ekSurucu * 8 +
+                                gencSurucu * 15;
+                              const convertedDaily = convertAmount
+                                ? convertAmount(
+                                    dailyTotal,
+                                    "EUR",
+                                    currentCurrency
+                                  )
+                                : dailyTotal;
                               return formatPrice
                                 ? formatPrice(convertedDaily)
-                                : `${getCurrencySymbol()}${convertedDaily.toFixed(2)}`;
-                            })()} / gün
+                                : `${getCurrencySymbol()}${convertedDaily.toFixed(
+                                    2
+                                  )}`;
+                            })()}{" "}
+                            / gün
                           </div>
                         </div>
                       )}
@@ -1290,7 +1363,10 @@ const CarsSingle = () => {
                         </>
                       ) : (
                         <>
-                          <i className="fa fa-whatsapp" style={{ marginRight: "8px" }}></i>
+                          <i
+                            className="fa fa-whatsapp"
+                            style={{ marginRight: "8px" }}
+                          ></i>
                           WhatsApp ile Rezervasyon Yap
                         </>
                       )}

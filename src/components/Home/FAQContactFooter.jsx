@@ -1,10 +1,4 @@
-// src/components/Home/FAQContactFooter.jsx - Blue Theme
-//a
-import React, { useState } from "react";
-
-const FAQContactFooter = () => {
-  const [openFAQ, setOpenFAQ] = useState(1); // İlk FAQ açık olsun
-
+// src/components/Home/FAQContactFooter.jsx - Blue Themegit log --oneline -5
   // FAQ verilerini buradan kolayca değiştirebilirsin
   const faqData = [
     {

@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { publicAPI } from "../../services/api";
-import { useCurrency } from "../../contexts/CurrencyContext";
 
 const CarsPartInHome = () => {
   const navigate = useNavigate();
   const sliderRef = useRef();
-  const { convertAndFormatPrice } = useCurrency();
 
   const [loading, setLoading] = useState(true);
   const [latestCars, setLatestCars] = useState([]);
@@ -229,41 +227,6 @@ const CarsPartInHome = () => {
                                       objectFit: "cover",
                                     }}
                                   />
-                                  <div
-                                    style={{
-                                      position: "absolute",
-                                      top: "15px",
-                                      left: "15px",
-                                      backgroundColor: "#1ecb15",
-                                      borderRadius: "8px",
-                                      padding: "6px 10px",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    <div
-                                      style={{
-                                        color: "white",
-                                        fontSize: "1rem",
-                                        fontWeight: "700",
-                                      }}
-                                    >
-                                      {car.pricing?.daily
-                                        ? convertAndFormatPrice(
-                                            car.pricing.daily,
-                                            car.pricing?.currency || "EUR"
-                                          )
-                                        : "Contact"}
-                                    </div>
-                                    <div
-                                      style={{
-                                        color: "white",
-                                        fontSize: "0.7rem",
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      PER DAY
-                                    </div>
-                                  </div>
                                 </div>
 
                                 <div style={{ padding: "1.5rem" }}>
@@ -287,7 +250,9 @@ const CarsPartInHome = () => {
                                       marginBottom: "1.5rem",
                                     }}
                                   >
-                                    {car.seats || "5"} seats • {car.transmission || "Auto"} • {car.doors || "4"} doors
+                                    {car.seats || "5"} seats •{" "}
+                                    {car.transmission || "Auto"} •{" "}
+                                    {car.doors || "4"} doors
                                   </p>
 
                                   <button
@@ -368,7 +333,9 @@ const CarsPartInHome = () => {
                                       e.currentTarget.style.boxShadow =
                                         "0 4px 20px rgba(0,0,0,0.1)";
                                     }}
-                                    onClick={() => handleViewCar(car.id || car._id)}
+                                    onClick={() =>
+                                      handleViewCar(car.id || car._id)
+                                    }
                                   >
                                     {/* Car Image */}
                                     <div
@@ -393,46 +360,6 @@ const CarsPartInHome = () => {
                                           transition: "transform 0.3s ease",
                                         }}
                                       />
-
-                                      {/* Price Badge */}
-                                      <div
-                                        style={{
-                                          position: "absolute",
-                                          top: "20px",
-                                          left: "20px",
-                                          backgroundColor: "#1ecb15",
-                                          borderRadius: "10px",
-                                          padding: "8px 12px",
-                                          textAlign: "center",
-                                          boxShadow: "0 2px 10px rgba(30, 203, 21, 0.3)",
-                                        }}
-                                      >
-                                        <div
-                                          style={{
-                                            color: "white",
-                                            fontSize: "1.2rem",
-                                            fontWeight: "700",
-                                            lineHeight: "1",
-                                          }}
-                                        >
-                                          {car.pricing?.daily
-                                            ? convertAndFormatPrice(
-                                                car.pricing.daily,
-                                                car.pricing?.currency || "EUR"
-                                              )
-                                            : "Contact"}
-                                        </div>
-                                        <div
-                                          style={{
-                                            color: "white",
-                                            fontSize: "0.8rem",
-                                            fontWeight: "600",
-                                            lineHeight: "1",
-                                          }}
-                                        >
-                                          PER DAY
-                                        </div>
-                                      </div>
                                     </div>
 
                                     {/* Car Content */}
@@ -465,7 +392,9 @@ const CarsPartInHome = () => {
                                           flex: "1",
                                         }}
                                       >
-                                        {car.seats || "5"} seats • {car.transmission || "Auto"} • {car.doors || "4"} doors
+                                        {car.seats || "5"} seats •{" "}
+                                        {car.transmission || "Auto"} •{" "}
+                                        {car.doors || "4"} doors
                                       </p>
 
                                       {/* View Details Button */}
@@ -502,7 +431,7 @@ const CarsPartInHome = () => {
                                             "translateY(0)";
                                         }}
                                       >
-                                        View Details
+                                        Detayları Görüntüle
                                       </button>
 
                                       {/* Bottom Border */}
@@ -700,7 +629,7 @@ const CarsPartInHome = () => {
               }}
               onClick={handleViewAllCars}
             >
-              View All Cars
+              Tüm Araçları Görüntüle
             </button>
           </div>
         </div>

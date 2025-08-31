@@ -168,38 +168,50 @@ const HeroSection = () => {
             color: #002efcff;
           }
 
-          /* Mobile button fixes */
+        /* Button container styles */
           .hero-button-container {
             display: flex;
             gap: 20px;
             justify-content: center;
-            flex-wrap: wrap;
             align-items: center;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
           }
 
+          .hero-button-container button {
+            flex: 1;
+            max-width: 280px;
+            min-width: 200px;
+            width: 100%;
+          }
+
+          /* Tablet and mobile responsive */
           @media (max-width: 768px) {
             .hero-button-container {
               flex-direction: column;
               gap: 15px;
-              width: 100%;
+              max-width: 350px;
             }
             
             .hero-button-container button {
+              flex: none !important;
               width: 100% !important;
-              max-width: 300px !important;
+              max-width: 100% !important;
               min-width: auto !important;
-              margin: 0 auto !important;
-              display: block !important;
-              text-align: center !important;
             }
           }
 
+          /* Small mobile */
           @media (max-width: 480px) {
+            .hero-button-container {
+              max-width: 100%;
+              padding: 0 10px;
+            }
+            
             .hero-button-container button {
-              padding: 12px 30px !important;
-              font-size: 1rem !important;
-              min-width: auto !important;
-              width: 100% !important;
+              padding: 12px 20px !important;
+              font-size: 0.95rem !important;
             }
           }
         `}
@@ -562,8 +574,6 @@ const HeroSection = () => {
                           >
                             🚗 Araç Kiralama
                           </button>
-                        </div>
-                        <div className="hero-button-container">
                           <button
                             type="submit"
                             onClick={() => navigate("/transfer-service")}

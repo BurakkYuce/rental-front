@@ -666,7 +666,7 @@ const TransferService = () => {
                     marginBottom: "15px",
                   }}
                 >
-                  Book Your Transfer
+                  Transferinizi Rezerve Edin
                 </h2>
                 <p style={{ fontSize: "1.1rem", color: "#666" }}>
                   Bilgilerinizi doldurun ve WhatsApp üzerinden transfer

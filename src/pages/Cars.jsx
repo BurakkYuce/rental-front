@@ -30,11 +30,11 @@ const CarsPage = () => {
 
   // Initialize filters from URL parameters
   useEffect(() => {
-    const pickupDateParam = searchParams.get('pickupDate');
-    const returnDateParam = searchParams.get('returnDate');
-    
+    const pickupDateParam = searchParams.get("pickupDate");
+    const returnDateParam = searchParams.get("returnDate");
+
     if (pickupDateParam || returnDateParam) {
-      setFilters(prev => ({
+      setFilters((prev) => ({
         ...prev,
         pickupDate: pickupDateParam || "",
         dropoffDate: returnDateParam || "",
@@ -99,7 +99,7 @@ const CarsPage = () => {
         rating: apiCar.stats?.rating?.average || 4.5,
         reviews:
           apiCar.stats?.rating?.count || Math.floor(Math.random() * 100) + 20,
-        seats: `${apiCar.seats || 4} seats`,
+        seats: `${apiCar.seats || 4} koltuk`,
         transmission: apiCar.transmission || "Automatic",
         doors: apiCar.doors || 4,
         type: apiCar.category || apiCar.bodyType || "Sedan",
@@ -175,7 +175,7 @@ const CarsPage = () => {
       setCars(transformedCars);
     } catch (error) {
       console.error("Failed to load cars:", error);
-      setError("Failed to load cars. Please try again later.");
+      setError("Araçlar yüklenemedi. Lütfen daha sonra tekrar deneyin.");
       setCars([]);
     } finally {
       setLoading(false);
@@ -325,7 +325,7 @@ const CarsPage = () => {
     const parts = dateString.split("/");
     if (parts.length === 3) {
       const [day, month, year] = parts;
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     }
     return dateString;
   };
@@ -352,7 +352,9 @@ const CarsPage = () => {
 
   // Handle calendar icon click
   const handleCalendarClick = (inputId) => {
-    const hiddenDateInput = document.querySelector(`#${inputId} + .date-picker-hidden`);
+    const hiddenDateInput = document.querySelector(
+      `#${inputId} + .date-picker-hidden`
+    );
     if (hiddenDateInput) {
       hiddenDateInput.showPicker();
     }
@@ -434,8 +436,8 @@ const CarsPage = () => {
       {/* Hero Section */}
       <div className="cars-hero">
         <div className="container">
-          <h1>Cars</h1>
-          <p>Find the perfect car for your next adventure</p>
+          <h1>Araçlar</h1>
+          <p>Bir sonraki maceranız için mükemmel aracı bulun</p>
         </div>
       </div>
 
@@ -449,21 +451,25 @@ const CarsPage = () => {
               type="button"
             >
               <Settings size={20} />
-              Filtreler ({
-                filters.fuelType.length + 
-                filters.bodyType.length + 
-                filters.brand.length + 
-                filters.transmission.length + 
-                (filters.pickupDate ? 1 : 0) + 
+              Filtreler (
+              {filters.fuelType.length +
+                filters.bodyType.length +
+                filters.brand.length +
+                filters.transmission.length +
+                (filters.pickupDate ? 1 : 0) +
                 (filters.dropoffDate ? 1 : 0) +
-                ((filters.priceRange.min > 0 || filters.priceRange.max < 2000) ? 1 : 0)
-              })
-              <span className={`toggle-arrow ${filtersVisible ? 'open' : ''}`}>▼</span>
+                (filters.priceRange.min > 0 || filters.priceRange.max < 2000
+                  ? 1
+                  : 0)}
+              )
+              <span className={`toggle-arrow ${filtersVisible ? "open" : ""}`}>
+                ▼
+              </span>
             </button>
           </div>
 
           {/* Filters Sidebar */}
-          <div className={`filters-sidebar ${filtersVisible ? 'visible' : ''}`}>
+          <div className={`filters-sidebar ${filtersVisible ? "visible" : ""}`}>
             <div className="filters-header">
               <h2>Filtreler</h2>
             </div>
@@ -478,20 +484,24 @@ const CarsPage = () => {
                       <input
                         type="text"
                         id="pickupDate"
-                        value={filters.pickupDate ? formatDateFromInput(filters.pickupDate) : ""}
+                        value={
+                          filters.pickupDate
+                            ? formatDateFromInput(filters.pickupDate)
+                            : ""
+                        }
                         onChange={(e) => {
                           let value = e.target.value;
                           // Auto-format while typing
-                          value = value.replace(/[^\d]/g, ''); // Only numbers
+                          value = value.replace(/[^\d]/g, ""); // Only numbers
                           if (value.length >= 2) {
-                            value = value.slice(0, 2) + '/' + value.slice(2);
+                            value = value.slice(0, 2) + "/" + value.slice(2);
                           }
                           if (value.length >= 5) {
-                            value = value.slice(0, 5) + '/' + value.slice(5, 9);
+                            value = value.slice(0, 5) + "/" + value.slice(5, 9);
                           }
                           if (value.length <= 10) {
                             const formattedForAPI = formatDateForInput(value);
-                            handleDateChange('pickupDate', formattedForAPI);
+                            handleDateChange("pickupDate", formattedForAPI);
                           }
                         }}
                         placeholder="GG/AA/YYYY"
@@ -502,16 +512,18 @@ const CarsPage = () => {
                         type="date"
                         className="date-picker-hidden"
                         onChange={(e) => {
-                          handleDateChange('pickupDate', e.target.value);
+                          handleDateChange("pickupDate", e.target.value);
                         }}
                         value={filters.pickupDate || ""}
                         min={new Date().toISOString().split("T")[0]}
                       />
-                      <Calendar 
-                        className="calendar-icon" 
-                        size={18} 
+                      <Calendar
+                        className="calendar-icon"
+                        size={18}
                         onClick={() => {
-                          const hiddenInput = document.querySelector('#pickupDate').parentElement.querySelector('.date-picker-hidden');
+                          const hiddenInput = document
+                            .querySelector("#pickupDate")
+                            .parentElement.querySelector(".date-picker-hidden");
                           if (hiddenInput) {
                             hiddenInput.showPicker();
                           }
@@ -525,20 +537,24 @@ const CarsPage = () => {
                       <input
                         type="text"
                         id="dropoffDate"
-                        value={filters.dropoffDate ? formatDateFromInput(filters.dropoffDate) : ""}
+                        value={
+                          filters.dropoffDate
+                            ? formatDateFromInput(filters.dropoffDate)
+                            : ""
+                        }
                         onChange={(e) => {
                           let value = e.target.value;
                           // Auto-format while typing
-                          value = value.replace(/[^\d]/g, ''); // Only numbers
+                          value = value.replace(/[^\d]/g, ""); // Only numbers
                           if (value.length >= 2) {
-                            value = value.slice(0, 2) + '/' + value.slice(2);
+                            value = value.slice(0, 2) + "/" + value.slice(2);
                           }
                           if (value.length >= 5) {
-                            value = value.slice(0, 5) + '/' + value.slice(5, 9);
+                            value = value.slice(0, 5) + "/" + value.slice(5, 9);
                           }
                           if (value.length <= 10) {
                             const formattedForAPI = formatDateForInput(value);
-                            handleDateChange('dropoffDate', formattedForAPI);
+                            handleDateChange("dropoffDate", formattedForAPI);
                           }
                         }}
                         placeholder="GG/AA/YYYY"
@@ -549,7 +565,7 @@ const CarsPage = () => {
                         type="date"
                         className="date-picker-hidden"
                         onChange={(e) => {
-                          handleDateChange('dropoffDate', e.target.value);
+                          handleDateChange("dropoffDate", e.target.value);
                         }}
                         value={filters.dropoffDate || ""}
                         min={
@@ -557,11 +573,13 @@ const CarsPage = () => {
                           new Date().toISOString().split("T")[0]
                         }
                       />
-                      <Calendar 
-                        className="calendar-icon" 
-                        size={18} 
+                      <Calendar
+                        className="calendar-icon"
+                        size={18}
                         onClick={() => {
-                          const hiddenInput = document.querySelector('#dropoffDate').parentElement.querySelector('.date-picker-hidden');
+                          const hiddenInput = document
+                            .querySelector("#dropoffDate")
+                            .parentElement.querySelector(".date-picker-hidden");
                           if (hiddenInput) {
                             hiddenInput.showPicker();
                           }
@@ -656,7 +674,7 @@ const CarsPage = () => {
             </div>
             {/* Price Range Filter */}
             <div className="filter-section">
-              <h3>Price ({getCurrencySymbol()})</h3>
+              <h3>Fiyat ({getCurrencySymbol()})</h3>
               <div className="price-range">
                 <div className="price-inputs">
                   <input
@@ -737,7 +755,7 @@ const CarsPage = () => {
                 <div key={index} className="car-card loading">
                   <div className="car-image loading-placeholder">
                     <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden">Loading...</span>
+                      <span className="visually-hidden">Yükleniyor...</span>
                     </div>
                   </div>
                   <div className="car-info loading-content">
@@ -748,10 +766,10 @@ const CarsPage = () => {
               ))
             ) : error ? (
               <div className="error-container">
-                <h3>Oops! Something went wrong</h3>
+                <h3>Ups! Bir şeyler yanlış gitti</h3>
                 <p>{error}</p>
                 <button onClick={loadCars} className="retry-btn" type="button">
-                  Try Again
+                  Tekrar Dene
                 </button>
               </div>
             ) : currentCars.length > 0 ? (
@@ -784,7 +802,7 @@ const CarsPage = () => {
                       </div>
                       <div className="feature">
                         <Calendar size={16} />
-                        <span>{car.doors} doors</span>
+                        <span>{car.doors} kapı</span>
                       </div>
                       <div className="feature car-type">
                         <span>{car.type}</span>
@@ -839,14 +857,14 @@ const CarsPage = () => {
               ))
             ) : (
               <div className="no-results">
-                <h3>No cars found matching your criteria</h3>
-                <p>Try adjusting your filters to see more results.</p>
+                <h3>Kriterlerinize uygun araç bulunamadı</h3>
+                <p>Daha fazla sonuç görmek için filtrelerinizi ayarlayın.</p>
                 <button
                   className="clear-filters-btn secondary"
                   onClick={clearAllFilters}
                   type="button"
                 >
-                  Clear All Filters
+                  Tüm Filtreleri Temizle
                 </button>
               </div>
             )}
@@ -860,9 +878,9 @@ const CarsPage = () => {
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 type="button"
-                aria-label="Previous page"
+                aria-label="Önceki sayfa"
               >
-                Previous
+                Önceki
               </button>
 
               {[...Array(totalPages)].map((_, index) => {
@@ -903,7 +921,7 @@ const CarsPage = () => {
                     }`}
                     onClick={() => handlePageChange(page)}
                     type="button"
-                    aria-label={`Go to page ${page}`}
+                    aria-label={`Sayfa ${page}`}
                     aria-current={currentPage === page ? "page" : undefined}
                   >
                     {page}
@@ -916,9 +934,9 @@ const CarsPage = () => {
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 type="button"
-                aria-label="Next page"
+                aria-label="Sonraki sayfa"
               >
-                Next
+                Sonraki
               </button>
             </div>
           )}
@@ -927,9 +945,9 @@ const CarsPage = () => {
           {!loading && !error && (
             <div className="results-summary">
               <p>
-                Showing {filteredCars.length === 0 ? 0 : startIndex + 1}-
-                {Math.min(endIndex, filteredCars.length)} of{" "}
-                {filteredCars.length} cars
+                Gösteriliyor {filteredCars.length === 0 ? 0 : startIndex + 1}-
+                {Math.min(endIndex, filteredCars.length)} /{" "}
+                {filteredCars.length} araç
               </p>
             </div>
           )}

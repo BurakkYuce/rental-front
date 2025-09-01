@@ -66,27 +66,78 @@ const HeroSection = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (formData.pickupDate && formData.returnDate) {
+    // Tarih validasyonu - invalid ise parametresiz /cars'a git
+    let validPickupDate = null;
+    let validReturnDate = null;
+
+    // Pickup date validation
+    if (formData.pickupDate) {
       const pickupDate = new Date(formData.pickupDate);
+      if (
+        isNaN(pickupDate.getTime()) ||
+        pickupDate < new Date().setHours(0, 0, 0, 0)
+      ) {
+        // Invalid pickup date - direkt /cars'a git
+        console.log(
+          "❌ Invalid pickup date, redirecting to /cars without params"
+        );
+        navigate("/cars");
+        return;
+      }
+      validPickupDate = formData.pickupDate;
+    }
+
+    // Return date validation
+    if (formData.returnDate) {
       const returnDate = new Date(formData.returnDate);
+      if (
+        isNaN(returnDate.getTime()) ||
+        returnDate < new Date().setHours(0, 0, 0, 0)
+      ) {
+        // Invalid return date - direkt /cars'a git
+        console.log(
+          "❌ Invalid return date, redirecting to /cars without params"
+        );
+        navigate("/cars");
+        return;
+      }
+      validReturnDate = formData.returnDate;
+    }
+
+    // Date comparison validation
+    if (validPickupDate && validReturnDate) {
+      const pickupDate = new Date(validPickupDate);
+      const returnDate = new Date(validReturnDate);
 
       if (pickupDate >= returnDate) {
         alert(
-          "Return date must be after pickup date. Please select valid dates."
+          "Dönüş tarihi alış tarihinden sonra olmalıdır. Lütfen geçerli tarihler seçiniz."
         );
         return;
       }
     }
 
+    // Tüm validasyonlar geçti - query parametreleri ile git
     const queryParams = new URLSearchParams();
-    if (formData.pickupLocation)
-      queryParams.set("pickupLocation", formData.pickupLocation);
-    if (formData.dropoffLocation)
-      queryParams.set("dropoffLocation", formData.dropoffLocation);
-    if (formData.pickupDate) queryParams.set("pickupDate", formData.pickupDate);
-    if (formData.returnDate) queryParams.set("returnDate", formData.returnDate);
 
-    navigate(`/cars?${queryParams.toString()}`);
+    if (formData.pickupLocation) {
+      queryParams.set("pickupLocation", formData.pickupLocation);
+    }
+    if (formData.dropoffLocation) {
+      queryParams.set("dropoffLocation", formData.dropoffLocation);
+    }
+    if (validPickupDate) {
+      queryParams.set("pickupDate", validPickupDate);
+    }
+    if (validReturnDate) {
+      queryParams.set("returnDate", validReturnDate);
+    }
+
+    const queryString = queryParams.toString();
+    const targetUrl = queryString ? `/cars?${queryString}` : "/cars";
+
+    console.log("✅ Valid form data, redirecting to:", targetUrl);
+    navigate(targetUrl);
   };
 
   const getTodayDate = () => {
@@ -566,6 +617,7 @@ const HeroSection = () => {
                       {/* Submit Buttons */}
                       <div className="col-lg-12 text-center mt-4">
                         <div className="hero-button-container">
+                          {/* Araç kiralama: Form submit eder */}
                           <button
                             type="submit"
                             style={buttonStyle}
@@ -574,8 +626,10 @@ const HeroSection = () => {
                           >
                             🚗 Araç Kiralama
                           </button>
+
+                          {/* Transfer: Sadece navigation yapar */}
                           <button
-                            type="submit"
+                            type="button"
                             onClick={() => navigate("/transfer-service")}
                             style={buttonStyle}
                             onMouseEnter={handleMouseEnter}

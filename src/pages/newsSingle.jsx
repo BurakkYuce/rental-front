@@ -11,13 +11,12 @@ import "../assets/css/style.css";
 const NewsSingle = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  
+
   // State for blog data
   const [blog, setBlog] = useState(null);
   const [relatedPosts, setRelatedPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  
 
   // Load blog post and related posts
   useEffect(() => {
@@ -32,11 +31,11 @@ const NewsSingle = () => {
       setLoading(true);
       setError("");
       console.log("🔄 Loading blog post with slug:", slug);
-      
+
       const response = await publicAPI.getNewsById(slug);
       console.log("📰 Blog API response:", response);
       console.log("📊 Response data structure:", response.data);
-      
+
       // Handle different possible response structures
       let blogData = null;
       if (response.data && response.data.success) {
@@ -44,9 +43,9 @@ const NewsSingle = () => {
       } else if (response.data) {
         blogData = response.data;
       }
-      
+
       console.log("📰 Processed blog data:", blogData);
-      
+
       if (blogData) {
         // Debug image fields specifically
         console.log("🖼️ Blog image fields:", {
@@ -55,9 +54,9 @@ const NewsSingle = () => {
           main_image: blogData.main_image,
           image: blogData.image,
           images: blogData.images,
-          thumbnail: blogData.thumbnail
+          thumbnail: blogData.thumbnail,
         });
-        
+
         setBlog(blogData);
         // Don't set related posts from blog data, we load them separately
       } else {
@@ -79,31 +78,33 @@ const NewsSingle = () => {
   const loadRecentPosts = async () => {
     try {
       console.log("🔄 Loading recent posts...");
-      const response = await publicAPI.getNews({ 
+      const response = await publicAPI.getNews({
         limit: 5,
-        page: 1
+        page: 1,
       });
       console.log("📰 Recent posts API response:", response);
-      
+
       // Handle different possible response structures
       let postsData = [];
       if (response.data && response.data.success) {
-        postsData = response.data.data?.blogs || response.data.data?.posts || [];
+        postsData =
+          response.data.data?.blogs || response.data.data?.posts || [];
       } else if (response.data && response.data.data) {
         postsData = response.data.data.blogs || response.data.data || [];
       }
-      
+
       console.log("📰 Recent posts processed data:", postsData);
-      
+
       // Filter out current post and take only 4 recent posts
-      const filteredPosts = postsData.filter(post => post.slug !== slug).slice(0, 4);
+      const filteredPosts = postsData
+        .filter((post) => post.slug !== slug)
+        .slice(0, 4);
       setRelatedPosts(filteredPosts);
     } catch (error) {
       console.error("❌ Failed to load recent posts:", error);
       // Don't set error for recent posts, just log it
     }
   };
-
 
   const socialIcons = [
     { name: "twitter", icon: "fa-twitter" },
@@ -113,14 +114,17 @@ const NewsSingle = () => {
     { name: "pinterest", icon: "fa-pinterest" },
     { name: "stumbleupon", icon: "fa-stumbleupon" },
     { name: "delicious", icon: "fa-delicious" },
-    { name: "envelope", icon: "fa-envelope" }
+    { name: "envelope", icon: "fa-envelope" },
   ];
 
   return (
-    <div className="news-single-page" style={{ minHeight: "100vh", backgroundColor: "#fff" }}>
+    <div
+      className="news-single-page"
+      style={{ minHeight: "100vh", backgroundColor: "#fff" }}
+    >
       {/* Header */}
       <Header />
-      
+
       {/* Back to Home Button */}
       <BackToHomeButton />
 
@@ -151,7 +155,11 @@ const NewsSingle = () => {
             <div className="row">
               <div className="col-md-12">
                 <h1 style={{ fontSize: "3rem", fontWeight: "bold", margin: 0 }}>
-                  {loading ? "Loading..." : error ? "Error" : blog?.title || "Blog Post"}
+                  {loading
+                    ? "Loading..."
+                    : error
+                    ? "Error"
+                    : blog?.title || "Blog Post"}
                 </h1>
               </div>
             </div>
@@ -170,26 +178,64 @@ const NewsSingle = () => {
                   <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Loading...</span>
                   </div>
-                  <p style={{ marginTop: "1rem", color: "#666" }}>Loading blog post...</p>
+                  <p style={{ marginTop: "1rem", color: "#666" }}>
+                    Loading blog post...
+                  </p>
                 </div>
               ) : error ? (
-                <div style={{ textAlign: "center", padding: "50px", color: "#dc3545" }}>
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "50px",
+                    color: "#dc3545",
+                  }}
+                >
                   <h3>Oops!</h3>
                   <p>{error}</p>
-                  <Link to="/news" style={{ color: "#1ECB15", textDecoration: "none", fontWeight: "500" }}>
+                  <Link
+                    to="/news"
+                    style={{
+                      color: "#1ECB15",
+                      textDecoration: "none",
+                      fontWeight: "500",
+                    }}
+                  >
                     ← Back to Blog
                   </Link>
                 </div>
               ) : blog ? (
                 <div style={{ marginBottom: "40px" }}>
                   {/* Article Meta */}
-                  <div style={{ marginBottom: "20px", paddingBottom: "20px", borderBottom: "1px solid #eee" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap", fontSize: "0.9rem", color: "#666" }}>
+                  <div
+                    style={{
+                      marginBottom: "20px",
+                      paddingBottom: "20px",
+                      borderBottom: "1px solid #eee",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "20px",
+                        flexWrap: "wrap",
+                        fontSize: "0.9rem",
+                        color: "#666",
+                      }}
+                    >
                       <span>By {blog.author?.name || "Admin"}</span>
                       <span>•</span>
                       <span>{blog.readingTimeDisplay}</span>
                       <span>•</span>
-                      <span style={{ backgroundColor: "#1ECB15", color: "white", padding: "2px 8px", borderRadius: "12px", fontSize: "0.8rem" }}>
+                      <span
+                        style={{
+                          backgroundColor: "#1ECB15",
+                          color: "white",
+                          padding: "2px 8px",
+                          borderRadius: "12px",
+                          fontSize: "0.8rem",
+                        }}
+                      >
                         {blog.category}
                       </span>
                     </div>
@@ -217,7 +263,10 @@ const NewsSingle = () => {
                       blog.title
                     }
                     onError={(e) => {
-                      console.warn("🖼️ Blog main image failed to load:", e.target.src);
+                      console.warn(
+                        "🖼️ Blog main image failed to load:",
+                        e.target.src
+                      );
                       e.target.src = "/images/news/big.jpg";
                     }}
                     style={{
@@ -225,50 +274,93 @@ const NewsSingle = () => {
                       height: "400px",
                       objectFit: "cover",
                       borderRadius: "12px",
-                      marginBottom: "30px"
+                      marginBottom: "30px",
                     }}
                   />
 
                   {/* Excerpt */}
                   {blog.excerpt && (
-                    <div style={{
-                      backgroundColor: "#f8f9fa",
-                      padding: "20px",
-                      borderRadius: "8px",
-                      borderLeft: "4px solid #1ECB15",
-                      marginBottom: "30px",
-                      fontSize: "1.1rem",
-                      fontStyle: "italic",
-                      lineHeight: "1.6",
-                      color: "#555"
-                    }}>
-                      {blog.excerpt}
+                    <div
+                      style={{
+                        backgroundColor: "#f8f9fa",
+                        padding: "20px",
+                        borderRadius: "8px",
+                        borderLeft: "4px solid #1ECB15",
+                        marginBottom: "30px",
+                        fontSize: "1.1rem",
+                        fontStyle: "italic",
+                        lineHeight: "1.6",
+                        color: "#555",
+                      }}
+                    >
+                      <a
+                        href="https://istedigin-url.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: "inherit",
+                          textDecoration: "none",
+                          display: "block",
+                          transition: "all 0.3s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.color = "#1ECB15";
+                          e.target.style.textDecoration = "underline";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.color = "#555";
+                          e.target.style.textDecoration = "none";
+                        }}
+                      >
+                        {blog.excerpt}
+                      </a>
                     </div>
                   )}
 
                   {/* Article Content */}
-                  <div 
-                    style={{ 
-                      fontSize: "1.1rem", 
-                      lineHeight: "1.8", 
+                  <div
+                    style={{
+                      fontSize: "1.1rem",
+                      lineHeight: "1.8",
                       color: "#666",
-                      marginBottom: "30px"
+                      marginBottom: "30px",
                     }}
-                    dangerouslySetInnerHTML={{ 
-                      __html: blog.content ? 
-                        (typeof blog.content === 'string' ? 
-                          blog.content.replace(/\n/g, '<br>') : 
-                          blog.content
-                        ) : 
-                        blog.description || blog.excerpt || "Content not available"
+                    dangerouslySetInnerHTML={{
+                      __html: blog.content
+                        ? typeof blog.content === "string"
+                          ? blog.content.replace(/\n/g, "<br>")
+                          : blog.content
+                        : blog.description ||
+                          blog.excerpt ||
+                          "Content not available",
                     }}
                   />
 
                   {/* Tags */}
                   {blog.tags && blog.tags.length > 0 && (
-                    <div style={{ marginTop: "30px", paddingTop: "20px", borderTop: "1px solid #eee" }}>
-                      <h5 style={{ marginBottom: "15px", fontWeight: "600", color: "#333" }}>Tags:</h5>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    <div
+                      style={{
+                        marginTop: "30px",
+                        paddingTop: "20px",
+                        borderTop: "1px solid #eee",
+                      }}
+                    >
+                      <h5
+                        style={{
+                          marginBottom: "15px",
+                          fontWeight: "600",
+                          color: "#333",
+                        }}
+                      >
+                        Tags:
+                      </h5>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: "8px",
+                        }}
+                      >
                         {blog.tags.map((tag, index) => (
                           <span
                             key={index}
@@ -290,20 +382,28 @@ const NewsSingle = () => {
                   )}
                 </div>
               ) : null}
-
             </div>
 
             {/* Sidebar */}
             <div className="col-md-4">
               {/* Share with Friends */}
-              <div style={{ 
-                backgroundColor: "white", 
-                padding: "25px", 
-                borderRadius: "12px", 
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                marginBottom: "30px" 
-              }}>
-                <h4 style={{ fontSize: "1.4rem", fontWeight: "600", marginBottom: "20px", color: "#333" }}>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  padding: "25px",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  marginBottom: "30px",
+                }}
+              >
+                <h4
+                  style={{
+                    fontSize: "1.4rem",
+                    fontWeight: "600",
+                    marginBottom: "20px",
+                    color: "#333",
+                  }}
+                >
                   Share With Friends
                 </h4>
                 <div
@@ -350,14 +450,23 @@ const NewsSingle = () => {
               </div>
 
               {/* Recent Posts */}
-              <div style={{ 
-                backgroundColor: "white", 
-                padding: "25px", 
-                borderRadius: "12px", 
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                marginBottom: "30px" 
-              }}>
-                <h4 style={{ fontSize: "1.4rem", fontWeight: "600", marginBottom: "20px", color: "#333" }}>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  padding: "25px",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  marginBottom: "30px",
+                }}
+              >
+                <h4
+                  style={{
+                    fontSize: "1.4rem",
+                    fontWeight: "600",
+                    marginBottom: "20px",
+                    color: "#333",
+                  }}
+                >
                   Recent Posts
                 </h4>
                 <div
@@ -369,74 +478,87 @@ const NewsSingle = () => {
                   }}
                 ></div>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  {relatedPosts.length > 0 ? relatedPosts.map((post) => (
-                    <li
-                      key={post._id || post.id}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginBottom: "20px",
-                        paddingBottom: "20px",
-                        borderBottom: "1px solid #eee",
-                      }}
-                    >
-                      <div style={{ marginRight: "15px", flexShrink: 0 }}>
-                        <img
-                          src={
-                            post.featuredImage?.url ||
-                            post.mainImage?.url ||
-                            post.main_image?.url ||
-                            post.image?.url ||
-                            post.image ||
-                            post.images?.main?.url ||
-                            post.images?.featured?.url ||
-                            post.thumbnail?.url ||
-                            post.thumbnail ||
-                            "/images/news-thumbnail/pic-blog-1.jpg"
-                          }
-                          alt={post.title}
-                          onError={(e) => {
-                            console.warn("🖼️ Recent post image failed to load:", e.target.src);
-                            e.target.src = "/images/news-thumbnail/pic-blog-1.jpg";
-                          }}
-                          style={{
-                            width: "70px",
-                            height: "70px",
-                            objectFit: "cover",
-                            borderRadius: "8px",
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <h4
-                          style={{
-                            fontSize: "0.95rem",
-                            fontWeight: "600",
-                            marginBottom: "5px",
-                            lineHeight: "1.3",
-                          }}
-                        >
-                          <Link
-                            to={`/news/${post.slug}`}
+                  {relatedPosts.length > 0 ? (
+                    relatedPosts.map((post) => (
+                      <li
+                        key={post._id || post.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: "20px",
+                          paddingBottom: "20px",
+                          borderBottom: "1px solid #eee",
+                        }}
+                      >
+                        <div style={{ marginRight: "15px", flexShrink: 0 }}>
+                          <img
+                            src={
+                              post.featuredImage?.url ||
+                              post.mainImage?.url ||
+                              post.main_image?.url ||
+                              post.image?.url ||
+                              post.image ||
+                              post.images?.main?.url ||
+                              post.images?.featured?.url ||
+                              post.thumbnail?.url ||
+                              post.thumbnail ||
+                              "/images/news-thumbnail/pic-blog-1.jpg"
+                            }
+                            alt={post.title}
+                            onError={(e) => {
+                              console.warn(
+                                "🖼️ Recent post image failed to load:",
+                                e.target.src
+                              );
+                              e.target.src =
+                                "/images/news-thumbnail/pic-blog-1.jpg";
+                            }}
                             style={{
-                              color: "#333",
-                              textDecoration: "none",
-                              transition: "color 0.3s ease",
+                              width: "70px",
+                              height: "70px",
+                              objectFit: "cover",
+                              borderRadius: "8px",
                             }}
-                            onMouseEnter={(e) => {
-                              e.target.style.color = "#1ECB15";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.target.style.color = "#333";
+                          />
+                        </div>
+                        <div>
+                          <h4
+                            style={{
+                              fontSize: "0.95rem",
+                              fontWeight: "600",
+                              marginBottom: "5px",
+                              lineHeight: "1.3",
                             }}
                           >
-                            {post.title}
-                          </Link>
-                        </h4>
-                      </div>
-                    </li>
-                  )) : (
-                    <li style={{ textAlign: "center", padding: "20px", color: "#666", fontSize: "0.9rem" }}>
+                            <Link
+                              to={`/news/${post.slug}`}
+                              style={{
+                                color: "#333",
+                                textDecoration: "none",
+                                transition: "color 0.3s ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.target.style.color = "#1ECB15";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.target.style.color = "#333";
+                              }}
+                            >
+                              {post.title}
+                            </Link>
+                          </h4>
+                        </div>
+                      </li>
+                    ))
+                  ) : (
+                    <li
+                      style={{
+                        textAlign: "center",
+                        padding: "20px",
+                        color: "#666",
+                        fontSize: "0.9rem",
+                      }}
+                    >
                       No recent posts available
                     </li>
                   )}
@@ -444,14 +566,23 @@ const NewsSingle = () => {
               </div>
 
               {/* About Us */}
-              <div style={{ 
-                backgroundColor: "white", 
-                padding: "25px", 
-                borderRadius: "12px", 
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                marginBottom: "30px" 
-              }}>
-                <h4 style={{ fontSize: "1.4rem", fontWeight: "600", marginBottom: "20px", color: "#333" }}>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  padding: "25px",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  marginBottom: "30px",
+                }}
+              >
+                <h4
+                  style={{
+                    fontSize: "1.4rem",
+                    fontWeight: "600",
+                    marginBottom: "20px",
+                    color: "#333",
+                  }}
+                >
                   About Us
                 </h4>
                 <div
@@ -462,19 +593,40 @@ const NewsSingle = () => {
                     marginBottom: "25px",
                   }}
                 ></div>
-                <p style={{ fontSize: "0.9rem", lineHeight: "1.6", color: "#666", margin: 0 }}>
-                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni
+                <p
+                  style={{
+                    fontSize: "0.9rem",
+                    lineHeight: "1.6",
+                    color: "#666",
+                    margin: 0,
+                  }}
+                >
+                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+                  accusantium doloremque laudantium, totam rem aperiam, eaque
+                  ipsa quae ab illo inventore veritatis et quasi architecto
+                  beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem
+                  quia voluptas sit aspernatur aut odit aut fugit, sed quia
+                  consequuntur magni
                 </p>
               </div>
 
               {/* Tags */}
-              <div style={{ 
-                backgroundColor: "white", 
-                padding: "25px", 
-                borderRadius: "12px", 
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" 
-              }}>
-                <h4 style={{ fontSize: "1.4rem", fontWeight: "600", marginBottom: "20px", color: "#333" }}>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  padding: "25px",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <h4
+                  style={{
+                    fontSize: "1.4rem",
+                    fontWeight: "600",
+                    marginBottom: "20px",
+                    color: "#333",
+                  }}
+                >
                   Tags
                 </h4>
                 <div
@@ -503,9 +655,45 @@ const NewsSingle = () => {
                     </span>
                   )) || (
                     <>
-                      <span style={{ display: "inline-block", padding: "6px 12px", backgroundColor: "#f8f9fa", color: "#666", borderRadius: "20px", fontSize: "0.85rem", border: "1px solid #e9ecef" }}>travel</span>
-                      <span style={{ display: "inline-block", padding: "6px 12px", backgroundColor: "#f8f9fa", color: "#666", borderRadius: "20px", fontSize: "0.85rem", border: "1px solid #e9ecef" }}>cars</span>
-                      <span style={{ display: "inline-block", padding: "6px 12px", backgroundColor: "#f8f9fa", color: "#666", borderRadius: "20px", fontSize: "0.85rem", border: "1px solid #e9ecef" }}>rental</span>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          padding: "6px 12px",
+                          backgroundColor: "#f8f9fa",
+                          color: "#666",
+                          borderRadius: "20px",
+                          fontSize: "0.85rem",
+                          border: "1px solid #e9ecef",
+                        }}
+                      >
+                        travel
+                      </span>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          padding: "6px 12px",
+                          backgroundColor: "#f8f9fa",
+                          color: "#666",
+                          borderRadius: "20px",
+                          fontSize: "0.85rem",
+                          border: "1px solid #e9ecef",
+                        }}
+                      >
+                        cars
+                      </span>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          padding: "6px 12px",
+                          backgroundColor: "#f8f9fa",
+                          color: "#666",
+                          borderRadius: "20px",
+                          fontSize: "0.85rem",
+                          border: "1px solid #e9ecef",
+                        }}
+                      >
+                        rental
+                      </span>
                     </>
                   )}
                 </div>

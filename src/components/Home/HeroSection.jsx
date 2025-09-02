@@ -620,10 +620,7 @@ const HeroSection = () => {
                           {/* Araç kiralama: Form submit eder */}
                           <button
                             type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleSubmit(e);
-                            }}
+                            onClick={() => navigate("/cars")}
                             style={buttonStyle}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}

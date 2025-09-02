@@ -8,6 +8,15 @@ const BackToHomeButton = ({
   right = "20px",
   variant = "default",
 }) => {
+  const handleClick = () => {
+    // Sayfanın en üstüne kaydir
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <Link
       to="/"
@@ -16,6 +25,7 @@ const BackToHomeButton = ({
         "--desktop-top": top,
         "--desktop-right": right,
       }}
+      onClick={handleClick}
     >
       {/* Mobile: Only house emoji */}
       <span className="mobile-content">🏠</span>

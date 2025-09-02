@@ -1,7 +1,7 @@
 // src/components/Home/HeroSection.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import "./../";
 // Location options for pickup and dropoff
 const locationOptions = [
   "Antalya Havalimanı (AYT)",
@@ -618,19 +618,21 @@ const HeroSection = () => {
                       <div className="col-lg-12 text-center mt-4">
                         <div className="hero-button-container">
                           {/* Araç kiralama: Form submit eder */}
+                          // Form kısmında:
                           <button
-                            type="button"
-                            onClick={() => navigate("/cars")}
+                            type="button" // submit yerine button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleSubmit(e); // Mevcut handleSubmit fonksiyonunuzu çağırın
+                            }}
                             style={buttonStyle}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
                           >
                             🚗 Araç Kiralama
                           </button>
-
-                          {/* Transfer: Sadece navigation yapar */}
                           <button
-                            type="button"
+                            type="button" // Zaten button
                             onClick={() => navigate("/transfer-service")}
                             style={buttonStyle}
                             onMouseEnter={handleMouseEnter}

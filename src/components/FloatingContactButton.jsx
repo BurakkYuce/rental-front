@@ -54,7 +54,11 @@ const FloatingContactButton = () => {
         </svg>
       ),
       label: "Instagram",
-      action: () => window.open("https://instagram.com/mitcar", "_blank"),
+      action: () =>
+        window.open(
+          "https://www.instagram.com/mitcarrental?igsh=cGdodXZkYXpqeGJk&utm_source=qr",
+          "_blank"
+        ),
       color: "#E4405F",
       hoverColor: "#C13584",
     },

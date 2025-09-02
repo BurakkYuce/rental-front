@@ -619,7 +619,11 @@ const HeroSection = () => {
                         <div className="hero-button-container">
                           {/* Araç kiralama: Form submit eder */}
                           <button
-                            type="submit"
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleSubmit(e);
+                            }}
                             style={buttonStyle}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}

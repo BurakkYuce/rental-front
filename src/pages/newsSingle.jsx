@@ -279,43 +279,56 @@ const NewsSingle = () => {
                   />
 
                   {/* Excerpt */}
-                  {blog.excerpt && (
-                    <div
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        padding: "20px",
-                        borderRadius: "8px",
-                        borderLeft: "4px solid #1ECB15",
-                        marginBottom: "30px",
-                        fontSize: "1.1rem",
-                        fontStyle: "italic",
-                        lineHeight: "1.6",
-                        color: "#555",
-                      }}
-                    >
-                      <a
-                        href="https://istedigin-url.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          color: "inherit",
-                          textDecoration: "none",
-                          display: "block",
-                          transition: "all 0.3s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.color = "#1ECB15";
-                          e.target.style.textDecoration = "underline";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.color = "#555";
-                          e.target.style.textDecoration = "none";
-                        }}
-                      >
-                        {blog.excerpt}
-                      </a>
-                    </div>
-                  )}
+                  {blog.excerpt &&
+                    (() => {
+                      // URL'yi bul ve temiz metni ayır
+                      const words = blog.excerpt.split(" ");
+                      const urlLink =
+                        words.find((word) => word.includes("https")) ||
+                        blog.excerpt;
+                      const cleanText = blog.excerpt
+                        .split(" ")
+                        .filter((word) => !word.includes("https"))
+                        .join(" ");
+
+                      return (
+                        <div
+                          style={{
+                            backgroundColor: "#f8f9fa",
+                            padding: "20px",
+                            borderRadius: "8px",
+                            borderLeft: "4px solid #1ECB15",
+                            marginBottom: "30px",
+                            fontSize: "1.1rem",
+                            fontStyle: "italic",
+                            lineHeight: "1.6",
+                            color: "#555",
+                          }}
+                        >
+                          <a
+                            href={urlLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              color: "inherit",
+                              textDecoration: "none",
+                              display: "block",
+                              transition: "all 0.3s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.color = "#1ECB15";
+                              e.target.style.textDecoration = "underline";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.color = "#555";
+                              e.target.style.textDecoration = "none";
+                            }}
+                          >
+                            {cleanText}
+                          </a>
+                        </div>
+                      );
+                    })()}
 
                   {/* Article Content */}
                   <div

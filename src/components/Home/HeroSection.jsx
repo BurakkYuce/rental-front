@@ -157,7 +157,9 @@ const HeroSection = () => {
   return (
     <>
       <style>
-        {`
+        // Bu CSS kısmını HeroSection.jsx dosyandaki <style> tagları içine kopyala:
+
+{`
           .date-input-wrapper {
             position: relative;
             width: 100%;
@@ -185,26 +187,30 @@ const HeroSection = () => {
             color: #002efcff;
           }
 
-          /* Hero button styles - DÜZELTİLDİ */
+          /* Hero button styles - TAM DÜZELTİLDİ */
           .hero-action-button {
-            background-color: #002efcff;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 15px 40px;
-            font-size: 1.1rem;
-            font-weight: 700;
+            background-color: #002efcff !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 0px !important; /* Tutarlılık için önemli */
+            padding: 15px 40px !important;
+            font-size: 1.1rem !important;
+            font-weight: 700 !important;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: block;  /* inline-block yerine block */
-            text-align: center;
-            text-decoration: none;
-            line-height: 1.2;
-            /* white-space: nowrap; KALDIRILDI */
-            box-sizing: border-box; /* Eklendi */
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            display: block !important;
+            text-align: center !important;
+            text-decoration: none !important;
+            line-height: 1.2 !important;
+            box-sizing: border-box !important;
+            /* Mobilde tutarlılık için */
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            outline: none !important;
           }
 
           /* Button container styles */
@@ -212,32 +218,33 @@ const HeroSection = () => {
             display: flex;
             gap: 20px;
             justify-content: center;
-            align-items: stretch; /* center yerine stretch */
+            align-items: stretch;
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
+            flex-wrap: wrap; /* Ekledik */
           }
 
           .hero-button-container .hero-action-button {
-            flex: 1 1 0; /* flex: 1 yerine flex: 1 1 0 */
+            flex: 1 1 0;
             max-width: 280px;
-            min-width: 0; /* 200px yerine 0 */
-            width: 0; /* 100% yerine 0 */
+            min-width: 200px; /* Minimum genişlik */
+            width: auto;
           }
 
           /* Desktop hover effects */
           .hero-action-button:hover {
-            background-color: #001db8;
+            background-color: #001db8 !important;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
           }
 
-          /* Tablet and mobile responsive - TAM DÜZELTİLDİ */
-          @media screen and (max-width: 768px) {
+          /* Tablet responsive - YENİ BREAKPOINT */
+          @media screen and (max-width: 992px) {
             .hero-button-container {
               flex-direction: column !important;
               gap: 15px !important;
-              max-width: 100% !important; /* 350px yerine 100% */
+              max-width: 400px !important;
               padding: 0 20px !important;
             }
             
@@ -249,6 +256,30 @@ const HeroSection = () => {
               margin: 0 !important;
               display: block !important;
               box-sizing: border-box !important;
+              border-radius: 0px !important; /* Tutarlılık için */
+            }
+          }
+
+          /* Mobile responsive - TAM DÜZELTİLDİ */
+          @media screen and (max-width: 768px) {
+            .hero-button-container {
+              flex-direction: column !important;
+              gap: 15px !important;
+              max-width: 100% !important;
+              padding: 0 20px !important;
+            }
+            
+            .hero-button-container .hero-action-button {
+              flex: none !important;
+              width: 100% !important;
+              max-width: none !important;
+              min-width: 0 !important;
+              margin: 0 !important;
+              display: block !important;
+              box-sizing: border-box !important;
+              border-radius: 0px !important; /* Tutarlılık için */
+              padding: 15px 20px !important; /* Padding tutarlı */
+              font-size: 1.1rem !important; /* Font size tutarlı */
             }
           }
 
@@ -256,7 +287,7 @@ const HeroSection = () => {
           @media screen and (max-width: 480px) {
             .hero-button-container {
               max-width: 100% !important;
-              padding: 0 10px !important;
+              padding: 0 15px !important;
               gap: 12px !important;
             }
             
@@ -269,6 +300,21 @@ const HeroSection = () => {
               flex: none !important;
               display: block !important;
               box-sizing: border-box !important;
+              border-radius: 0px !important; /* Tutarlılık için */
+            }
+          }
+
+          /* Extra small screens */
+          @media screen and (max-width: 360px) {
+            .hero-button-container {
+              padding: 0 10px !important;
+              gap: 10px !important;
+            }
+            
+            .hero-button-container .hero-action-button {
+              padding: 10px 15px !important;
+              font-size: 0.9rem !important;
+              border-radius: 0px !important;
             }
           }
         `}

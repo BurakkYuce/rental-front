@@ -215,7 +215,8 @@ const HeroSection = () => {
         }
 /* ✨ EŞİT BOYUTLU BUTTONLAR - TAM ÇÖZÜM ✨ */
 
-/* Hero button styles */
+/* 🎯 HERO BUTTON - TAMAMEN ÖZDEş BUTTONLAR */
+
 .hero-action-button {
   background: linear-gradient(135deg, #002efcff 0%, #001db8 100%) !important;
   color: white !important;
@@ -224,123 +225,61 @@ const HeroSection = () => {
   padding: 16px 24px !important;
   font-size: 1.1rem !important;
   font-weight: 600 !important;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
-    0 4px 15px rgba(0, 46, 252, 0.3), 
-    0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(0, 46, 252, 0.3) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
   text-align: center !important;
   text-decoration: none !important;
   line-height: 1.4 !important;
   box-sizing: border-box !important;
-  position: relative;
-  overflow: hidden;
-  white-space: nowrap; /* Metin kırılmasını engeller */
-  
-  /* BOYUT EŞİTLİĞİ İÇİN ÖNEMLİ */
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  min-height: 56px !important; /* Sabit yükseklik */
+  display: block !important;
+  width: 100% !important;
+  min-height: 56px !important;
+  margin: 0 !important;
+  outline: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
 }
 
-/* Button container - EŞİT BOYUT GARANTISI */
+.hero-action-button:hover {
+  background: linear-gradient(135deg, #001db8 0%, #001299 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(0, 46, 252, 0.4) !important;
+}
+
+.hero-action-button:active {
+  transform: translateY(0px) !important;
+  box-shadow: 0 2px 10px rgba(0, 46, 252, 0.3) !important;
+}
+
+/* CONTAINER */
 .hero-button-container {
   display: flex !important;
   gap: 16px !important;
   justify-content: center !important;
-  align-items: stretch !important;
   width: 100% !important;
   max-width: 600px !important;
   margin: 0 auto !important;
-  box-sizing: border-box !important;
 }
 
-/* DESKTOP - Yan yana eşit boyut */
 .hero-button-container .hero-action-button {
-  flex: 1 !important; /* Eşit genişlik paylaşımı */
-  width: 0 !important; /* Flex hesaplaması için */
-  max-width: none !important; /* Kısıtlama yok */
-  min-width: 0 !important; /* Kısıtlama yok */
-  margin: 0 !important;
+  flex: 1 !important;
 }
 
-/* Hover effects */
-.hero-action-button:hover {
-  background: linear-gradient(135deg, #001db8 0%, #001299 100%) !important;
-  transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 
-    0 8px 25px rgba(0, 46, 252, 0.4), 
-    0 4px 10px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* 🎯 TABLET RESPONSIVE - 992px altı */
-@media screen and (max-width: 992px) {
+/* MOBİLE */
+@media (max-width: 768px) {
   .hero-button-container {
     flex-direction: column !important;
-    gap: 12px !important;
-    max-width: 400px !important;
     padding: 0 20px !important;
   }
   
-  .hero-button-container .hero-action-button {
-    flex: none !important; /* Flex iptal */
-    width: 100% !important; /* Tam genişlik */
-    max-width: none !important;
-    min-width: 0 !important;
-    min-height: 52px !important; /* Mobilde biraz daha kısa */
-  }
-}
-
-/* 📱 MOBILE RESPONSIVE - 768px altı */
-@media screen and (max-width: 768px) {
-  .hero-button-container {
-    flex-direction: column !important;
-    gap: 12px !important;
-    max-width: 100% !important;
-    padding: 0 20px !important;
-  }
-  
-  .hero-button-container .hero-action-button {
-    flex: none !important;
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 0 !important;
+  .hero-action-button {
     padding: 14px 20px !important;
     font-size: 1.05rem !important;
-    min-height: 50px !important;
   }
-}
-
-/* 📱 SMALL MOBILE - 480px altı */
-@media screen and (max-width: 480px) {
-  .hero-button-container {
-    padding: 0 15px !important;
-    gap: 10px !important;
-  }
-  
-  .hero-button-container .hero-action-button {
-    padding: 12px 18px !important;
-    font-size: 0.95rem !important;
-    min-height: 48px !important;
-  }
-}
-
-/* 🔧 EXTRA FIXES - Tarayıcı uyumluluğu */
-.hero-action-button {
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  appearance: none !important;
-  outline: none !important;
-  border: none !important;
-}
-
-/* İkon + metin için extra alan (eğer ikon varsa) */
-.hero-action-button .icon {
-  margin-right: 8px;
-  font-size: 1.2em;
 }
           }
         `}

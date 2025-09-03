@@ -1,7 +1,6 @@
 // src/components/Home/HeroSection.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./../";
 // Location options for pickup and dropoff
 const locationOptions = [
   "Antalya Havalimanı (AYT)",

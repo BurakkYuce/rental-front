@@ -185,135 +185,86 @@ const HeroSection = () => {
             color: #002efcff;
           }
 
-          /* Hero button styles - TAM DÜZELTİLDİ */
-          .hero-action-button {
-            background-color: #002efcff !important;
+                 /* Orijinal Tasarım (İyileştirilmiş) */
+        .hero-action-button {
+            background: linear-gradient(135deg, #002efcff 0%, #001db8 100%) !important;
             color: white !important;
             border: none !important;
-            border-radius: 0px !important; /* Tutarlılık için önemli */
-            padding: 15px 40px !important;
+            border-radius: 12px !important; /* Yuvarlaklık eklendi */
+            padding: 16px 32px !important;
             font-size: 1.1rem !important;
-            font-weight: 700 !important;
+            font-weight: 600 !important;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 4px 15px rgba(0, 46, 252, 0.3), 
+                0 2px 4px rgba(0, 0, 0, 0.1) !important;
             text-transform: uppercase !important;
-            letter-spacing: 1px !important;
+            letter-spacing: 0.5px !important;
             display: block !important;
             text-align: center !important;
             text-decoration: none !important;
-            line-height: 1.2 !important;
+            line-height: 1.4 !important;
             box-sizing: border-box !important;
-            /* Mobilde tutarlılık için */
+            position: relative;
+            overflow: hidden;
             -webkit-appearance: none !important;
             -moz-appearance: none !important;
             appearance: none !important;
             outline: none !important;
-          }
+        }
 
-          /* Button container styles */
-          .hero-button-container {
+        /* Gradient overlay effect */
+        .hero-action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .hero-action-button:hover::before {
+            left: 100%;
+        }
+
+        /* Desktop hover effects */
+        .hero-action-button:hover {
+            background: linear-gradient(135deg, #001db8 0%, #001299 100%) !important;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 8px 25px rgba(0, 46, 252, 0.4), 
+                0 4px 10px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .hero-action-button:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 
+                0 2px 10px rgba(0, 46, 252, 0.3), 
+                0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* Button container styles */
+        .hero-button-container {
             display: flex;
             gap: 20px;
             justify-content: center;
             align-items: stretch;
             width: 100%;
             max-width: 600px;
-            margin: 0 auto;
-            flex-wrap: wrap; /* Ekledik */
-          }
+            margin: 0 auto 30px;
+            flex-wrap: wrap;
+        }
 
-          .hero-button-container .hero-action-button {
+        .hero-button-container .hero-action-button {
             flex: 1 1 0;
             max-width: 280px;
-            min-width: 200px; /* Minimum genişlik */
+            min-width: 200px;
             width: auto;
-          }
-
-          /* Desktop hover effects */
-          .hero-action-button:hover {
-            background-color: #001db8 !important;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
-          }
-
-          /* Tablet responsive - YENİ BREAKPOINT */
-          @media screen and (max-width: 992px) {
-            .hero-button-container {
-              flex-direction: column !important;
-              gap: 15px !important;
-              max-width: 400px !important;
-              padding: 0 20px !important;
-            }
-            
-            .hero-button-container .hero-action-button {
-              flex: none !important;
-              width: 100% !important;
-              max-width: none !important;
-              min-width: 0 !important;
-              margin: 0 !important;
-              display: block !important;
-              box-sizing: border-box !important;
-              border-radius: 0px !important; /* Tutarlılık için */
-            }
-          }
-
-          /* Mobile responsive - TAM DÜZELTİLDİ */
-          @media screen and (max-width: 768px) {
-            .hero-button-container {
-              flex-direction: column !important;
-              gap: 15px !important;
-              max-width: 100% !important;
-              padding: 0 20px !important;
-            }
-            
-            .hero-button-container .hero-action-button {
-              flex: none !important;
-              width: 100% !important;
-              max-width: none !important;
-              min-width: 0 !important;
-              margin: 0 !important;
-              display: block !important;
-              box-sizing: border-box !important;
-              border-radius: 0px !important; /* Tutarlılık için */
-              padding: 15px 20px !important; /* Padding tutarlı */
-              font-size: 1.1rem !important; /* Font size tutarlı */
-            }
-          }
-
-          /* Small mobile */
-          @media screen and (max-width: 480px) {
-            .hero-button-container {
-              max-width: 100% !important;
-              padding: 0 15px !important;
-              gap: 12px !important;
-            }
-            
-            .hero-button-container .hero-action-button {
-              padding: 12px 20px !important;
-              font-size: 0.95rem !important;
-              width: 100% !important;
-              min-width: 0 !important;
-              max-width: none !important;
-              flex: none !important;
-              display: block !important;
-              box-sizing: border-box !important;
-              border-radius: 0px !important; /* Tutarlılık için */
-            }
-          }
-
-          /* Extra small screens */
-          @media screen and (max-width: 360px) {
-            .hero-button-container {
-              padding: 0 10px !important;
-              gap: 10px !important;
-            }
-            
-            .hero-button-container .hero-action-button {
-              padding: 10px 15px !important;
-              font-size: 0.9rem !important;
-              border-radius: 0px !important;
-            }
+        }
+          
           }
         `}
       </style>

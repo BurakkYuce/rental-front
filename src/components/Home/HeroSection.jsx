@@ -1,6 +1,7 @@
 // src/components/Home/HeroSection.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 // Location options for pickup and dropoff
 const locationOptions = [
   "Antalya Havalimanı (AYT)",
@@ -153,30 +154,8 @@ const HeroSection = () => {
     return getTodayDate();
   };
 
-  // Shared button style object
-  const buttonStyle = {
-    backgroundColor: "#002efcff",
-    color: "white",
-    border: "none",
-    borderRadius: "50px",
-    padding: "15px 40px",
-    fontSize: "1.1rem",
-    fontWeight: "700",
-    cursor: "pointer",
-    transition: "all 0.3s ease",
-    boxShadow: "0 4px 15px rgba(102, 126, 234, 0.4)",
-    textTransform: "uppercase",
-    letterSpacing: "1px",
-    minWidth: "250px",
-    display: "inline-block",
-    textAlign: "center",
-    textDecoration: "none",
-    lineHeight: "1.2",
-    whiteSpace: "nowrap",
-  };
-
   const handleMouseEnter = (e) => {
-    e.target.style.backgroundColor = "#002efcff";
+    e.target.style.backgroundColor = "#001db8";
     e.target.style.transform = "translateY(-2px)";
     e.target.style.boxShadow = "0 6px 20px rgba(102, 126, 234, 0.6)";
   };
@@ -218,7 +197,28 @@ const HeroSection = () => {
             color: #002efcff;
           }
 
-        /* Button container styles */
+          /* Hero button styles */
+          .hero-action-button {
+            background-color: #002efcff;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            line-height: 1.2;
+            white-space: nowrap;
+          }
+
+          /* Button container styles */
           .hero-button-container {
             display: flex;
             gap: 20px;
@@ -229,11 +229,18 @@ const HeroSection = () => {
             margin: 0 auto;
           }
 
-          .hero-button-container button {
+          .hero-button-container .hero-action-button {
             flex: 1;
             max-width: 280px;
             min-width: 200px;
             width: 100%;
+          }
+
+          /* Desktop hover effects */
+          .hero-action-button:hover {
+            background-color: #001db8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
           }
 
           /* Tablet and mobile responsive */
@@ -244,7 +251,7 @@ const HeroSection = () => {
               max-width: 350px;
             }
             
-            .hero-button-container button {
+            .hero-button-container .hero-action-button {
               flex: none !important;
               width: 100% !important;
               max-width: 100% !important;
@@ -259,9 +266,10 @@ const HeroSection = () => {
               padding: 0 10px;
             }
             
-            .hero-button-container button {
+            .hero-button-container .hero-action-button {
               padding: 12px 20px !important;
               font-size: 0.95rem !important;
+              min-width: auto !important;
             }
           }
         `}
@@ -335,7 +343,7 @@ const HeroSection = () => {
                       maxWidth: "300px",
                       width: "100%",
                       height: "auto",
-                      transition: "transform 0.3 ease",
+                      transition: "transform 0.3s ease",
                     }}
                   />
                 </div>
@@ -616,22 +624,22 @@ const HeroSection = () => {
                       {/* Submit Buttons */}
                       <div className="col-lg-12 text-center mt-4">
                         <div className="hero-button-container">
-                          {/* Araç kiralama: Form submit eder */}
+                          {/* Araç kiralama butonu */}
                           <button
                             type="button"
+                            className="hero-action-button"
                             onClick={() => navigate("/cars")}
-                            style={buttonStyle}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
                           >
                             🚗 Araç Kiralama
                           </button>
 
-                          {/* Transfer: Sadece navigation yapar */}
+                          {/* Transfer hizmeti butonu */}
                           <button
                             type="button"
+                            className="hero-action-button"
                             onClick={() => navigate("/transfer-service")}
-                            style={buttonStyle}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
                           >

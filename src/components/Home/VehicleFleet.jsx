@@ -596,43 +596,6 @@ const VehicleFleet = () => {
                                     >
                                       {car.brand} {car.model}
                                     </div>
-
-                                    {/* Price Badge */}
-                                    <div
-                                      style={{
-                                        position: "absolute",
-                                        top: "15px",
-                                        left: "15px",
-                                        backgroundColor: "#4A90E2",
-                                        borderRadius: "8px",
-                                        padding: "6px 10px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      <div
-                                        style={{
-                                          color: "white",
-                                          fontSize: "1rem",
-                                          fontWeight: "700",
-                                        }}
-                                      >
-                                        {car.pricing?.daily
-                                          ? convertAndFormatPrice(
-                                              car.pricing.daily,
-                                              car.pricing?.currency || "EUR"
-                                            )
-                                          : "Contact"}
-                                      </div>
-                                      <div
-                                        style={{
-                                          color: "white",
-                                          fontSize: "0.7rem",
-                                          fontWeight: "600",
-                                        }}
-                                      >
-                                        PER DAY
-                                      </div>
-                                    </div>
                                   </div>
 
                                   <div style={{ padding: "1.5rem" }}>

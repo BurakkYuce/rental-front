@@ -154,18 +154,6 @@ const HeroSection = () => {
     return getTodayDate();
   };
 
-  const handleMouseEnter = (e) => {
-    e.target.style.backgroundColor = "#001db8";
-    e.target.style.transform = "translateY(-2px)";
-    e.target.style.boxShadow = "0 6px 20px rgba(102, 126, 234, 0.6)";
-  };
-
-  const handleMouseLeave = (e) => {
-    e.target.style.backgroundColor = "#002efcff";
-    e.target.style.transform = "translateY(0)";
-    e.target.style.boxShadow = "0 4px 15px rgba(102, 126, 234, 0.4)";
-  };
-
   return (
     <>
       <style>
@@ -435,7 +423,6 @@ const HeroSection = () => {
                           ))}
                         </select>
                       </div>
-
                       <div className="col-lg-3 col-md-6 mb-3">
                         <label
                           style={{
@@ -470,7 +457,6 @@ const HeroSection = () => {
                           ))}
                         </select>
                       </div>
-
                       <div className="col-lg-3 col-md-6 mb-3">
                         <label
                           style={{
@@ -545,7 +531,6 @@ const HeroSection = () => {
                           />
                         </div>
                       </div>
-
                       <div className="col-lg-3 col-md-6 mb-3">
                         <label
                           style={{
@@ -620,7 +605,6 @@ const HeroSection = () => {
                           />
                         </div>
                       </div>
-
                       {/* Submit Buttons */}
                       <div className="col-lg-12 text-center mt-4">
                         <div className="hero-button-container">
@@ -629,8 +613,6 @@ const HeroSection = () => {
                             type="button"
                             className="hero-action-button"
                             onClick={() => navigate("/cars")}
-                            onMouseEnter={handleMouseEnter}
-                            onMouseLeave={handleMouseLeave}
                           >
                             🚗 Araç Kiralama
                           </button>
@@ -640,8 +622,6 @@ const HeroSection = () => {
                             type="button"
                             className="hero-action-button"
                             onClick={() => navigate("/transfer-service")}
-                            onMouseEnter={handleMouseEnter}
-                            onMouseLeave={handleMouseLeave}
                           >
                             🚐 Transfer Hizmeti
                           </button>

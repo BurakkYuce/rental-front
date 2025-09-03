@@ -618,21 +618,19 @@ const HeroSection = () => {
                       <div className="col-lg-12 text-center mt-4">
                         <div className="hero-button-container">
                           {/* Araç kiralama: Form submit eder */}
-                          // Form kısmında:
                           <button
-                            type="button" // submit yerine button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleSubmit(e); // Mevcut handleSubmit fonksiyonunuzu çağırın
-                            }}
+                            type="button"
+                            onClick={() => navigate("/cars")}
                             style={buttonStyle}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
                           >
                             🚗 Araç Kiralama
                           </button>
+
+                          {/* Transfer: Sadece navigation yapar */}
                           <button
-                            type="button" // Zaten button
+                            type="button"
                             onClick={() => navigate("/transfer-service")}
                             style={buttonStyle}
                             onMouseEnter={handleMouseEnter}

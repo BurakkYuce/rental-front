@@ -157,9 +157,7 @@ const HeroSection = () => {
   return (
     <>
       <style>
-        // Bu CSS kısmını HeroSection.jsx dosyandaki <style> tagları içine kopyala:
-
-{`
+        {`
           .date-input-wrapper {
             position: relative;
             width: 100%;

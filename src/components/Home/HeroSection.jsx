@@ -617,7 +617,7 @@ const HeroSection = () => {
                         </div>
                       </div>
                       {/* Submit Buttons */}
-                      <div className="col-lg-12 text-center mt-4">
+                      <div>
                         <div className="hero-button-container">
                           {/* Araç kiralama butonu */}
                           <button

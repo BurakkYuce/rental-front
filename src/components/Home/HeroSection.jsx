@@ -185,7 +185,7 @@ const HeroSection = () => {
             color: #002efcff;
           }
 
-          /* Hero button styles */
+          /* Hero button styles - DÜZELTİLDİ */
           .hero-action-button {
             background-color: #002efcff;
             color: white;
@@ -199,11 +199,12 @@ const HeroSection = () => {
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
             text-transform: uppercase;
             letter-spacing: 1px;
-            display: inline-block;
+            display: block;  /* inline-block yerine block */
             text-align: center;
             text-decoration: none;
             line-height: 1.2;
-            white-space: nowrap;
+            /* white-space: nowrap; KALDIRILDI */
+            box-sizing: border-box; /* Eklendi */
           }
 
           /* Button container styles */
@@ -211,17 +212,17 @@ const HeroSection = () => {
             display: flex;
             gap: 20px;
             justify-content: center;
-            align-items: center;
+            align-items: stretch; /* center yerine stretch */
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
           }
 
           .hero-button-container .hero-action-button {
-            flex: 1;
+            flex: 1 1 0; /* flex: 1 yerine flex: 1 1 0 */
             max-width: 280px;
-            min-width: 200px;
-            width: 100%;
+            min-width: 0; /* 200px yerine 0 */
+            width: 0; /* 100% yerine 0 */
           }
 
           /* Desktop hover effects */
@@ -231,33 +232,43 @@ const HeroSection = () => {
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
           }
 
-          /* Tablet and mobile responsive */
-          @media (max-width: 768px) {
+          /* Tablet and mobile responsive - TAM DÜZELTİLDİ */
+          @media screen and (max-width: 768px) {
             .hero-button-container {
-              flex-direction: column;
-              gap: 15px;
-              max-width: 350px;
+              flex-direction: column !important;
+              gap: 15px !important;
+              max-width: 100% !important; /* 350px yerine 100% */
+              padding: 0 20px !important;
             }
             
             .hero-button-container .hero-action-button {
               flex: none !important;
               width: 100% !important;
-              max-width: 100% !important;
-              min-width: auto !important;
+              max-width: none !important;
+              min-width: 0 !important;
+              margin: 0 !important;
+              display: block !important;
+              box-sizing: border-box !important;
             }
           }
 
           /* Small mobile */
-          @media (max-width: 480px) {
+          @media screen and (max-width: 480px) {
             .hero-button-container {
-              max-width: 100%;
-              padding: 0 10px;
+              max-width: 100% !important;
+              padding: 0 10px !important;
+              gap: 12px !important;
             }
             
             .hero-button-container .hero-action-button {
               padding: 12px 20px !important;
               font-size: 0.95rem !important;
-              min-width: auto !important;
+              width: 100% !important;
+              min-width: 0 !important;
+              max-width: none !important;
+              flex: none !important;
+              display: block !important;
+              box-sizing: border-box !important;
             }
           }
         `}

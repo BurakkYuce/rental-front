@@ -12,7 +12,8 @@ const TransferService = () => {
   const [error, setError] = useState("");
   const [selectedZone, setSelectedZone] = useState(null);
   const [selectedCapacity, setSelectedCapacity] = useState("capacity_1_4");
-
+  let a = 5;
+  console.log(a);
   // Contact form state
   const [contactForm, setContactForm] = useState({
     name: "",

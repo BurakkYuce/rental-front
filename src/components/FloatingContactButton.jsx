@@ -23,7 +23,7 @@ const FloatingContactButton = () => {
       label: "WhatsApp",
       action: () =>
         window.open(
-          "https://wa.me/905551234567?text=Merhaba, araç kiralama hakkında bilgi almak istiyorum.",
+          "https://wa.me/905366039907?text=Merhaba, araç kiralama hakkında bilgi almak istiyorum.",
           "_blank"
         ),
       color: "#25D366",
@@ -32,7 +32,7 @@ const FloatingContactButton = () => {
     {
       icon: <Phone size={20} />,
       label: "Hemen Ara",
-      action: () => window.open("tel:+905551234567", "_self"),
+      action: () => window.open("tel:+905366039907", "_self"),
       color: "#FF8C00",
       hoverColor: "#FF7F00",
     },

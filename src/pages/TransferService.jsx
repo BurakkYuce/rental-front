@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import BackToHomeButton from "../components/BackToHomeButton.jsx";
 import api from "../services/api.js";
-import FAQContactFooter from "./components/Home/FAQContactFooter";
+import FAQContactFooter from "../components/Home/FAQContactFooter.jsx";
 
 const TransferService = () => {
   const [zones, setZones] = useState([]);

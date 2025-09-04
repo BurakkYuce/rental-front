@@ -50,6 +50,10 @@ const CarsPage = () => {
   const [imageLoadErrors, setImageLoadErrors] = useState(new Set());
   const [filtersVisible, setFiltersVisible] = useState(false);
 
+  // Create refs for date inputs
+  const pickupDateRef = React.useRef(null);
+  const dropoffDateRef = React.useRef(null);
+
   // Transform API car data to match component expected format
   const transformCarData = useCallback((apiCar) => {
     if (!apiCar) {
@@ -319,19 +323,8 @@ const CarsPage = () => {
     setCurrentPage(1); // Reset to first page when filters change
   }, []);
 
-  // Date format helper - convert DD/MM/YYYY to YYYY-MM-DD
-  const formatDateForInput = (dateString) => {
-    if (!dateString) return "";
-    const parts = dateString.split("/");
-    if (parts.length === 3) {
-      const [day, month, year] = parts;
-      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-    }
-    return dateString;
-  };
-
-  // Format date from YYYY-MM-DD to DD/MM/YYYY
-  const formatDateFromInput = (dateString) => {
+  // Format date from YYYY-MM-DD to DD/MM/YYYY for display
+  const formatDateForDisplay = (dateString) => {
     if (!dateString) return "";
     const parts = dateString.split("-");
     if (parts.length === 3) {
@@ -350,13 +343,21 @@ const CarsPage = () => {
     setCurrentPage(1);
   };
 
-  // Handle calendar icon click
-  const handleCalendarClick = (inputId) => {
-    const hiddenDateInput = document.querySelector(
-      `#${inputId} + .date-picker-hidden`
-    );
-    if (hiddenDateInput) {
-      hiddenDateInput.showPicker();
+  // Trigger date picker for Apple/iOS compatibility
+  const triggerDatePicker = (inputRef) => {
+    if (inputRef && inputRef.current) {
+      // For better iOS/Safari compatibility
+      inputRef.current.focus();
+      inputRef.current.click();
+
+      // Fallback for modern browsers
+      if (inputRef.current.showPicker) {
+        try {
+          inputRef.current.showPicker();
+        } catch (error) {
+          console.log("showPicker not supported, using fallback");
+        }
+      }
     }
   };
 
@@ -425,8 +426,80 @@ const CarsPage = () => {
     }
   };
 
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+
+  const getMinDropoffDate = () => {
+    if (filters.pickupDate) {
+      const pickupDate = new Date(filters.pickupDate);
+      pickupDate.setDate(pickupDate.getDate() + 1);
+      return pickupDate.toISOString().split("T")[0];
+    }
+    return getTodayDate();
+  };
+
   return (
     <div className="cars-page">
+      {/* Additional CSS for date picker fixes */}
+      <style>
+        {`
+          .date-input-wrapper {
+            position: relative;
+            width: 100%;
+          }
+          
+          .date-display-input {
+            width: 100% !important;
+            padding: 8px 12px !important;
+            padding-right: 35px !important;
+            border: 1px solid #ddd !important;
+            border-radius: 4px !important;
+            font-size: 14px !important;
+            background-color: white !important;
+            color: #333 !important;
+            cursor: pointer !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            font-family: monospace !important;
+          }
+          
+          .date-display-input:focus {
+            outline: none !important;
+            border-color: #007bff !important;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25) !important;
+          }
+          
+          .date-picker-hidden {
+            position: absolute !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: -1 !important;
+          }
+          
+          .calendar-icon {
+            position: absolute !important;
+            right: 10px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            cursor: pointer !important;
+            color: #666 !important;
+            z-index: 2 !important;
+          }
+          
+          .calendar-icon:hover {
+            color: #007bff !important;
+          }
+        `}
+      </style>
+
       {/* Header */}
       <Header />
 
@@ -484,50 +557,26 @@ const CarsPage = () => {
                       <input
                         type="text"
                         id="pickupDate"
-                        value={
-                          filters.pickupDate
-                            ? formatDateFromInput(filters.pickupDate)
-                            : ""
-                        }
-                        onChange={(e) => {
-                          let value = e.target.value;
-                          // Auto-format while typing
-                          value = value.replace(/[^\d]/g, ""); // Only numbers
-                          if (value.length >= 2) {
-                            value = value.slice(0, 2) + "/" + value.slice(2);
-                          }
-                          if (value.length >= 5) {
-                            value = value.slice(0, 5) + "/" + value.slice(5, 9);
-                          }
-                          if (value.length <= 10) {
-                            const formattedForAPI = formatDateForInput(value);
-                            handleDateChange("pickupDate", formattedForAPI);
-                          }
-                        }}
+                        className="date-display-input"
+                        value={formatDateForDisplay(filters.pickupDate)}
                         placeholder="GG/AA/YYYY"
-                        maxLength="10"
-                        style={{ fontFamily: "monospace" }}
+                        readOnly
+                        onClick={() => triggerDatePicker(pickupDateRef)}
                       />
                       <input
+                        ref={pickupDateRef}
                         type="date"
                         className="date-picker-hidden"
                         onChange={(e) => {
                           handleDateChange("pickupDate", e.target.value);
                         }}
                         value={filters.pickupDate || ""}
-                        min={new Date().toISOString().split("T")[0]}
+                        min={getTodayDate()}
                       />
                       <Calendar
                         className="calendar-icon"
                         size={18}
-                        onClick={() => {
-                          const hiddenInput = document
-                            .querySelector("#pickupDate")
-                            .parentElement.querySelector(".date-picker-hidden");
-                          if (hiddenInput) {
-                            hiddenInput.showPicker();
-                          }
-                        }}
+                        onClick={() => triggerDatePicker(pickupDateRef)}
                       />
                     </div>
                   </div>
@@ -537,53 +586,26 @@ const CarsPage = () => {
                       <input
                         type="text"
                         id="dropoffDate"
-                        value={
-                          filters.dropoffDate
-                            ? formatDateFromInput(filters.dropoffDate)
-                            : ""
-                        }
-                        onChange={(e) => {
-                          let value = e.target.value;
-                          // Auto-format while typing
-                          value = value.replace(/[^\d]/g, ""); // Only numbers
-                          if (value.length >= 2) {
-                            value = value.slice(0, 2) + "/" + value.slice(2);
-                          }
-                          if (value.length >= 5) {
-                            value = value.slice(0, 5) + "/" + value.slice(5, 9);
-                          }
-                          if (value.length <= 10) {
-                            const formattedForAPI = formatDateForInput(value);
-                            handleDateChange("dropoffDate", formattedForAPI);
-                          }
-                        }}
+                        className="date-display-input"
+                        value={formatDateForDisplay(filters.dropoffDate)}
                         placeholder="GG/AA/YYYY"
-                        maxLength="10"
-                        style={{ fontFamily: "monospace" }}
+                        readOnly
+                        onClick={() => triggerDatePicker(dropoffDateRef)}
                       />
                       <input
+                        ref={dropoffDateRef}
                         type="date"
                         className="date-picker-hidden"
                         onChange={(e) => {
                           handleDateChange("dropoffDate", e.target.value);
                         }}
                         value={filters.dropoffDate || ""}
-                        min={
-                          filters.pickupDate ||
-                          new Date().toISOString().split("T")[0]
-                        }
+                        min={getMinDropoffDate()}
                       />
                       <Calendar
                         className="calendar-icon"
                         size={18}
-                        onClick={() => {
-                          const hiddenInput = document
-                            .querySelector("#dropoffDate")
-                            .parentElement.querySelector(".date-picker-hidden");
-                          if (hiddenInput) {
-                            hiddenInput.showPicker();
-                          }
-                        }}
+                        onClick={() => triggerDatePicker(dropoffDateRef)}
                       />
                     </div>
                   </div>

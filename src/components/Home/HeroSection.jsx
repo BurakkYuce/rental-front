@@ -25,19 +25,8 @@ const HeroSection = () => {
     returnDate: "",
   });
 
-  // Date format helper - convert DD/MM/YYYY to YYYY-MM-DD
-  const formatDateForInput = (dateString) => {
-    if (!dateString) return "";
-    const parts = dateString.split("/");
-    if (parts.length === 3) {
-      const [day, month, year] = parts;
-      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-    }
-    return dateString;
-  };
-
-  // Format date from YYYY-MM-DD to DD/MM/YYYY
-  const formatDateFromInput = (dateString) => {
+  // Format date from YYYY-MM-DD to DD/MM/YYYY for display
+  const formatDateForDisplay = (dateString) => {
     if (!dateString) return "";
     const parts = dateString.split("-");
     if (parts.length === 3) {
@@ -63,10 +52,28 @@ const HeroSection = () => {
     }));
   };
 
+  // Trigger date picker for Apple/iOS compatibility
+  const triggerDatePicker = (inputRef) => {
+    if (inputRef && inputRef.current) {
+      // For better iOS/Safari compatibility
+      inputRef.current.focus();
+      inputRef.current.click();
+
+      // Fallback for modern browsers
+      if (inputRef.current.showPicker) {
+        try {
+          inputRef.current.showPicker();
+        } catch (error) {
+          console.log("showPicker not supported, using fallback");
+        }
+      }
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Tarih validasyonu - invalid ise parametresiz /cars'a git
+    // Date validation - if invalid go to /cars without params
     let validPickupDate = null;
     let validReturnDate = null;
 
@@ -77,7 +84,6 @@ const HeroSection = () => {
         isNaN(pickupDate.getTime()) ||
         pickupDate < new Date().setHours(0, 0, 0, 0)
       ) {
-        // Invalid pickup date - direkt /cars'a git
         console.log(
           "❌ Invalid pickup date, redirecting to /cars without params"
         );
@@ -94,7 +100,6 @@ const HeroSection = () => {
         isNaN(returnDate.getTime()) ||
         returnDate < new Date().setHours(0, 0, 0, 0)
       ) {
-        // Invalid return date - direkt /cars'a git
         console.log(
           "❌ Invalid return date, redirecting to /cars without params"
         );
@@ -117,7 +122,7 @@ const HeroSection = () => {
       }
     }
 
-    // Tüm validasyonlar geçti - query parametreleri ile git
+    // All validations passed - go with query parameters
     const queryParams = new URLSearchParams();
 
     if (formData.pickupLocation) {
@@ -154,6 +159,10 @@ const HeroSection = () => {
     return getTodayDate();
   };
 
+  // Create refs for date inputs
+  const pickupDateRef = React.useRef(null);
+  const returnDateRef = React.useRef(null);
+
   return (
     <>
       <style>
@@ -162,125 +171,118 @@ const HeroSection = () => {
             position: relative;
             width: 100%;
           }
+          
+          .date-display-input {
+            width: 100% !important;
+            padding: 12px 15px !important;
+            padding-right: 45px !important;
+            border: 2px solid #e9ecef !important;
+            border-radius: 10px !important;
+            fontSize: 1rem !important;
+            background-color: white !important;
+            color: #333 !important;
+            transition: border-color 0.3s ease !important;
+            font-family: monospace !important;
+            cursor: pointer !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+          }
+          
+          .date-display-input:focus {
+            outline: none !important;
+            border-color: #002efcff !important;
+            box-shadow: 0 0 0 3px rgba(0, 46, 252, 0.1) !important;
+          }
+          
           .date-picker-hidden {
             position: absolute !important;
             opacity: 0 !important;
             pointer-events: none !important;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: -1 !important;
           }
+          
           .calendar-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #666;
-            font-size: 16px;
+            position: absolute !important;
+            right: 15px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            cursor: pointer !important;
+            color: #666 !important;
+            font-size: 16px !important;
+            z-index: 2 !important;
           }
+          
           .calendar-icon:hover {
-            color: #002efcff;
+            color: #002efcff !important;
           }
 
-                 /* Orijinal Tasarım (İyileştirilmiş) */
-        -button {
+          .hero-action-button {
             background: linear-gradient(135deg, #002efcff 0%, #001db8 100%) !important;
-            color: white !important.hero-action;
+            color: white !important;
             border: none !important;
-            border-radius: 12px !important; /* Yuvarlaklık eklendi */
-            padding: 16px 32px !important;
+            border-radius: 12px !important;
+            padding: 16px 24px !important;
             font-size: 1.1rem !important;
             font-weight: 600 !important;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 
-                0 4px 15px rgba(0, 46, 252, 0.3), 
-                0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(0, 46, 252, 0.3) !important;
             text-transform: uppercase !important;
             letter-spacing: 0.5px !important;
-            display: block !important;
             text-align: center !important;
             text-decoration: none !important;
             line-height: 1.4 !important;
             box-sizing: border-box !important;
-            position: relative;
-            overflow: hidden;
+            display: block !important;
+            width: 100% !important;
+            min-height: 56px !important;
+            margin: 0 !important;
+            outline: none !important;
             -webkit-appearance: none !important;
             -moz-appearance: none !important;
             appearance: none !important;
-            outline: none !important;
-        }
-/* ✨ EŞİT BOYUTLU BUTTONLAR - TAM ÇÖZÜM ✨ */
+          }
 
-/* 🎯 HERO BUTTON - TAMAMEN ÖZDEş BUTTONLAR */
+          .hero-action-button:hover {
+            background: linear-gradient(135deg, #001db8 0%, #001299 100%) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(0, 46, 252, 0.4) !important;
+          }
 
-.hero-action-button {
-  background: linear-gradient(135deg, #002efcff 0%, #001db8 100%) !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 12px !important;
-  padding: 16px 24px !important;
-  font-size: 1.1rem !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 4px 15px rgba(0, 46, 252, 0.3) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  text-align: center !important;
-  text-decoration: none !important;
-  line-height: 1.4 !important;
-  box-sizing: border-box !important;
-  display: block !important;
-  width: 100% !important;
-  min-height: 56px !important;
-  margin: 0 !important;
-  outline: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  appearance: none !important;
-}
+          .hero-action-button:active {
+            transform: translateY(0px) !important;
+            box-shadow: 0 2px 10px rgba(0, 46, 252, 0.3) !important;
+          }
 
-.hero-action-button:hover {
-  background: linear-gradient(135deg, #001db8 0%, #001299 100%) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 25px rgba(0, 46, 252, 0.4) !important;
-}
+          .hero-button-container {
+            display: flex !important;
+            gap: 16px !important;
+            justify-content: center !important;
+            width: 100% !important;
+            max-width: 600px !important;
+            margin: 0 auto !important;
+          }
 
-.hero-action-button:active {
-  transform: translateY(0px) !important;
-  box-shadow: 0 2px 10px rgba(0, 46, 252, 0.3) !important;
-}
+          .hero-button-container .hero-action-button {
+            flex: 1 !important;
+          }
 
-/* CONTAINER */
-.hero-button-container {
-  display: flex !important;
-  gap: 16px !important;
-  justify-content: center !important;
-  width: 100% !important;
-  max-width: 600px !important;
-  margin: 0 auto !important;
-}
-
-.hero-button-container .hero-action-button {
-  flex: 1 !important;
-}
-
-/* MOBİLE */
-@media (max-width: 768px) {
-  .hero-button-container {
-    flex-direction: column !important;
-    padding: 0 20px !important;
-  }
-  
-  .hero-action-button {
-    padding: 14px 20px !important;
-    font-size: 1.05rem !important;
-  }
-}
+          @media (max-width: 768px) {
+            .hero-button-container {
+              flex-direction: column !important;
+              padding: 0 20px !important;
+            }
+            
+            .hero-action-button {
+              padding: 14px 20px !important;
+              font-size: 1.05rem !important;
+            }
           }
         `}
       </style>
@@ -493,45 +495,14 @@ const HeroSection = () => {
                         <div className="date-input-wrapper">
                           <input
                             type="text"
-                            value={
-                              formData.pickupDate
-                                ? formatDateFromInput(formData.pickupDate)
-                                : ""
-                            }
-                            onChange={(e) => {
-                              let value = e.target.value;
-                              // Auto-format while typing
-                              value = value.replace(/[^\d]/g, ""); // Only numbers
-                              if (value.length >= 2) {
-                                value =
-                                  value.slice(0, 2) + "/" + value.slice(2);
-                              }
-                              if (value.length >= 5) {
-                                value =
-                                  value.slice(0, 5) + "/" + value.slice(5, 9);
-                              }
-                              if (value.length <= 10) {
-                                const formattedForAPI =
-                                  formatDateForInput(value);
-                                handleDateChange("pickupDate", formattedForAPI);
-                              }
-                            }}
+                            className="date-display-input"
+                            value={formatDateForDisplay(formData.pickupDate)}
                             placeholder="GG/AA/YYYY"
-                            maxLength="10"
-                            style={{
-                              width: "100%",
-                              padding: "12px 15px",
-                              paddingRight: "45px",
-                              border: "2px solid #e9ecef",
-                              borderRadius: "10px",
-                              fontSize: "1rem",
-                              backgroundColor: "white",
-                              color: "#333",
-                              transition: "border-color 0.3s ease",
-                              fontFamily: "monospace",
-                            }}
+                            readOnly
+                            onClick={() => triggerDatePicker(pickupDateRef)}
                           />
                           <input
+                            ref={pickupDateRef}
                             type="date"
                             className="date-picker-hidden"
                             onChange={(e) => {
@@ -542,14 +513,7 @@ const HeroSection = () => {
                           />
                           <i
                             className="fa fa-calendar calendar-icon"
-                            onClick={() => {
-                              const hiddenInput = document.querySelector(
-                                ".date-input-wrapper .date-picker-hidden"
-                              );
-                              if (hiddenInput) {
-                                hiddenInput.showPicker();
-                              }
-                            }}
+                            onClick={() => triggerDatePicker(pickupDateRef)}
                           />
                         </div>
                       </div>
@@ -567,45 +531,14 @@ const HeroSection = () => {
                         <div className="date-input-wrapper">
                           <input
                             type="text"
-                            value={
-                              formData.returnDate
-                                ? formatDateFromInput(formData.returnDate)
-                                : ""
-                            }
-                            onChange={(e) => {
-                              let value = e.target.value;
-                              // Auto-format while typing
-                              value = value.replace(/[^\d]/g, ""); // Only numbers
-                              if (value.length >= 2) {
-                                value =
-                                  value.slice(0, 2) + "/" + value.slice(2);
-                              }
-                              if (value.length >= 5) {
-                                value =
-                                  value.slice(0, 5) + "/" + value.slice(5, 9);
-                              }
-                              if (value.length <= 10) {
-                                const formattedForAPI =
-                                  formatDateForInput(value);
-                                handleDateChange("returnDate", formattedForAPI);
-                              }
-                            }}
+                            className="date-display-input"
+                            value={formatDateForDisplay(formData.returnDate)}
                             placeholder="GG/AA/YYYY"
-                            maxLength="10"
-                            style={{
-                              width: "100%",
-                              padding: "12px 15px",
-                              paddingRight: "45px",
-                              border: "2px solid #e9ecef",
-                              borderRadius: "10px",
-                              fontSize: "1rem",
-                              backgroundColor: "white",
-                              color: "#333",
-                              transition: "border-color 0.3s ease",
-                              fontFamily: "monospace",
-                            }}
+                            readOnly
+                            onClick={() => triggerDatePicker(returnDateRef)}
                           />
                           <input
+                            ref={returnDateRef}
                             type="date"
                             className="date-picker-hidden"
                             onChange={(e) => {
@@ -616,14 +549,7 @@ const HeroSection = () => {
                           />
                           <i
                             className="fa fa-calendar calendar-icon"
-                            onClick={() => {
-                              const hiddenInputs = document.querySelectorAll(
-                                ".date-picker-hidden"
-                              );
-                              if (hiddenInputs.length > 1) {
-                                hiddenInputs[1].showPicker();
-                              }
-                            }}
+                            onClick={() => triggerDatePicker(returnDateRef)}
                           />
                         </div>
                       </div>

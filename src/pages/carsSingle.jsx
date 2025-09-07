@@ -41,6 +41,10 @@ const CarsSingle = () => {
   const [imageLoadErrors, setImageLoadErrors] = useState(new Set());
   const [bookingLoading, setBookingLoading] = useState(false);
 
+  // Create refs for date inputs
+  const pickupDateRef = React.useRef(null);
+  const returnDateRef = React.useRef(null);
+
   // Form state
   const [formData, setFormData] = useState({
     pickupLocation: "",
@@ -60,19 +64,8 @@ const CarsSingle = () => {
     gencSurucu: 0, // max 1, 15€ per day
   });
 
-  // Date format helper - convert DD/MM/YYYY to YYYY-MM-DD
-  const formatDateForInput = (dateString) => {
-    if (!dateString) return "";
-    const parts = dateString.split("/");
-    if (parts.length === 3) {
-      const [day, month, year] = parts;
-      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-    }
-    return dateString;
-  };
-
-  // Format date from YYYY-MM-DD to DD/MM/YYYY
-  const formatDateFromInput = (dateString) => {
+  // Format date from YYYY-MM-DD to DD/MM/YYYY for display
+  const formatDateForDisplay = (dateString) => {
     if (!dateString) return "";
     const parts = dateString.split("-");
     if (parts.length === 3) {
@@ -95,6 +88,24 @@ const CarsSingle = () => {
         ...prev,
         [fieldName]: "",
       }));
+    }
+  };
+
+  // Trigger date picker for Apple/iOS compatibility
+  const triggerDatePicker = (inputRef) => {
+    if (inputRef && inputRef.current) {
+      // For better iOS/Safari compatibility
+      inputRef.current.focus();
+      inputRef.current.click();
+
+      // Fallback for modern browsers
+      if (inputRef.current.showPicker) {
+        try {
+          inputRef.current.showPicker();
+        } catch (error) {
+          console.log("showPicker not supported, using fallback");
+        }
+      }
     }
   };
 
@@ -402,10 +413,10 @@ const CarsSingle = () => {
 
     // Format dates for display
     const pickupDateFormatted = formData.pickupDate
-      ? formatDateFromInput(formData.pickupDate)
+      ? formatDateForDisplay(formData.pickupDate)
       : "";
     const returnDateFormatted = formData.returnDate
-      ? formatDateFromInput(formData.returnDate)
+      ? formatDateForDisplay(formData.returnDate)
       : "";
 
     // Prepare additional options text
@@ -644,6 +655,65 @@ const CarsSingle = () => {
 
   return (
     <div className="cars-single-page">
+      {/* Additional CSS for date picker fixes */}
+      <style>
+        {`
+          .date-input-wrapper {
+            position: relative;
+            width: 100%;
+          }
+          
+          .date-display-input {
+            width: 100% !important;
+            padding: 12px 15px !important;
+            padding-right: 45px !important;
+            border: 2px solid #e9ecef !important;
+            border-radius: 8px !important;
+            font-size: 0.95rem !important;
+            background-color: #ffffff !important;
+            color: #333 !important;
+            cursor: pointer !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            font-family: monospace !important;
+            transition: border-color 0.3s ease !important;
+          }
+          
+          .date-display-input:focus {
+            outline: none !important;
+            border-color: #007bff !important;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25) !important;
+          }
+          
+          .date-picker-hidden {
+            position: absolute !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: -1 !important;
+          }
+          
+          .calendar-icon {
+            position: absolute !important;
+            right: 15px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            cursor: pointer !important;
+            color: #666 !important;
+            z-index: 2 !important;
+          }
+          
+          .calendar-icon:hover {
+            color: #007bff !important;
+          }
+        `}
+      </style>
+
       {/* Header */}
       <Header />
 
@@ -906,44 +976,20 @@ const CarsSingle = () => {
                       <div className="datetime-inputs">
                         <div className="date-input-wrapper">
                           <input
-                            name="pickupDate"
                             type="text"
-                            value={
-                              formData.pickupDate
-                                ? formatDateFromInput(formData.pickupDate)
-                                : ""
-                            }
-                            onChange={(e) => {
-                              let value = e.target.value;
-                              // Auto-format while typing
-                              value = value.replace(/[^\d]/g, ""); // Only numbers
-                              if (value.length >= 2) {
-                                value =
-                                  value.slice(0, 2) + "/" + value.slice(2);
-                              }
-                              if (value.length >= 5) {
-                                value =
-                                  value.slice(0, 5) + "/" + value.slice(5, 9);
-                              }
-                              if (value.length <= 10) {
-                                const formattedForAPI =
-                                  formatDateForInput(value);
-                                handleDateChange("pickupDate", formattedForAPI);
-                              }
-                            }}
+                            className="date-display-input"
+                            value={formatDateForDisplay(formData.pickupDate)}
                             placeholder="GG/AA/YYYY"
-                            maxLength="10"
+                            readOnly
+                            onClick={() => triggerDatePicker(pickupDateRef)}
                             style={{
-                              ...inputStyle,
                               borderColor: formErrors.pickupDate
                                 ? "#dc3545"
                                 : "#e9ecef",
-                              fontFamily: "monospace",
-                              paddingRight: "45px",
                             }}
-                            className="form-input date-input"
                           />
                           <input
+                            ref={pickupDateRef}
                             type="date"
                             className="date-picker-hidden"
                             onChange={(e) => {
@@ -955,14 +1001,7 @@ const CarsSingle = () => {
                           <Calendar
                             className="calendar-icon"
                             size={18}
-                            onClick={() => {
-                              const hiddenInput = document.querySelector(
-                                ".datetime-inputs .date-picker-hidden"
-                              );
-                              if (hiddenInput) {
-                                hiddenInput.showPicker();
-                              }
-                            }}
+                            onClick={() => triggerDatePicker(pickupDateRef)}
                           />
                         </div>
                         <select
@@ -1000,44 +1039,20 @@ const CarsSingle = () => {
                       <div className="datetime-inputs">
                         <div className="date-input-wrapper">
                           <input
-                            name="returnDate"
                             type="text"
-                            value={
-                              formData.returnDate
-                                ? formatDateFromInput(formData.returnDate)
-                                : ""
-                            }
-                            onChange={(e) => {
-                              let value = e.target.value;
-                              // Auto-format while typing
-                              value = value.replace(/[^\d]/g, ""); // Only numbers
-                              if (value.length >= 2) {
-                                value =
-                                  value.slice(0, 2) + "/" + value.slice(2);
-                              }
-                              if (value.length >= 5) {
-                                value =
-                                  value.slice(0, 5) + "/" + value.slice(5, 9);
-                              }
-                              if (value.length <= 10) {
-                                const formattedForAPI =
-                                  formatDateForInput(value);
-                                handleDateChange("returnDate", formattedForAPI);
-                              }
-                            }}
+                            className="date-display-input"
+                            value={formatDateForDisplay(formData.returnDate)}
                             placeholder="GG/AA/YYYY"
-                            maxLength="10"
+                            readOnly
+                            onClick={() => triggerDatePicker(returnDateRef)}
                             style={{
-                              ...inputStyle,
                               borderColor: formErrors.returnDate
                                 ? "#dc3545"
                                 : "#e9ecef",
-                              fontFamily: "monospace",
-                              paddingRight: "45px",
                             }}
-                            className="form-input date-input"
                           />
                           <input
+                            ref={returnDateRef}
                             type="date"
                             className="date-picker-hidden"
                             onChange={(e) => {
@@ -1049,15 +1064,7 @@ const CarsSingle = () => {
                           <Calendar
                             className="calendar-icon"
                             size={18}
-                            onClick={() => {
-                              const hiddenInputs = document.querySelectorAll(
-                                ".datetime-inputs .date-picker-hidden"
-                              );
-                              const returnDateInput = hiddenInputs[1]; // second date input is return date
-                              if (returnDateInput) {
-                                returnDateInput.showPicker();
-                              }
-                            }}
+                            onClick={() => triggerDatePicker(returnDateRef)}
                           />
                         </div>
                         <select

@@ -8,15 +8,15 @@
   text-decoration: none;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(30, 203, 21, 0.3);
-  z-index: 1000;
+  z-index: 1001; /* FloatingContactButton'dan (1000) daha yüksek */
   border: none;
   cursor: pointer;
 }
 
-/* Mobile styles (default) */
+/* Mobile styles - FloatingContactButton ile çakışmasın diye konumu değiştirildi */
 .back-to-home-button {
   position: fixed;
-  bottom: 20px;
+  top: 20px; /* bottom yerine top kullan */
   left: 20px;
   width: 50px;
   height: 50px;
@@ -48,7 +48,7 @@
 .back-to-home-button.inline {
   position: static !important;
   margin: 20px 0;
-  bottom: auto !important;
+  top: auto !important;
   left: auto !important;
 }
 
@@ -58,8 +58,7 @@
     position: fixed;
     top: var(--desktop-top, 100px);
     right: var(--desktop-right, 20px);
-    bottom: auto;
-    left: auto;
+    left: auto; /* Sol konumlandırmayı sıfırla */
     width: auto;
     height: auto;
     padding: 12px 20px;
@@ -89,7 +88,7 @@
     width: 55px;
     height: 55px;
     font-size: 1.5rem;
-    bottom: 25px;
+    top: 25px; /* bottom yerine top */
     left: 25px;
   }
 }
@@ -100,7 +99,7 @@
     width: 45px;
     height: 45px;
     font-size: 1.2rem;
-    bottom: 15px;
+    top: 15px; /* bottom yerine top */
     left: 15px;
   }
 }
@@ -124,9 +123,10 @@
   transition: inherit;
 }
 
-/* Ensure button doesn't interfere with page scrolling on mobile */
+/* FloatingContactButton var olduğunda body padding'i kaldır */
 @media (max-width: 767px) {
+  /* FloatingContactButton kendi padding'ini ekliyor, burada kaldır */
   body {
-    padding-bottom: 80px;
+    padding-bottom: 0;
   }
 }

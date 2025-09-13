@@ -1,5 +1,22 @@
 /* CarsSingle.css - Tropical Blue Theme */
+/* iOS Safari date picker düzeltmesi için */
+input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 16px; /* iOS zoom'u engellemek için */
+}
 
+/* iOS Safari focus styling */
+input[type="date"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
 .cars-single-page {
   min-height: 100vh;
   background-color: #fff;

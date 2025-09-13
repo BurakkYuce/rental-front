@@ -75,39 +75,88 @@ const CarsSingle = () => {
     return dateString;
   };
 
-  // Handle date input changes
-  const handleDateChange = (fieldName, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [fieldName]: value,
-    }));
-
-    // Clear error for this field when user starts typing
-    if (formErrors[fieldName]) {
-      setFormErrors((prev) => ({
-        ...prev,
-        [fieldName]: "",
-      }));
+ const handleDateChange = (fieldName, value) => {
+  let validatedValue = value;
+  
+  // iOS Safari için manuel tarih kontrolü
+  if (fieldName === 'pickupDate') {
+    const today = new Date().toISOString().split('T')[0];
+    if (value < today) {
+      validatedValue = today;
+      alert('Alış tarihi bugünden önce olamaz!');
     }
-  };
+  }
+  
+  if (fieldName === 'returnDate' && formData.pickupDate) {
+    const pickupDate = new Date(formData.pickupDate);
+    const selectedDate = new Date(value);
+    
+    // En az 1 gün sonra olmalı
+    const minReturnDate = new Date(pickupDate);
+    minReturnDate.setDate(minReturnDate.getDate() + 1);
+    
+    if (selectedDate <= pickupDate) {
+      validatedValue = minReturnDate.toISOString().split('T')[0];
+      alert('Dönüş tarihi alış tarihinden en az 1 gün sonra olmalıdır!');
+    }
+  }
+  
+  setFormData((prev) => ({
+    ...prev,
+    [fieldName]: validatedValue,
+  }));
+
+  // Clear error for this field when user starts typing
+  if (formErrors[fieldName]) {
+    setFormErrors((prev) => ({
+      ...prev,
+      [fieldName]: "",
+    }));
+  }
+};
+
 
   // Trigger date picker for Apple/iOS compatibility
-  const triggerDatePicker = (inputRef) => {
-    if (inputRef && inputRef.current) {
-      // For better iOS/Safari compatibility
+const triggerDatePicker = (inputRef) => {
+  if (inputRef && inputRef.current) {
+    // iOS Safari için özel handling
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+    
+    if (isIOS || isSafari) {
+      // iOS Safari için direkt focus ve click
+      inputRef.current.focus();
+      
+      // Küçük bir delay ile click event'i
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.click();
+          
+          // showPicker varsa kullan
+          if (inputRef.current.showPicker) {
+            try {
+              inputRef.current.showPicker();
+            } catch (e) {
+              console.log("showPicker failed on iOS Safari");
+            }
+          }
+        }
+      }, 100);
+    } else {
+      // Diğer tarayıcılar için standart
       inputRef.current.focus();
       inputRef.current.click();
-
-      // Fallback for modern browsers
+      
       if (inputRef.current.showPicker) {
         try {
           inputRef.current.showPicker();
         } catch (error) {
-          console.log("showPicker not supported, using fallback");
+          console.log("showPicker not supported");
         }
       }
     }
-  };
+  }
+};
 
   // Helper functions for date validation
   const getTodayDate = () => {
@@ -405,7 +454,9 @@ const CarsSingle = () => {
     return errors;
   }, [formData]);
 
+// Generate WhatsApp message with car and booking details
 // Handle form submission - Open WhatsApp instead
+// Safari için tamamen yeni WhatsApp handling
 const handleBookingSubmit = async (e) => {
   e.preventDefault();
 
@@ -418,11 +469,9 @@ const handleBookingSubmit = async (e) => {
   setBookingLoading(true);
 
   try {
-    // Generate WhatsApp message
     const message = generateWhatsAppMessage();
-    console.log("Generated message:", message); // Debug için
+    console.log("Generated message:", message);
     
-    // Mesaj boş kontrolü
     if (!message || message.trim() === "") {
       throw new Error("Mesaj oluşturulamadı");
     }
@@ -431,42 +480,58 @@ const handleBookingSubmit = async (e) => {
     const whatsappNumber = "905366039907";
     const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
-    console.log("WhatsApp URL:", whatsappURL); // Debug için
+    console.log("WhatsApp URL:", whatsappURL);
 
-    // iOS Safari özel tespiti
+    // Tarayıcı tespiti
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
     const isAndroid = /Android/.test(navigator.userAgent);
     
-    console.log("Device info:", { isIOS, isSafari, isAndroid }); // Debug için
+    console.log("Browser detection:", { isIOS, isSafari, isAndroid });
 
-    // Platform-specific handling
-    if (isIOS || (isSafari && !isAndroid)) {
-      // iOS ve Safari için window.open kullan (user gesture context'inde daha güvenilir)
-      const newWindow = window.open(whatsappURL, '_blank');
+    // Safari için 3 farklı yaklaşım dene
+    if (isSafari || isIOS) {
+      console.log("Safari/iOS detected - trying multiple approaches");
       
-      // Eğer window.open başarısız olduysa (popup blocked), location kullan
-      if (!newWindow) {
-        console.log("iOS/Safari: window.open blocked, using location");
-        window.location = whatsappURL;
+      // Yaklaşım 1: Doğrudan location assignment
+      try {
+        window.location.assign(whatsappURL);
+        console.log("Safari: location.assign attempted");
+      } catch (error1) {
+        console.log("Safari: location.assign failed, trying window.open");
+        
+        // Yaklaşım 2: window.open
+        try {
+          const popup = window.open(whatsappURL, '_blank', 'noopener,noreferrer');
+          if (!popup) {
+            throw new Error("Popup blocked");
+          }
+          console.log("Safari: window.open successful");
+        } catch (error2) {
+          console.log("Safari: window.open failed, trying location.href");
+          
+          // Yaklaşım 3: location.href
+          window.location.href = whatsappURL;
+          console.log("Safari: location.href attempted");
+        }
       }
     } else if (isAndroid) {
-      // Android için location.href
+      // Android için mevcut yöntem
       window.location.href = whatsappURL;
+      console.log("Android: location.href used");
     } else {
-      // Desktop için standart window.open
+      // Desktop için standart
       const newWindow = window.open(whatsappURL, "_blank");
-      
-      // Popup engellenmiş ise fallback
-      if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+      if (!newWindow) {
         window.location.href = whatsappURL;
       }
+      console.log("Desktop: window.open used");
     }
 
-    // Show success message
+    // Success message
     alert("WhatsApp açılıyor! Rezervasyon talebiniz hazırlandı.");
 
-    // Reset form after a short delay
+    // Form reset
     setTimeout(() => {
       setFormData({
         pickupLocation: "",
@@ -482,6 +547,7 @@ const handleBookingSubmit = async (e) => {
         gencSurucu: 0,
       });
     }, 1000);
+    
   } catch (error) {
     console.error("WhatsApp redirect failed:", error);
     alert("WhatsApp açılırken bir hata oluştu. Lütfen tekrar deneyin.");

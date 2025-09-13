@@ -6,6 +6,9 @@ import "./BackToHomeButton.css";
 const BackToHomeButton = ({
   top = "100px",
   right = "20px",
+  // Mobil için yeni props ekledik
+  mobileBottom = "100px",
+  mobileRight = "20px",
   variant = "default",
 }) => {
   const handleClick = () => {
@@ -22,8 +25,12 @@ const BackToHomeButton = ({
       to="/"
       className={`back-to-home-button ${variant === "inline" ? "inline" : ""}`}
       style={{
+        // Desktop için
         "--desktop-top": top,
         "--desktop-right": right,
+        // Mobil için yeni CSS değişkenleri
+        "--mobile-bottom": mobileBottom,
+        "--mobile-right": mobileRight,
       }}
       onClick={handleClick}
     >

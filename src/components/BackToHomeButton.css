@@ -8,17 +8,16 @@
   text-decoration: none;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(30, 203, 21, 0.3);
-  z-index: 1001; /* FloatingContactButton'dan (1000) daha yüksek */
+  z-index: 1001;
   border: none;
   cursor: pointer;
 }
 
-/* Mobile styles - Sağ orta kenarda konumlandırma */
+/* Mobile styles - Instagram butonunun 15px üstünde */
 .back-to-home-button {
   position: fixed;
-  top: 50%; /* Sayfanın ortası */
-  transform: translateY(-50%); /* Tam ortalama için */
-  right: var(--mobile-right, 0px); /* Sağ kenara yapışık */
+  bottom: 85px; /* FloatingContactButton (70px) + 15px mesafe */
+  right: var(--mobile-right, 0px);
   left: auto;
   width: 50px;
   height: 50px;
@@ -37,7 +36,7 @@
 /* Hover effects for mobile */
 .back-to-home-button:hover {
   background-color: #179510;
-  transform: translateX(-2px); /* Hover'da biraz sol'a kayar */
+  transform: translateX(-2px);
   box-shadow: 0 6px 20px rgba(30, 203, 21, 0.4);
 }
 
@@ -50,9 +49,9 @@
 .back-to-home-button.inline {
   position: static !important;
   margin: 20px 0;
-  top: auto !important;
-  left: auto !important;
+  bottom: auto !important;
   right: auto !important;
+  left: auto !important;
   transform: none !important;
 }
 
@@ -62,8 +61,8 @@
     position: fixed;
     top: var(--desktop-top, 100px);
     right: var(--desktop-right, 20px);
+    bottom: auto;
     left: auto;
-    transform: none; /* Desktop'ta transform kaldır */
     width: auto;
     height: auto;
     padding: 12px 20px;
@@ -98,7 +97,7 @@
     width: 55px;
     height: 55px;
     font-size: 1.5rem;
-    bottom: 90px; /* FloatingContactButton + biraz daha fazla mesafe */
+    bottom: 90px;
     right: var(--mobile-right, 5px);
   }
 }
@@ -109,7 +108,7 @@
     width: 45px;
     height: 45px;
     font-size: 1.2rem;
-    bottom: 80px; /* FloatingContactButton + mesafe */
+    bottom: 80px;
     right: var(--mobile-right, 0px);
   }
 }

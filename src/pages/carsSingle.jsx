@@ -405,56 +405,6 @@ const CarsSingle = () => {
     return errors;
   }, [formData]);
 
-// Generate WhatsApp message with car and booking details
-const generateWhatsAppMessage = () => {
-  // Fallback message if car is not available
-  if (!car) return "Araç kiralama talebi - detaylar yakında paylaşılacak";
-
-  const carName = car.title || car.name || "Araç";
-
-  // Format dates for display
-  const pickupDateFormatted = formData.pickupDate
-    ? formatDateForDisplay(formData.pickupDate)
-    : "";
-  const returnDateFormatted = formData.returnDate
-    ? formatDateForDisplay(formData.returnDate)
-    : "";
-
-  // Prepare additional options text
-  const additionalOptionsText = [];
-
-  if (additionalOptions.cocukKoltugu > 0) {
-    additionalOptionsText.push(
-      `- Çocuk Koltuğu: ${additionalOptions.cocukKoltugu} adet`
-    );
-  }
-  if (additionalOptions.ekSurucu > 0) {
-    additionalOptionsText.push(
-      `- Ek Sürücü: ${additionalOptions.ekSurucu} adet`
-    );
-  }
-  if (additionalOptions.gencSurucu > 0) {
-    additionalOptionsText.push(
-      `- Genç Sürücü Paketi: ${additionalOptions.gencSurucu} adet`
-    );
-  }
-
-  // Build the message
-  let message = `Merhaba, aşağıdaki araç için rezervasyon yapmak istiyorum 🚗\n\n`;
-
-  message += `Araç: ${carName}\n`;
-  message += `Alış Yeri: ${formData.pickupLocation} – ${pickupDateFormatted} ${formData.pickupTime}\n`;
-  message += `Dönüş Yeri: ${formData.dropoffLocation} – ${returnDateFormatted} ${formData.returnTime}\n`;
-
-  if (additionalOptionsText.length > 0) {
-    message += `\nEk Seçenekler:\n${additionalOptionsText.join("\n")}\n`;
-  }
-
-  message += `\nLütfen müsaitliği ve fiyatı teyit eder misiniz? 🙂`;
-
-  return message;
-};
-
 // Handle form submission - Open WhatsApp instead
 const handleBookingSubmit = async (e) => {
   e.preventDefault();
@@ -478,19 +428,33 @@ const handleBookingSubmit = async (e) => {
     }
 
     const encodedMessage = encodeURIComponent(message);
-    const whatsappNumber = "905366039907"; // Turkish number format
+    const whatsappNumber = "905366039907";
     const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
     console.log("WhatsApp URL:", whatsappURL); // Debug için
 
-    // Mobil cihaz kontrolü - daha güvenilir açılış
-    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    // iOS Safari özel tespiti
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
     
-    if (isMobile) {
-      // Mobil cihazlarda window.location.href daha güvenilir
+    console.log("Device info:", { isIOS, isSafari, isAndroid }); // Debug için
+
+    // Platform-specific handling
+    if (isIOS || (isSafari && !isAndroid)) {
+      // iOS ve Safari için window.open kullan (user gesture context'inde daha güvenilir)
+      const newWindow = window.open(whatsappURL, '_blank');
+      
+      // Eğer window.open başarısız olduysa (popup blocked), location kullan
+      if (!newWindow) {
+        console.log("iOS/Safari: window.open blocked, using location");
+        window.location = whatsappURL;
+      }
+    } else if (isAndroid) {
+      // Android için location.href
       window.location.href = whatsappURL;
     } else {
-      // Desktop'ta window.open kullan
+      // Desktop için standart window.open
       const newWindow = window.open(whatsappURL, "_blank");
       
       // Popup engellenmiş ise fallback

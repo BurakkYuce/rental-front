@@ -19,7 +19,55 @@ const locationOptions = [
   "Antalya Kemer",
   "Antalya Alanya",
 ];
+// Generate WhatsApp message with car and booking details
+const generateWhatsAppMessage = () => {
+  // Fallback message if car is not available
+  if (!car) return "Araç kiralama talebi - detaylar yakında paylaşılacak";
 
+  const carName = car.title || car.name || "Araç";
+
+  // Format dates for display
+  const pickupDateFormatted = formData.pickupDate
+    ? formatDateForDisplay(formData.pickupDate)
+    : "";
+  const returnDateFormatted = formData.returnDate
+    ? formatDateForDisplay(formData.returnDate)
+    : "";
+
+  // Prepare additional options text
+  const additionalOptionsText = [];
+
+  if (additionalOptions.cocukKoltugu > 0) {
+    additionalOptionsText.push(
+      `- Çocuk Koltuğu: ${additionalOptions.cocukKoltugu} adet`
+    );
+  }
+  if (additionalOptions.ekSurucu > 0) {
+    additionalOptionsText.push(
+      `- Ek Sürücü: ${additionalOptions.ekSurucu} adet`
+    );
+  }
+  if (additionalOptions.gencSurucu > 0) {
+    additionalOptionsText.push(
+      `- Genç Sürücü Paketi: ${additionalOptions.gencSurucu} adet`
+    );
+  }
+
+  // Build the message
+  let message = `Merhaba, aşağıdaki araç için rezervasyon yapmak istiyorum 🚗\n\n`;
+
+  message += `Araç: ${carName}\n`;
+  message += `Alış Yeri: ${formData.pickupLocation} – ${pickupDateFormatted} ${formData.pickupTime}\n`;
+  message += `Dönüş Yeri: ${formData.dropoffLocation} – ${returnDateFormatted} ${formData.returnTime}\n`;
+
+  if (additionalOptionsText.length > 0) {
+    message += `\nEk Seçenekler:\n${additionalOptionsText.join("\n")}\n`;
+  }
+
+  message += `\nLütfen müsaitliği ve fiyatı teyit eder misiniz? 🙂`;
+
+  return message;
+};
 const CarsSingle = () => {
   const { id } = useParams();
   const navigate = useNavigate();

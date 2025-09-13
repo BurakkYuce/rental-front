@@ -405,103 +405,126 @@ const CarsSingle = () => {
     return errors;
   }, [formData]);
 
-  // Generate WhatsApp message with car and booking details
-  const generateWhatsAppMessage = () => {
-    if (!car) return "";
+// Generate WhatsApp message with car and booking details
+const generateWhatsAppMessage = () => {
+  // Fallback message if car is not available
+  if (!car) return "Araç kiralama talebi - detaylar yakında paylaşılacak";
 
-    const carName = car.title || car.name || "Araç";
+  const carName = car.title || car.name || "Araç";
 
-    // Format dates for display
-    const pickupDateFormatted = formData.pickupDate
-      ? formatDateForDisplay(formData.pickupDate)
-      : "";
-    const returnDateFormatted = formData.returnDate
-      ? formatDateForDisplay(formData.returnDate)
-      : "";
+  // Format dates for display
+  const pickupDateFormatted = formData.pickupDate
+    ? formatDateForDisplay(formData.pickupDate)
+    : "";
+  const returnDateFormatted = formData.returnDate
+    ? formatDateForDisplay(formData.returnDate)
+    : "";
 
-    // Prepare additional options text
-    const additionalOptionsText = [];
+  // Prepare additional options text
+  const additionalOptionsText = [];
 
-    if (additionalOptions.cocukKoltugu > 0) {
-      additionalOptionsText.push(
-        `- Çocuk Koltuğu: ${additionalOptions.cocukKoltugu} adet`
-      );
+  if (additionalOptions.cocukKoltugu > 0) {
+    additionalOptionsText.push(
+      `- Çocuk Koltuğu: ${additionalOptions.cocukKoltugu} adet`
+    );
+  }
+  if (additionalOptions.ekSurucu > 0) {
+    additionalOptionsText.push(
+      `- Ek Sürücü: ${additionalOptions.ekSurucu} adet`
+    );
+  }
+  if (additionalOptions.gencSurucu > 0) {
+    additionalOptionsText.push(
+      `- Genç Sürücü Paketi: ${additionalOptions.gencSurucu} adet`
+    );
+  }
+
+  // Build the message
+  let message = `Merhaba, aşağıdaki araç için rezervasyon yapmak istiyorum 🚗\n\n`;
+
+  message += `Araç: ${carName}\n`;
+  message += `Alış Yeri: ${formData.pickupLocation} – ${pickupDateFormatted} ${formData.pickupTime}\n`;
+  message += `Dönüş Yeri: ${formData.dropoffLocation} – ${returnDateFormatted} ${formData.returnTime}\n`;
+
+  if (additionalOptionsText.length > 0) {
+    message += `\nEk Seçenekler:\n${additionalOptionsText.join("\n")}\n`;
+  }
+
+  message += `\nLütfen müsaitliği ve fiyatı teyit eder misiniz? 🙂`;
+
+  return message;
+};
+
+// Handle form submission - Open WhatsApp instead
+const handleBookingSubmit = async (e) => {
+  e.preventDefault();
+
+  const errors = validateForm();
+  if (Object.keys(errors).length > 0) {
+    setFormErrors(errors);
+    return;
+  }
+
+  setBookingLoading(true);
+
+  try {
+    // Generate WhatsApp message
+    const message = generateWhatsAppMessage();
+    console.log("Generated message:", message); // Debug için
+    
+    // Mesaj boş kontrolü
+    if (!message || message.trim() === "") {
+      throw new Error("Mesaj oluşturulamadı");
     }
-    if (additionalOptions.ekSurucu > 0) {
-      additionalOptionsText.push(
-        `- Ek Sürücü: ${additionalOptions.ekSurucu} adet`
-      );
-    }
-    if (additionalOptions.gencSurucu > 0) {
-      additionalOptionsText.push(
-        `- Genç Sürücü Paketi: ${additionalOptions.gencSurucu} adet`
-      );
-    }
 
-    // Build the message
-    let message = `Merhaba, aşağıdaki araç için rezervasyon yapmak istiyorum 🚗\n\n`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappNumber = "905366039907"; // Turkish number format
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
-    message += `Araç: ${carName}\n`;
-    message += `Alış Yeri: ${formData.pickupLocation} – ${pickupDateFormatted} ${formData.pickupTime}\n`;
-    message += `Dönüş Yeri: ${formData.dropoffLocation} – ${returnDateFormatted} ${formData.returnTime}\n`;
+    console.log("WhatsApp URL:", whatsappURL); // Debug için
 
-    if (additionalOptionsText.length > 0) {
-      message += `\nEk Seçenekler:\n${additionalOptionsText.join("\n")}\n`;
-    }
-
-    message += `\nLütfen müsaitliği ve fiyatı teyit eder misiniz? 🙂`;
-
-    return message;
-  };
-
-  // Handle form submission - Open WhatsApp instead
-  const handleBookingSubmit = async (e) => {
-    e.preventDefault();
-
-    const errors = validateForm();
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
+    // Mobil cihaz kontrolü - daha güvenilir açılış
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // Mobil cihazlarda window.location.href daha güvenilir
+      window.location.href = whatsappURL;
+    } else {
+      // Desktop'ta window.open kullan
+      const newWindow = window.open(whatsappURL, "_blank");
+      
+      // Popup engellenmiş ise fallback
+      if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+        window.location.href = whatsappURL;
+      }
     }
 
-    setBookingLoading(true);
+    // Show success message
+    alert("WhatsApp açılıyor! Rezervasyon talebiniz hazırlandı.");
 
-    try {
-      // Generate WhatsApp message
-      const message = generateWhatsAppMessage();
-      const encodedMessage = encodeURIComponent(message);
-      const whatsappNumber = "905366039907"; // Turkish number format
-      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-
-      // Open WhatsApp in new tab
-      window.open(whatsappURL, "_blank");
-
-      // Show success message
-      alert("WhatsApp açılıyor! Rezervasyon talebiniz hazırlandı.");
-
-      // Reset form after a short delay
-      setTimeout(() => {
-        setFormData({
-          pickupLocation: "",
-          dropoffLocation: "",
-          pickupDate: "",
-          pickupTime: "",
-          returnDate: "",
-          returnTime: "",
-        });
-        setAdditionalOptions({
-          cocukKoltugu: 0,
-          ekSurucu: 0,
-          gencSurucu: 0,
-        });
-      }, 1000);
-    } catch (error) {
-      console.error("WhatsApp redirect failed:", error);
-      alert("WhatsApp açılırken bir hata oluştu. Lütfen tekrar deneyin.");
-    } finally {
-      setBookingLoading(false);
-    }
-  };
+    // Reset form after a short delay
+    setTimeout(() => {
+      setFormData({
+        pickupLocation: "",
+        dropoffLocation: "",
+        pickupDate: "",
+        pickupTime: "",
+        returnDate: "",
+        returnTime: "",
+      });
+      setAdditionalOptions({
+        cocukKoltugu: 0,
+        ekSurucu: 0,
+        gencSurucu: 0,
+      });
+    }, 1000);
+  } catch (error) {
+    console.error("WhatsApp redirect failed:", error);
+    alert("WhatsApp açılırken bir hata oluştu. Lütfen tekrar deneyin.");
+  } finally {
+    setBookingLoading(false);
+  }
+};
 
   // Car specifications with better API integration
   const specifications = useMemo(() => {

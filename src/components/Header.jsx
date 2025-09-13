@@ -244,7 +244,7 @@ const Header = () => {
         <div className="mobile-header">
           <div className="mobile-header-left">
             <Link to="/" className="mobile-logo">
-              <img src="C:\Users\yusuf\OneDrive\Desktop\Burak\Github- Mitcar\rental-front-main\rental-front-main\public\images\logo\UMİT-2.png" alt="" />
+              <img src="C:/Users/yusuf/OneDrive/Desktop/Burak/Github- Mitcar/rental-front-main/rental-front-main/public/images/logo/UMİT-2.png" alt="" />
             </Link>
             <CurrencySelector variant="header" />
           </div>

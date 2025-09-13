@@ -37,12 +37,12 @@
 /* Hover effects for mobile */
 .back-to-home-button:hover {
   background-color: #179510;
-  transform: translateY(-50%) translateX(-2px); /* Hover'da biraz sol'a kayar */
+  transform: translateX(-2px); /* Hover'da biraz sol'a kayar */
   box-shadow: 0 6px 20px rgba(30, 203, 21, 0.4);
 }
 
 .back-to-home-button:active {
-  transform: translateY(-50%) translateX(0);
+  transform: translateX(0);
   box-shadow: 0 2px 8px rgba(30, 203, 21, 0.3);
 }
 

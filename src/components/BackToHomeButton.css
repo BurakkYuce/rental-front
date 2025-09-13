@@ -13,11 +13,13 @@
   cursor: pointer;
 }
 
-/* Mobile styles - FloatingContactButton ile çakışmasın diye konumu değiştirildi */
+/* Mobile styles - Sağ orta kenarda konumlandırma */
 .back-to-home-button {
   position: fixed;
-  top: 20px; /* bottom yerine top kullan */
-  left: 20px;
+  top: 50%; /* Sayfanın ortası */
+  transform: translateY(-50%); /* Tam ortalama için */
+  right: var(--mobile-right, 0px); /* Sağ kenara yapışık */
+  left: auto;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -35,12 +37,12 @@
 /* Hover effects for mobile */
 .back-to-home-button:hover {
   background-color: #179510;
-  transform: translateY(-2px);
+  transform: translateY(-50%) translateX(-2px); /* Hover'da biraz sol'a kayar */
   box-shadow: 0 6px 20px rgba(30, 203, 21, 0.4);
 }
 
 .back-to-home-button:active {
-  transform: translateY(0);
+  transform: translateY(-50%) translateX(0);
   box-shadow: 0 2px 8px rgba(30, 203, 21, 0.3);
 }
 
@@ -50,6 +52,8 @@
   margin: 20px 0;
   top: auto !important;
   left: auto !important;
+  right: auto !important;
+  transform: none !important;
 }
 
 /* Desktop styles */
@@ -58,7 +62,8 @@
     position: fixed;
     top: var(--desktop-top, 100px);
     right: var(--desktop-right, 20px);
-    left: auto; /* Sol konumlandırmayı sıfırla */
+    left: auto;
+    transform: none; /* Desktop'ta transform kaldır */
     width: auto;
     height: auto;
     padding: 12px 20px;
@@ -80,6 +85,11 @@
   .back-to-home-button .desktop-content i {
     font-size: 1rem;
   }
+
+  /* Desktop hover effect */
+  .back-to-home-button:hover {
+    transform: translateY(-2px);
+  }
 }
 
 /* Tablet adjustments */
@@ -88,8 +98,7 @@
     width: 55px;
     height: 55px;
     font-size: 1.5rem;
-    bottom: 105px; /* FloatingContactButton + güvenli boşluk */
-    right: 25px;
+    right: var(--mobile-right, 5px); /* Biraz içeride */
   }
 }
 
@@ -99,8 +108,7 @@
     width: 45px;
     height: 45px;
     font-size: 1.2rem;
-    bottom: 95px; /* Küçük ekranlarda biraz daha yakın ama güvenli */
-    right: 15px;
+    right: var(--mobile-right, 0px); /* Tam kenarda */
   }
 }
 
@@ -123,9 +131,8 @@
   transition: inherit;
 }
 
-/* FloatingContactButton var olduğunda body padding'i kaldır */
+/* FloatingContactButton ile çakışma engelleme */
 @media (max-width: 767px) {
-  /* FloatingContactButton kendi padding'ini ekliyor, burada kaldır */
   body {
     padding-bottom: 0;
   }

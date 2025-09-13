@@ -88,7 +88,7 @@
     width: 55px;
     height: 55px;
     font-size: 1.5rem;
-    bottom: 90px; /* FloatingContactButton + biraz daha fazla boşluk */
+    bottom: 105px; /* FloatingContactButton + güvenli boşluk */
     right: 25px;
   }
 }
@@ -99,7 +99,7 @@
     width: 45px;
     height: 45px;
     font-size: 1.2rem;
-    bottom: 80px; /* Küçük ekranlarda biraz daha yakın */
+    bottom: 95px; /* Küçük ekranlarda biraz daha yakın ama güvenli */
     right: 15px;
   }
 }

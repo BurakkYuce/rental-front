@@ -6,7 +6,7 @@ import Header from "../components/Header";
 import BackToHomeButton from "../components/BackToHomeButton";
 import { publicAPI } from "../services/api";
 import { useCurrency } from "../contexts/CurrencyContext";
-import "./CarsSingle.css"; // CSS'i ayrı dosyaya taşı
+import "./CarsSingle.css";
 
 // Location options for pickup and dropoff
 const locationOptions = [
@@ -19,60 +19,12 @@ const locationOptions = [
   "Antalya Kemer",
   "Antalya Alanya",
 ];
-// Generate WhatsApp message with car and booking details
-const generateWhatsAppMessage = () => {
-  // Fallback message if car is not available
-  if (!car) return "Araç kiralama talebi - detaylar yakında paylaşılacak";
 
-  const carName = car.title || car.name || "Araç";
-
-  // Format dates for display
-  const pickupDateFormatted = formData.pickupDate
-    ? formatDateForDisplay(formData.pickupDate)
-    : "";
-  const returnDateFormatted = formData.returnDate
-    ? formatDateForDisplay(formData.returnDate)
-    : "";
-
-  // Prepare additional options text
-  const additionalOptionsText = [];
-
-  if (additionalOptions.cocukKoltugu > 0) {
-    additionalOptionsText.push(
-      `- Çocuk Koltuğu: ${additionalOptions.cocukKoltugu} adet`
-    );
-  }
-  if (additionalOptions.ekSurucu > 0) {
-    additionalOptionsText.push(
-      `- Ek Sürücü: ${additionalOptions.ekSurucu} adet`
-    );
-  }
-  if (additionalOptions.gencSurucu > 0) {
-    additionalOptionsText.push(
-      `- Genç Sürücü Paketi: ${additionalOptions.gencSurucu} adet`
-    );
-  }
-
-  // Build the message
-  let message = `Merhaba, aşağıdaki araç için rezervasyon yapmak istiyorum 🚗\n\n`;
-
-  message += `Araç: ${carName}\n`;
-  message += `Alış Yeri: ${formData.pickupLocation} – ${pickupDateFormatted} ${formData.pickupTime}\n`;
-  message += `Dönüş Yeri: ${formData.dropoffLocation} – ${returnDateFormatted} ${formData.returnTime}\n`;
-
-  if (additionalOptionsText.length > 0) {
-    message += `\nEk Seçenekler:\n${additionalOptionsText.join("\n")}\n`;
-  }
-
-  message += `\nLütfen müsaitliği ve fiyatı teyit eder misiniz? 🙂`;
-
-  return message;
-};
 const CarsSingle = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Get currency context - sadece kullanılan fonksiyonlar
+  // Currency context
   const {
     currentCurrency,
     convertAndFormatPrice,
@@ -82,6 +34,7 @@ const CarsSingle = () => {
     isLoaded: currencyLoaded,
   } = useCurrency();
 
+  // State variables
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -89,7 +42,7 @@ const CarsSingle = () => {
   const [imageLoadErrors, setImageLoadErrors] = useState(new Set());
   const [bookingLoading, setBookingLoading] = useState(false);
 
-  // Create refs for date inputs
+  // Date picker refs
   const pickupDateRef = React.useRef(null);
   const returnDateRef = React.useRef(null);
 
@@ -107,9 +60,9 @@ const CarsSingle = () => {
 
   // Additional options state
   const [additionalOptions, setAdditionalOptions] = useState({
-    cocukKoltugu: 0, // max 3, 5€ per day
-    ekSurucu: 0, // max 1, 8€ per day
-    gencSurucu: 0, // max 1, 15€ per day
+    cocukKoltugu: 0,
+    ekSurucu: 0,
+    gencSurucu: 0,
   });
 
   // Format date from YYYY-MM-DD to DD/MM/YYYY for display
@@ -123,88 +76,80 @@ const CarsSingle = () => {
     return dateString;
   };
 
- const handleDateChange = (fieldName, value) => {
-  let validatedValue = value;
-  
-  // iOS Safari için manuel tarih kontrolü
-  if (fieldName === 'pickupDate') {
-    const today = new Date().toISOString().split('T')[0];
-    if (value < today) {
-      validatedValue = today;
-      alert('Alış tarihi bugünden önce olamaz!');
+  // Handle date changes with iOS Safari validation
+  const handleDateChange = (fieldName, value) => {
+    let validatedValue = value;
+    
+    // iOS Safari için manuel tarih kontrolü
+    if (fieldName === 'pickupDate') {
+      const today = new Date().toISOString().split('T')[0];
+      if (value < today) {
+        validatedValue = today;
+        alert('Alış tarihi bugünden önce olamaz!');
+      }
     }
-  }
-  
-  if (fieldName === 'returnDate' && formData.pickupDate) {
-    const pickupDate = new Date(formData.pickupDate);
-    const selectedDate = new Date(value);
     
-    // En az 1 gün sonra olmalı
-    const minReturnDate = new Date(pickupDate);
-    minReturnDate.setDate(minReturnDate.getDate() + 1);
-    
-    if (selectedDate <= pickupDate) {
-      validatedValue = minReturnDate.toISOString().split('T')[0];
-      alert('Dönüş tarihi alış tarihinden en az 1 gün sonra olmalıdır!');
-    }
-  }
-  
-  setFormData((prev) => ({
-    ...prev,
-    [fieldName]: validatedValue,
-  }));
-
-  // Clear error for this field when user starts typing
-  if (formErrors[fieldName]) {
-    setFormErrors((prev) => ({
-      ...prev,
-      [fieldName]: "",
-    }));
-  }
-};
-
-
-  // Trigger date picker for Apple/iOS compatibility
-const triggerDatePicker = (inputRef) => {
-  if (inputRef && inputRef.current) {
-    // iOS Safari için özel handling
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-    
-    if (isIOS || isSafari) {
-      // iOS Safari için direkt focus ve click
-      inputRef.current.focus();
+    if (fieldName === 'returnDate' && formData.pickupDate) {
+      const pickupDate = new Date(formData.pickupDate);
+      const selectedDate = new Date(value);
       
-      // Küçük bir delay ile click event'i
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.click();
-          
-          // showPicker varsa kullan
-          if (inputRef.current.showPicker) {
-            try {
-              inputRef.current.showPicker();
-            } catch (e) {
-              console.log("showPicker failed on iOS Safari");
+      // En az 1 gün sonra olmalı
+      const minReturnDate = new Date(pickupDate);
+      minReturnDate.setDate(minReturnDate.getDate() + 1);
+      
+      if (selectedDate <= pickupDate) {
+        validatedValue = minReturnDate.toISOString().split('T')[0];
+        alert('Dönüş tarihi alış tarihinden en az 1 gün sonra olmalıdır!');
+      }
+    }
+    
+    setFormData((prev) => ({
+      ...prev,
+      [fieldName]: validatedValue,
+    }));
+
+    // Clear error for this field
+    if (formErrors[fieldName]) {
+      setFormErrors((prev) => ({
+        ...prev,
+        [fieldName]: "",
+      }));
+    }
+  };
+
+  // Trigger date picker for iOS Safari compatibility
+  const triggerDatePicker = (inputRef) => {
+    if (inputRef && inputRef.current) {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+      
+      if (isIOS || isSafari) {
+        inputRef.current.focus();
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.click();
+            if (inputRef.current.showPicker) {
+              try {
+                inputRef.current.showPicker();
+              } catch (e) {
+                console.log("showPicker failed on iOS Safari");
+              }
             }
           }
-        }
-      }, 100);
-    } else {
-      // Diğer tarayıcılar için standart
-      inputRef.current.focus();
-      inputRef.current.click();
-      
-      if (inputRef.current.showPicker) {
-        try {
-          inputRef.current.showPicker();
-        } catch (error) {
-          console.log("showPicker not supported");
+        }, 100);
+      } else {
+        inputRef.current.focus();
+        inputRef.current.click();
+        if (inputRef.current.showPicker) {
+          try {
+            inputRef.current.showPicker();
+          } catch (error) {
+            console.log("showPicker not supported");
+          }
         }
       }
     }
-  }
-};
+  };
 
   // Helper functions for date validation
   const getTodayDate = () => {
@@ -235,7 +180,7 @@ const triggerDatePicker = (inputRef) => {
     return options;
   }, []);
 
-  // Calculate rental days between pickup and return dates
+  // Calculate rental days
   const calculateRentalDays = useCallback(() => {
     if (!formData.pickupDate || !formData.returnDate) return 0;
 
@@ -244,49 +189,31 @@ const triggerDatePicker = (inputRef) => {
     const diffTime = returnDate - pickupDate;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    return Math.max(1, diffDays); // Minimum 1 day
+    return Math.max(1, diffDays);
   }, [formData.pickupDate, formData.returnDate]);
 
-  // Calculate optimized car rental price (weekly + daily breakdown)
+  // Calculate car rental total
   const calculateCarRentalTotal = useCallback(() => {
     if (!car || !currencyLoaded || !convertAmount) return 0;
 
     const rentalDays = calculateRentalDays();
     if (rentalDays === 0) return 0;
 
-    // Use effective pricing (seasonal) if available, otherwise use base pricing
     const pricing = car.effectivePricing || car.pricing || {};
     const baseCurrency = pricing.currency || car.currency || "EUR";
 
     const dailyRate = pricing.daily || car.dailyRate || 50;
     const weeklyRate = pricing.weekly || dailyRate * 7;
 
-    // Calculate optimized pricing: weekly + remaining daily
     const weeks = Math.floor(rentalDays / 7);
     const remainingDays = rentalDays % 7;
 
     const totalEUR = weeks * weeklyRate + remainingDays * dailyRate;
 
-    console.log("🧮 Car rental calculation:", {
-      rentalDays,
-      weeks,
-      remainingDays,
-      weeklyRate,
-      dailyRate,
-      totalEUR,
-      baseCurrency,
-    });
-
     return convertAmount(totalEUR, baseCurrency, currentCurrency);
-  }, [
-    car,
-    currencyLoaded,
-    convertAmount,
-    currentCurrency,
-    calculateRentalDays,
-  ]);
+  }, [car, currencyLoaded, convertAmount, currentCurrency, calculateRentalDays]);
 
-  // Calculate additional options total for rental period
+  // Calculate additional options total
   const calculateAdditionalOptionsTotal = useCallback(() => {
     if (!currencyLoaded || !convertAmount) return 0;
 
@@ -298,15 +225,9 @@ const triggerDatePicker = (inputRef) => {
     const totalEUR = dailyOptionsTotal * rentalDays;
 
     return convertAmount(totalEUR, "EUR", currentCurrency);
-  }, [
-    additionalOptions,
-    convertAmount,
-    currencyLoaded,
-    currentCurrency,
-    calculateRentalDays,
-  ]);
+  }, [additionalOptions, convertAmount, currencyLoaded, currentCurrency, calculateRentalDays]);
 
-  // Calculate grand total (car + additional options)
+  // Calculate grand total
   const calculateGrandTotal = useCallback(() => {
     return calculateCarRentalTotal() + calculateAdditionalOptionsTotal();
   }, [calculateCarRentalTotal, calculateAdditionalOptionsTotal]);
@@ -317,7 +238,6 @@ const triggerDatePicker = (inputRef) => {
       const current = prev[option];
       let newValue = current + increment;
 
-      // Apply limits
       if (option === "cocukKoltugu") {
         newValue = Math.max(0, Math.min(3, newValue));
       } else if (option === "ekSurucu" || option === "gencSurucu") {
@@ -328,7 +248,7 @@ const triggerDatePicker = (inputRef) => {
     });
   }, []);
 
-  // Load car data with improved error handling and API fallback
+  // Load car data
   const loadCarData = useCallback(async () => {
     if (!id) return;
 
@@ -336,13 +256,8 @@ const triggerDatePicker = (inputRef) => {
       setLoading(true);
       setError("");
 
-      console.log("🚗 Loading car with ID:", id);
-
-      // Use only public API
       const response = await publicAPI.getCarById(id);
-      console.log("✅ Public API response:", response);
-
-      // Handle different response structures
+      
       let carData;
       if (response?.data?.data) {
         carData = response.data.data;
@@ -352,28 +267,9 @@ const triggerDatePicker = (inputRef) => {
         throw new Error("Invalid response structure");
       }
 
-      console.log("🔍 Parsed car data:", carData);
-      console.log("🔍 Car effectivePricing:", carData.effectivePricing);
-      console.log("🔍 Car basePricing:", carData.basePricing);
-      console.log("🔍 Car seasonal_pricing:", carData.seasonal_pricing);
-
-      // Debug seasonal pricing like in Cars.jsx
-      if (carData.seasonal_pricing && carData.seasonal_pricing.length > 0) {
-        console.log(
-          "🎯 CarsSingle - Car has seasonal_pricing:",
-          carData.id,
-          carData.seasonal_pricing
-        );
-        console.log(
-          "🎯 CarsSingle - Effective pricing:",
-          carData.effectivePricing
-        );
-        console.log("🎯 CarsSingle - Base pricing:", carData.pricing);
-      }
-
       setCar(carData);
     } catch (error) {
-      console.error("❌ Failed to load car:", error);
+      console.error("Failed to load car:", error);
       if (error.response?.status === 404) {
         setError("Car not found");
       } else {
@@ -388,18 +284,16 @@ const triggerDatePicker = (inputRef) => {
     loadCarData();
   }, [loadCarData]);
 
-  // Get car images with better fallback handling
+  // Get car images
   const carImages = useMemo(() => {
     if (!car) return ["/images/cars/default-car.jpg"];
 
     const images = [];
 
-    // Add main image if available
     if (car.mainImage?.url) {
       images.push(car.mainImage.url);
     }
 
-    // Add gallery images if available
     if (car.gallery && Array.isArray(car.gallery)) {
       car.gallery.forEach((img) => {
         if (img?.url) {
@@ -408,18 +302,15 @@ const triggerDatePicker = (inputRef) => {
       });
     }
 
-    // If no images from API, use default
     if (images.length === 0) {
       images.push("/images/cars/default-car.jpg");
     }
 
-    console.log("🖼️ Car images:", images);
     return images;
   }, [car]);
 
   // Handle image load errors
   const handleImageError = useCallback((index) => {
-    console.log("❌ Image failed to load:", index);
     setImageLoadErrors((prev) => new Set([...prev, index]));
   }, []);
 
@@ -432,24 +323,20 @@ const triggerDatePicker = (inputRef) => {
   }, [carImages, currentImageIndex, imageLoadErrors]);
 
   // Handle form input changes
-  const handleInputChange = useCallback(
-    (e) => {
-      const { name, value } = e.target;
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+  const handleInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
-      // Clear error for this field when user starts typing
-      if (formErrors[name]) {
-        setFormErrors((prev) => ({
-          ...prev,
-          [name]: "",
-        }));
-      }
-    },
-    [formErrors]
-  );
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  }, [formErrors]);
 
   // Validate form
   const validateForm = useCallback(() => {
@@ -479,7 +366,6 @@ const triggerDatePicker = (inputRef) => {
       errors.returnTime = "Return time is required";
     }
 
-    // Validate date and time logic
     if (
       formData.pickupDate &&
       formData.returnDate &&
@@ -502,110 +388,146 @@ const triggerDatePicker = (inputRef) => {
     return errors;
   }, [formData]);
 
-// Generate WhatsApp message with car and booking details
- try {
-    const message = generateWhatsAppMessage();
-    console.log("Generated message:", message);
-    
-    if (!message || message.trim() === "") {
-      throw new Error("Mesaj oluşturulamadı");
+  // Generate WhatsApp message
+  const generateWhatsAppMessage = useCallback(() => {
+    if (!car) return "Araç kiralama talebi - detaylar yakında paylaşılacak";
+
+    const carName = car.title || car.name || "Araç";
+
+    const pickupDateFormatted = formData.pickupDate
+      ? formatDateForDisplay(formData.pickupDate)
+      : "";
+    const returnDateFormatted = formData.returnDate
+      ? formatDateForDisplay(formData.returnDate)
+      : "";
+
+    const additionalOptionsText = [];
+
+    if (additionalOptions.cocukKoltugu > 0) {
+      additionalOptionsText.push(
+        `- Çocuk Koltuğu: ${additionalOptions.cocukKoltugu} adet`
+      );
+    }
+    if (additionalOptions.ekSurucu > 0) {
+      additionalOptionsText.push(
+        `- Ek Sürücü: ${additionalOptions.ekSurucu} adet`
+      );
+    }
+    if (additionalOptions.gencSurucu > 0) {
+      additionalOptionsText.push(
+        `- Genç Sürücü Paketi: ${additionalOptions.gencSurucu} adet`
+      );
     }
 
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappNumber = "905366039907";
-    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+    let message = `Merhaba, aşağıdaki araç için rezervasyon yapmak istiyorum 🚗\n\n`;
 
-    console.log("WhatsApp URL:", whatsappURL);
+    message += `Araç: ${carName}\n`;
+    message += `Alış Yeri: ${formData.pickupLocation} – ${pickupDateFormatted} ${formData.pickupTime}\n`;
+    message += `Dönüş Yeri: ${formData.dropoffLocation} – ${returnDateFormatted} ${formData.returnTime}\n`;
 
-    // Tarayıcı tespiti
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-    const isAndroid = /Android/.test(navigator.userAgent);
-    
-    console.log("Browser detection:", { isIOS, isSafari, isAndroid });
+    if (additionalOptionsText.length > 0) {
+      message += `\nEk Seçenekler:\n${additionalOptionsText.join("\n")}\n`;
+    }
 
-    // Safari için 3 farklı yaklaşım dene
-    if (isSafari || isIOS) {
-      console.log("Safari/iOS detected - trying multiple approaches");
+    message += `\nLütfen müsaitliği ve fiyatı teyit eder misiniz? 🙂`;
+
+    return message;
+  }, [car, formData, additionalOptions]);
+
+  // Handle booking submission with WhatsApp redirect
+  const handleBookingSubmit = async (e) => {
+    e.preventDefault();
+
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setBookingLoading(true);
+
+    try {
+      const message = generateWhatsAppMessage();
+      console.log("Generated message:", message);
       
-      // Yaklaşım 1: Doğrudan location assignment
-      try {
-        window.location.assign(whatsappURL);
-        console.log("Safari: location.assign attempted");
-      } catch (error1) {
-        console.log("Safari: location.assign failed, trying window.open");
+      if (!message || message.trim() === "") {
+        throw new Error("Mesaj oluşturulamadı");
+      }
+
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappNumber = "905366039907";
+      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+      console.log("WhatsApp URL:", whatsappURL);
+
+      // Browser detection
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+      const isAndroid = /Android/.test(navigator.userAgent);
+      
+      console.log("Browser detection:", { isIOS, isSafari, isAndroid });
+
+      // Platform-specific WhatsApp handling
+      if (isSafari || isIOS) {
+        console.log("Safari/iOS detected - trying multiple approaches");
         
-        // Yaklaşım 2: window.open
         try {
-          const popup = window.open(whatsappURL, '_blank', 'noopener,noreferrer');
-          if (!popup) {
-            throw new Error("Popup blocked");
-          }
-          console.log("Safari: window.open successful");
-        } catch (error2) {
-          console.log("Safari: window.open failed, trying location.href");
+          window.location.assign(whatsappURL);
+          console.log("Safari: location.assign attempted");
+        } catch (error1) {
+          console.log("Safari: location.assign failed, trying window.open");
           
-          // Yaklaşım 3: location.href
-          window.location.href = whatsappURL;
-          console.log("Safari: location.href attempted");
+          try {
+            const popup = window.open(whatsappURL, '_blank', 'noopener,noreferrer');
+            if (!popup) {
+              throw new Error("Popup blocked");
+            }
+            console.log("Safari: window.open successful");
+          } catch (error2) {
+            console.log("Safari: window.open failed, trying location.href");
+            window.location.href = whatsappURL;
+            console.log("Safari: location.href attempted");
+          }
         }
-      }
-    } else if (isAndroid) {
-      // Android için mevcut yöntem
-      window.location.href = whatsappURL;
-      console.log("Android: location.href used");
-    } else {
-      // Desktop için standart
-      const newWindow = window.open(whatsappURL, "_blank");
-      if (!newWindow) {
+      } else if (isAndroid) {
         window.location.href = whatsappURL;
+        console.log("Android: location.href used");
+      } else {
+        const newWindow = window.open(whatsappURL, "_blank");
+        if (!newWindow) {
+          window.location.href = whatsappURL;
+        }
+        console.log("Desktop: window.open used");
       }
-      console.log("Desktop: window.open used");
+
+      alert("WhatsApp açılıyor! Rezervasyon talebiniz hazırlandı.");
+
+      // Reset form
+      setTimeout(() => {
+        setFormData({
+          pickupLocation: "",
+          dropoffLocation: "",
+          pickupDate: "",
+          pickupTime: "",
+          returnDate: "",
+          returnTime: "",
+        });
+        setAdditionalOptions({
+          cocukKoltugu: 0,
+          ekSurucu: 0,
+          gencSurucu: 0,
+        });
+      }, 1000);
+      
+    } catch (error) {
+      console.error("WhatsApp redirect failed:", error);
+      alert("WhatsApp açılırken bir hata oluştu. Lütfen tekrar deneyin.");
+    } finally {
+      setBookingLoading(false);
     }
+  };
 
-    // Success message
-    alert("WhatsApp açılıyor! Rezervasyon talebiniz hazırlandı.");
-
-    // Form reset
-    setTimeout(() => {
-      setFormData({
-        pickupLocation: "",
-        dropoffLocation: "",
-        pickupDate: "",
-        pickupTime: "",
-        returnDate: "",
-        returnTime: "",
-      });
-      setAdditionalOptions({
-        cocukKoltugu: 0,
-        ekSurucu: 0,
-        gencSurucu: 0,
-      });
-    }, 1000);
-    
-  } catch (error) {
-    console.error("WhatsApp redirect failed:", error);
-    alert("WhatsApp açılırken bir hata oluştu. Lütfen tekrar deneyin.");
-  } finally {
-    setBookingLoading(false);
-  }
-// Handle form submission - Open WhatsApp instead
-// Safari için tamamen yeni WhatsApp handling
-const handleBookingSubmit = async (e) => {
-  e.preventDefault();
-
-  const errors = validateForm();
-  if (Object.keys(errors).length > 0) {
-    setFormErrors(errors);
-    return;
-  }
-
-  setBookingLoading(true);
-
- 
-};
-
-  // Car specifications with better API integration
+  // Car specifications
   const specifications = useMemo(() => {
     if (!car) {
       return [
@@ -628,7 +550,7 @@ const handleBookingSubmit = async (e) => {
     ];
   }, [car]);
 
-  // Dynamic features from API data
+  // Dynamic features
   const features = useMemo(() => {
     if (!car) return ["Loading..."];
 
@@ -642,52 +564,37 @@ const handleBookingSubmit = async (e) => {
     );
   }, [car?.features]);
 
-  // Price calculation with better error handling
-  const calculatePrice = useCallback(
-    (period) => {
-      if (!car || !currencyLoaded || !convertAndFormatPrice) {
-        return "Loading...";
-      }
+  // Calculate price
+  const calculatePrice = useCallback((period) => {
+    if (!car || !currencyLoaded || !convertAndFormatPrice) {
+      return "Loading...";
+    }
 
-      try {
-        // Use effective pricing (seasonal) if available, otherwise use base pricing
-        const pricing = car.effectivePricing || car.pricing || {};
-        const baseCurrency = pricing.currency || car.currency || "EUR";
-        let amount = pricing[period];
+    try {
+      const pricing = car.effectivePricing || car.pricing || {};
+      const baseCurrency = pricing.currency || car.currency || "EUR";
+      let amount = pricing[period];
 
-        // Fallback for missing pricing periods
-        if (!amount) {
-          const dailyRate = pricing.daily || car.dailyRate || 50; // Default fallback
-          switch (period) {
-            case "weekly":
-              amount = dailyRate * 7;
-              break;
-            case "monthly":
-              amount = dailyRate * 30;
-              break;
-            default:
-              amount = dailyRate;
-          }
+      if (!amount) {
+        const dailyRate = pricing.daily || car.dailyRate || 50;
+        switch (period) {
+          case "weekly":
+            amount = dailyRate * 7;
+            break;
+          case "monthly":
+            amount = dailyRate * 30;
+            break;
+          default:
+            amount = dailyRate;
         }
-
-        console.log(`💰 Price calculation for ${period}:`, {
-          amount,
-          baseCurrency,
-          currentCurrency,
-          isSeasonalPricing: !!car.effectivePricing?.seasonalName,
-          seasonalName: car.effectivePricing?.seasonalName,
-          pricing: pricing,
-          basePricing: car.basePricing,
-        });
-
-        return convertAndFormatPrice(amount, baseCurrency);
-      } catch (error) {
-        console.error("Price calculation error:", error);
-        return "Price not available";
       }
-    },
-    [car, currencyLoaded, convertAndFormatPrice, currentCurrency]
-  );
+
+      return convertAndFormatPrice(amount, baseCurrency);
+    } catch (error) {
+      console.error("Price calculation error:", error);
+      return "Price not available";
+    }
+  }, [car, currencyLoaded, convertAndFormatPrice]);
 
   // Social sharing
   const socialIcons = [
@@ -751,7 +658,7 @@ const handleBookingSubmit = async (e) => {
     try {
       return getCurrentCurrencyInfo().symbol;
     } catch {
-      return "€"; // Fallback
+      return "€";
     }
   };
 
@@ -958,9 +865,8 @@ const handleBookingSubmit = async (e) => {
 
               {/* Booking Section */}
               <div className="col-lg-3">
-                {/* Price */}
+                {/* Price Card */}
                 <div className="price-card">
-                  {/* Pricing Period Tabs */}
                   <div className="pricing-tabs">
                     {[
                       { code: "daily", name: "Günlük" },
@@ -980,7 +886,6 @@ const handleBookingSubmit = async (e) => {
                     ))}
                   </div>
 
-                  {/* Price Display */}
                   <div className="price-display">
                     <div className="price-label">
                       {activePricingPeriod.charAt(0).toUpperCase() +
@@ -1042,7 +947,7 @@ const handleBookingSubmit = async (e) => {
                     {/* Drop Off Location */}
                     <div className="form-group">
                       <label htmlFor="dropoffLocation" className="form-label">
-                        Dönüş Yeri{" "}
+                        Dönüş Yeri *
                       </label>
                       <select
                         id="dropoffLocation"
@@ -1073,7 +978,7 @@ const handleBookingSubmit = async (e) => {
                     {/* Pick Up Date & Time */}
                     <div className="form-group">
                       <label className="form-label">
-                        Alış Yeri Tarihi/Zamanı{" "}
+                        Alış Tarihi/Zamanı *
                       </label>
                       <div className="datetime-inputs">
                         <div className="date-input-wrapper">
@@ -1118,7 +1023,7 @@ const handleBookingSubmit = async (e) => {
                           }}
                           className="form-input"
                         >
-                          <option value="">Select time</option>
+                          <option value="">Saat seçiniz</option>
                           {timeOptions.map((time) => (
                             <option key={time} value={time}>
                               {time}
@@ -1136,7 +1041,7 @@ const handleBookingSubmit = async (e) => {
                     {/* Return Date & Time */}
                     <div className="form-group">
                       <label className="form-label">
-                        Dönüş Yeri Tarihi/Zamanı *
+                        Dönüş Tarihi/Zamanı *
                       </label>
                       <div className="datetime-inputs">
                         <div className="date-input-wrapper">
@@ -1505,8 +1410,8 @@ const handleBookingSubmit = async (e) => {
                       >
                         <i
                           className={`fa ${social.icon}`}
-                          style={{ color: "black" }} // ikon rengi siyah
-                        ></i>
+                          style={{ color: "black" }}
+                        />
                       </a>
                     ))}
                   </div>

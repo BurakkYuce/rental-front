@@ -455,20 +455,7 @@ const triggerDatePicker = (inputRef) => {
   }, [formData]);
 
 // Generate WhatsApp message with car and booking details
-// Handle form submission - Open WhatsApp instead
-// Safari için tamamen yeni WhatsApp handling
-const handleBookingSubmit = async (e) => {
-  e.preventDefault();
-
-  const errors = validateForm();
-  if (Object.keys(errors).length > 0) {
-    setFormErrors(errors);
-    return;
-  }
-
-  setBookingLoading(true);
-
-  try {
+ try {
     const message = generateWhatsAppMessage();
     console.log("Generated message:", message);
     
@@ -554,6 +541,20 @@ const handleBookingSubmit = async (e) => {
   } finally {
     setBookingLoading(false);
   }
+// Handle form submission - Open WhatsApp instead
+// Safari için tamamen yeni WhatsApp handling
+const handleBookingSubmit = async (e) => {
+  e.preventDefault();
+
+  const errors = validateForm();
+  if (Object.keys(errors).length > 0) {
+    setFormErrors(errors);
+    return;
+  }
+
+  setBookingLoading(true);
+
+ 
 };
 
   // Car specifications with better API integration

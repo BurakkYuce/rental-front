@@ -276,7 +276,7 @@ const NewsLeftGrid = () => {
                     color: "#333",
                   }}
                 >
-                  Recent Posts
+                  Son Yayınlar
                 </h4>
                 <div
                   style={{
@@ -365,7 +365,7 @@ const NewsLeftGrid = () => {
                     color: "#333",
                   }}
                 >
-                  Popular Tags
+                  Popüler Etiketler
                 </h4>
                 <div
                   style={{
@@ -593,7 +593,7 @@ const NewsLeftGrid = () => {
                                   e.target.style.transform = "translateY(0)";
                                 }}
                               >
-                                Read More
+                                Devamını Oku
                               </button>
                             </div>
                           </div>

@@ -40,7 +40,22 @@ const Header = () => {
             .mobile-header-left {
               display: flex !important;
               align-items: center !important;
-              gap: 15px !important;
+              flex: 1 !important;
+              justify-content: flex-start !important;
+            }
+            
+            .mobile-header-center {
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              flex: 1 !important;
+            }
+            
+            .mobile-header-right {
+              display: flex !important;
+              align-items: center !important;
+              flex: 1 !important;
+              justify-content: flex-end !important;
             }
             
             .mobile-logo img {
@@ -243,19 +258,24 @@ const Header = () => {
         {/* Mobile Header */}
         <div className="mobile-header">
           <div className="mobile-header-left">
-            <Link to="/" className="mobile-logo">
-              <img src="C:/Users/yusuf/OneDrive/Desktop/Burak/Github- Mitcar/rental-front-main/rental-front-main/public/images/logo/UMİT-2.png" alt="" />
-            </Link>
             <CurrencySelector variant="header" />
           </div>
           
-          <div 
-            className={`hamburger-menu ${isMobileMenuOpen ? 'active' : ''}`}
-            onClick={toggleMobileMenu}
-          >
-            <div className="hamburger-line"></div>
-            <div className="hamburger-line"></div>
-            <div className="hamburger-line"></div>
+          <div className="mobile-header-center">
+            <Link to="/" className="mobile-logo">
+              <img src="/images/logo/UMİT-2.png" alt="Ümit A Rent Car" />
+            </Link>
+          </div>
+          
+          <div className="mobile-header-right">
+            <div 
+              className={`hamburger-menu ${isMobileMenuOpen ? 'active' : ''}`}
+              onClick={toggleMobileMenu}
+            >
+              <div className="hamburger-line"></div>
+              <div className="hamburger-line"></div>
+              <div className="hamburger-line"></div>
+            </div>
           </div>
         </div>
       </header>

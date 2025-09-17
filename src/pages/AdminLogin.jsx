@@ -351,37 +351,7 @@ const AdminLogin = () => {
         </form>
 
         {/* Info */}
-        <div style={{
-          marginTop: "30px",
-          padding: "15px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "8px",
-          textAlign: "center"
-        }}>
-          <p style={{ margin: "0 0 5px 0", fontSize: "0.9rem", color: "#666" }}>
-            Demo Credentials:
-          </p>
-          <p style={{ margin: "0 0 15px 0", fontSize: "0.85rem", color: "#999" }}>
-            Username: <strong>admin</strong> | Password: <strong>admin123</strong>
-          </p>
-          <button
-            onClick={() => {
-              localStorage.clear();
-              alert('Local storage cleared! Please try logging in again.');
-            }}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#dc3545",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              fontSize: "0.8rem",
-              cursor: "pointer"
-            }}
-          >
-            Clear Browser Storage
-          </button>
-        </div>
+    
       </div>
 
       {/* CSS Animation */}

@@ -536,7 +536,7 @@ const LatestNews = () => {
                                             "translateY(0)";
                                         }}
                                       >
-                                        Read More
+                                        Devamını Oku
                                       </button>
 
                                       {/* Bottom Border */}

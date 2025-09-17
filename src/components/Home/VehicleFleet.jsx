@@ -898,7 +898,7 @@ const VehicleFleet = () => {
                                                 "translateY(0)";
                                             }}
                                           >
-                                            View Details
+                                            Detayları Görüntüle
                                           </button>
                                         </div>
                                       </div>

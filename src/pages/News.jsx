@@ -248,7 +248,7 @@ const NewsLeftGrid = () => {
                   marginBottom: "15px",
                 }}
               >
-                Blog & News
+                Bloglar
               </h2>
               <p
                 style={{

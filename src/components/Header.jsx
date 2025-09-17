@@ -312,7 +312,7 @@ const Header = () => {
               Arabalar
             </Link>
             
-            <Link to="/transfer-services" className="mobile-menu-item" onClick={closeMobileMenu}>
+            <Link to="/transfer-service" className="mobile-menu-item" onClick={closeMobileMenu}>
               <i className="fa fa-bus"></i>
               Transfer Hizmeti
             </Link>

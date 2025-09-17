@@ -609,7 +609,7 @@ const TransferService = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  Comfortable Vehicles
+                  Komforlu Araçlar
                 </h5>
                 <p style={{ color: "#666", fontSize: "0.9rem" }}>
                   Klimalı ve geniş iç mekâna sahip, modern, temiz ve bakımlı

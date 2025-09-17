@@ -25,16 +25,27 @@ const Header = () => {
               display: none !important;
             }
             
-            /* Mobile header styles */
+            /* Mobile header styles - Fixed position */
             .mobile-header {
               display: flex !important;
               justify-content: space-between !important;
               align-items: center !important;
               padding: 10px 15px !important;
-              background: rgba(0, 0, 0, 0.9) !important;
-              position: sticky !important;
+              background: rgba(0, 0, 0, 0.95) !important;
+              position: fixed !important;
               top: 0 !important;
-              z-index: 999 !important;
+              left: 0 !important;
+              right: 0 !important;
+              width: 100% !important;
+              z-index: 9999 !important;
+              backdrop-filter: blur(10px) !important;
+              -webkit-backdrop-filter: blur(10px) !important;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+            }
+            
+            /* Add body padding to prevent content from being hidden behind fixed header */
+            body {
+              padding-top: 60px !important;
             }
             
             .mobile-header-left {
@@ -90,7 +101,7 @@ const Header = () => {
               transform: rotate(45deg) translate(-5px, -6px) !important;
             }
             
-            /* Mobile menu overlay */
+            /* Mobile menu overlay - Higher z-index than fixed header */
             .mobile-menu-overlay {
               position: fixed !important;
               top: 0 !important;
@@ -98,7 +109,7 @@ const Header = () => {
               right: 0 !important;
               bottom: 0 !important;
               background: rgba(0, 0, 0, 0.8) !important;
-              z-index: 1000 !important;
+              z-index: 10000 !important;
               display: flex !important;
               justify-content: center !important;
               align-items: center !important;
@@ -121,6 +132,7 @@ const Header = () => {
               text-align: center !important;
               transform: translateY(-50px) !important;
               transition: transform 0.3s ease !important;
+              position: relative !important;
             }
             
             .mobile-menu-overlay.active .mobile-menu-content {
@@ -182,6 +194,11 @@ const Header = () => {
             
             .mobile-menu-overlay {
               display: none !important;
+            }
+            
+            /* Remove body padding on desktop */
+            body {
+              padding-top: 0 !important;
             }
             
             /* Desktop header styles */
@@ -255,7 +272,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Header */}
+        {/* Mobile Header - Fixed */}
         <div className="mobile-header">
           <div className="mobile-header-left">
             <CurrencySelector variant="header" />

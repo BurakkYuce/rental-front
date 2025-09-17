@@ -41,7 +41,7 @@ const FloatingContactButton = () => {
       label: "E-posta",
       action: () =>
         window.open(
-          "mailto:info@mitcar.com?subject=Araç Kiralama Talebi",
+          "mailto:umityucce@gmail.com?subject=Araç Kiralama Talebi",
           "_self"
         ),
       color: "#dc3545",

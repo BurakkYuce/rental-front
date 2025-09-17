@@ -328,7 +328,7 @@ const LatestNews = () => {
                                       textTransform: "uppercase",
                                     }}
                                   >
-                                    Read More
+                                    Devamını Oku
                                   </button>
                                 </div>
                               </div>
@@ -735,7 +735,7 @@ const LatestNews = () => {
               }}
               onClick={handleViewAllBlogs}
             >
-              View All Blogs
+              TÜMÜNÜ GÖRÜNTÜLE
             </button>
           </div>
         </div>

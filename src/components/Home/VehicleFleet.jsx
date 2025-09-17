@@ -642,7 +642,7 @@ const VehicleFleet = () => {
                                         textTransform: "uppercase",
                                       }}
                                     >
-                                      View Details
+                                      DETAYLARI GÖRÜNTÜLE
                                     </button>
                                   </div>
                                 </div>
@@ -807,7 +807,7 @@ const VehicleFleet = () => {
                                               marginBottom: "12px",
                                             }}
                                           >
-                                            Year: {car.year}
+                                            YIL: {car.year}
                                           </p>
 
                                           {/* Car Features */}
@@ -832,7 +832,7 @@ const VehicleFleet = () => {
                                                 padding: "4px 0",
                                               }}
                                             >
-                                              👥 {car.seats || "5"} Seats
+                                              👥 {car.seats || "5"} Koltuk
                                             </div>
                                             <div
                                               style={{
@@ -852,7 +852,7 @@ const VehicleFleet = () => {
                                                 padding: "4px 0",
                                               }}
                                             >
-                                              🚪 {car.doors || "4"} Doors
+                                              🚪 {car.doors || "4"} Kapı
                                             </div>
                                             <div
                                               style={{

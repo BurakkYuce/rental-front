@@ -60,9 +60,9 @@ const CurrencySelector = ({ variant = "header" }) => {
         }
       }}
     >
-      <option value="EUR" style={optionStyle}>€ EUR - Euro</option>
-      <option value="USD" style={optionStyle}>$ USD - US Dollar</option>
-      <option value="TRY" style={optionStyle}>₺ TRY - Turkish Lira</option>
+      <option value="EUR" style={optionStyle}>€ EUR</option>
+      <option value="USD" style={optionStyle}>$ USD</option>
+      <option value="TRY" style={optionStyle}>₺ TRY</option>
     </select>
   );
 };

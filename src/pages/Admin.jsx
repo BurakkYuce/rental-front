@@ -24,10 +24,6 @@ import "../assets/css/plugins.css";
 import "../assets/css/style.css";
 
 const Admin = () => {
-  console.log("🏠 Admin component mounted");
-  console.log("🏠 Admin current location:", window.location.pathname);
-  console.log("🏠 Admin token exists:", !!localStorage.getItem("admin_token"));
-  console.log("🏠 Admin mount timestamp:", new Date().toLocaleTimeString());
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -51,23 +47,23 @@ const Admin = () => {
   });
 
   const sidebarItems = [
-    { id: "dashboard", label: "Dashboard", icon: BarChart3 },
-    { id: "cars", label: "Cars Management", icon: Car },
+    { id: "dashboard", label: "Kontrol Paneli", icon: BarChart3 },
+    { id: "cars", label: "Araç Yönetimi", icon: Car },
     {
       id: "bookings",
-      label: "Bookings",
+      label: "Rezervasyonlar",
       icon: Calendar,
       route: "/admin/bookings",
     },
     {
       id: "blog",
-      label: "Blog Management",
+      label: "Blog Yönetimi",
       icon: FileText,
       route: "/admin/blog",
     },
     {
       id: "transfers",
-      label: "Transfer Zones",
+      label: "Transfer Bölgeleri",
       icon: Truck,
       route: "/admin/transfer-zones",
     },
@@ -77,13 +73,11 @@ const Admin = () => {
     try {
       setLoadingStates((prev) => ({ ...prev, dashboard: true }));
       setError(""); // Clear any previous errors
-      console.log("🔄 Loading dashboard data...");
       const response = await adminAPI.getDashboardStats();
-      console.log("✅ Dashboard data loaded:", response.data.data);
       setDashboardStats(response.data.data);
     } catch (error) {
-      console.error("❌ Failed to load dashboard stats:", error);
-      setError("Failed to load dashboard statistics.");
+      console.error("❌ Kontrol paneli istatistikleri yüklenemedi:", error);
+      setError("Kontrol paneli istatistikleri yüklenemedi.");
     } finally {
       setLoadingStates((prev) => ({ ...prev, dashboard: false }));
     }
@@ -95,8 +89,8 @@ const Admin = () => {
     try {
       await loadDashboardData();
     } catch (error) {
-      console.error("Failed to load initial data:", error);
-      setError("Failed to load data. Please try again.");
+      console.error("İlk veriler yüklenemedi:", error);
+      setError("Veriler yüklenemedi. Lütfen tekrar deneyin.");
     } finally {
       setLoading(false);
     }
@@ -150,14 +144,12 @@ const Admin = () => {
     try {
       setLoading(true);
       setError(""); // Clear any previous errors
-      console.log("🔄 Loading cars data...");
       const response = await adminAPI.getCars();
-      console.log("✅ Cars data loaded:", response.data);
       // The API returns { success: true, data: { cars: [...] } }
       setCars(response.data.data?.cars || []);
     } catch (error) {
-      console.error("❌ Failed to load cars:", error);
-      setError("Failed to load cars data.");
+      console.error("❌ Araçlar yüklenemedi:", error);
+      setError("Araç verileri yüklenemedi.");
     } finally {
       setLoading(false);
     }
@@ -167,9 +159,8 @@ const Admin = () => {
     try {
       setLoadingStates((prev) => ({ ...prev, blogs: true }));
       const response = await adminAPI.getBlogPosts();
-      console.log("📝 Admin blogs response:", response);
       console.log(
-        "📝 Full response structure:",
+        "📝 Tam yanıt yapısı:",
         JSON.stringify(response.data, null, 2)
       );
 
@@ -183,22 +174,19 @@ const Admin = () => {
         blogsData = response.data;
       }
 
-      console.log("📝 Extracted blogs data:", blogsData);
       setBlogs(blogsData);
     } catch (error) {
-      console.error("Failed to load blogs:", error);
-      console.error("Error details:", error.response?.data || error.message);
-      setError("Failed to load blogs data.");
+      console.error("Bloglar yüklenemedi:", error);
+      console.error("Hata detayları:", error.response?.data || error.message);
+      setError("Blog verileri yüklenemedi.");
 
       // Fallback: try to load from public API
       try {
-        console.log("📝 Trying fallback to public blogs API...");
         const fallbackResponse = await blogAPI.getBlogs();
         const fallbackBlogs = fallbackResponse.data.data.blogs || [];
-        console.log("📝 Fallback blogs:", fallbackBlogs);
         setBlogs(fallbackBlogs);
       } catch (fallbackError) {
-        console.error("Fallback also failed:", fallbackError);
+        console.error("Yedek yükleme de başarısız:", fallbackError);
       }
     } finally {
       setLoadingStates((prev) => ({ ...prev, blogs: false }));
@@ -225,9 +213,12 @@ const Admin = () => {
   };
 
   const handleDelete = async () => {
+    const itemType = activeSection === "cars" ? "aracı" : 
+                     activeSection === "blog" ? "blog yazısını" : "öğeyi";
+    
     if (
       !window.confirm(
-        `Are you sure you want to delete this ${activeSection.slice(0, -1)}?`
+        `Bu ${itemType} silmek istediğinizden emin misiniz?`
       )
     ) {
       return;
@@ -247,8 +238,8 @@ const Admin = () => {
 
       closeModal();
     } catch (error) {
-      console.error("Delete failed:", error);
-      setError(error.response?.data?.error || "Failed to delete item.");
+      console.error("Silme işlemi başarısız:", error);
+      setError(error.response?.data?.error || "Öğe silinemedi.");
     } finally {
       setLoading(false);
     }
@@ -265,7 +256,7 @@ const Admin = () => {
           marginBottom: "30px",
         }}
       >
-        <h2 style={{ margin: 0, color: "#333" }}>Dashboard Overview</h2>
+        <h2 style={{ margin: 0, color: "#333" }}>Kontrol Paneli Özeti</h2>
         <div style={{ display: "flex", gap: "10px" }}>
           <Bell size={24} color="#666" style={{ cursor: "pointer" }} />
           <Settings size={24} color="#666" style={{ cursor: "pointer" }} />
@@ -289,7 +280,7 @@ const Admin = () => {
               {dashboardStats.totalCars || 0}
             </h3>
             <p style={{ margin: 0, color: "#666", fontSize: "0.9rem" }}>
-              Total Cars
+              Toplam Araç
             </p>
           </div>
         </div>
@@ -313,7 +304,7 @@ const Admin = () => {
               {dashboardStats.totalBookings || 0}
             </h3>
             <p style={{ margin: 0, color: "#666", fontSize: "0.9rem" }}>
-              Total Bookings
+              Toplam Rezervasyon
             </p>
           </div>
         </div>
@@ -337,7 +328,7 @@ const Admin = () => {
               {dashboardStats.activeCars || 0}
             </h3>
             <p style={{ margin: 0, color: "#666", fontSize: "0.9rem" }}>
-              Active Cars
+              Aktif Araç
             </p>
           </div>
         </div>
@@ -352,15 +343,15 @@ const Admin = () => {
               padding: "25px",
               borderRadius: "12px",
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              width: "100%", // Ekranı kaplasın
-              minWidth: "100%", // Minimum genişlik
-              maxWidth: "1600px", // Önceki max 1200px ise büyüttük
+              width: "100%",
+              minWidth: "100%",
+              maxWidth: "1600px",
               minHeight: "450px",
               margin: "0 auto",
             }}
           >
             <h4 style={{ marginBottom: "20px", color: "#333" }}>
-              Available Cars
+              Müsait Araçlar
             </h4>
             {cars
               .filter(
@@ -393,11 +384,11 @@ const Admin = () => {
                       {car.pricing?.daily || car.dailyRate
                         ? `${car.pricing?.daily || car.dailyRate} ${
                             car.currency || "EUR"
-                          }/day`
-                        : "Price not set"}
+                          }/gün`
+                        : "Fiyat belirlenmemiş"}
                     </p>
                     <p style={{ margin: 0, fontSize: "0.8rem", color: "#666" }}>
-                      {car.available_units || 1} available
+                      {car.available_units || 1} müsait
                     </p>
                   </div>
                 </div>
@@ -420,9 +411,9 @@ const Admin = () => {
         }}
       >
         <div>
-          <h2 style={{ margin: 0, color: "#333" }}>Cars Management</h2>
+          <h2 style={{ margin: 0, color: "#333" }}>Araç Yönetimi</h2>
           <p style={{ margin: 0, color: "#666", fontSize: "0.9rem" }}>
-            Manage your car fleet and inventory
+            Araç filonuzu ve envanterinizi yönetin
           </p>
         </div>
         <button
@@ -441,7 +432,7 @@ const Admin = () => {
           }}
         >
           <Plus size={20} />
-          Add New Car
+          Yeni Araç Ekle
         </button>
       </div>
 
@@ -465,20 +456,21 @@ const Admin = () => {
             borderBottom: "2px solid #e9ecef",
           }}
         >
-          <div>Car Details</div>
-          <div>Category</div>
-          <div>Status</div>
-          <div>Units</div>
-          <div>Daily Rate</div>
+          <div>Araç Detayları</div>
+          <div>Kategori</div>
+          <div>Durum</div>
+          <div>Adet</div>
+          <div>Günlük Fiyat</div>
+          <div>İşlemler</div>
         </div>
 
         {loading ? (
           <div style={{ padding: "40px", textAlign: "center", color: "#666" }}>
-            Loading cars...
+            Araçlar yükleniyor...
           </div>
         ) : cars.length === 0 ? (
           <div style={{ padding: "40px", textAlign: "center", color: "#666" }}>
-            No cars found. Add your first car to get started.
+            Araç bulunamadı. Başlamak için ilk aracınızı ekleyin.
           </div>
         ) : (
           cars.map((car) => (
@@ -533,7 +525,7 @@ const Admin = () => {
                     ? `${car.pricing?.daily || car.dailyRate} ${
                         car.currency || "EUR"
                       }`
-                    : "No price"}
+                    : "Fiyat yok"}
                 </span>
               </div>
 
@@ -550,6 +542,7 @@ const Admin = () => {
                     borderRadius: "4px",
                     cursor: "pointer",
                   }}
+                  title="Düzenle"
                 >
                   <Edit size={14} />
                 </button>
@@ -564,6 +557,7 @@ const Admin = () => {
                     borderRadius: "4px",
                     cursor: "pointer",
                   }}
+                  title="Sil"
                 >
                   <Trash2 size={14} />
                 </button>
@@ -578,6 +572,12 @@ const Admin = () => {
   // Modal Component
   const Modal = () => {
     if (!showModal) return null;
+
+    const getModalTitle = () => {
+      const sectionName = activeSection === "cars" ? "araç" : 
+                         activeSection === "blog" ? "blog yazısı" : "öğe";
+      return modalType === "view" ? `${sectionName} Görüntüle` : `${sectionName} Sil`;
+    };
 
     return (
       <div
@@ -614,9 +614,7 @@ const Admin = () => {
             }}
           >
             <h4 style={{ margin: 0, color: "#333" }}>
-              {modalType === "view"
-                ? `View ${activeSection.slice(0, -1)}`
-                : `Delete ${activeSection.slice(0, -1)}`}
+              {getModalTitle()}
             </h4>
             <button
               onClick={closeModal}
@@ -649,8 +647,9 @@ const Admin = () => {
           {modalType === "delete" ? (
             <div>
               <p style={{ marginBottom: "25px", color: "#666" }}>
-                Are you sure you want to delete this{" "}
-                {activeSection.slice(0, -1)}? This action cannot be undone.
+                Bu {activeSection === "cars" ? "aracı" : 
+                     activeSection === "blog" ? "blog yazısını" : "öğeyi"} silmek istediğinizden emin misiniz? 
+                Bu işlem geri alınamaz.
               </p>
               <div
                 style={{
@@ -670,7 +669,7 @@ const Admin = () => {
                     cursor: "pointer",
                   }}
                 >
-                  Cancel
+                  İptal
                 </button>
                 <button
                   onClick={handleDelete}
@@ -685,7 +684,7 @@ const Admin = () => {
                     opacity: loading ? 0.6 : 1,
                   }}
                 >
-                  {loading ? "Deleting..." : "Delete"}
+                  {loading ? "Siliniyor..." : "Sil"}
                 </button>
               </div>
             </div>
@@ -705,12 +704,12 @@ const Admin = () => {
                   }}
                 >
                   <span>
-                    <strong>Category:</strong>{" "}
-                    {selectedItem.category || "Uncategorized"}
+                    <strong>Kategori:</strong>{" "}
+                    {selectedItem.category || "Kategorisiz"}
                   </span>
                   <span style={{ margin: "0 15px" }}>•</span>
                   <span>
-                    <strong>Status:</strong>
+                    <strong>Durum:</strong>
                     <span
                       style={{
                         backgroundColor:
@@ -727,12 +726,13 @@ const Admin = () => {
                         textTransform: "capitalize",
                       }}
                     >
-                      {selectedItem.status}
+                      {selectedItem.status === "published" ? "Yayında" :
+                       selectedItem.status === "draft" ? "Taslak" : selectedItem.status}
                     </span>
                   </span>
                   <span style={{ margin: "0 15px" }}>•</span>
                   <span>
-                    <strong>Author:</strong> {selectedItem.author}
+                    <strong>Yazar:</strong> {selectedItem.author}
                   </span>
                 </div>
                 {selectedItem.excerpt && (
@@ -752,7 +752,7 @@ const Admin = () => {
                 {selectedItem.tags && selectedItem.tags.length > 0 && (
                   <div style={{ marginBottom: "20px" }}>
                     <strong style={{ color: "#666", fontSize: "0.9rem" }}>
-                      Tags:{" "}
+                      Etiketler:{" "}
                     </strong>
                     {selectedItem.tags.map((tag, index) => (
                       <span
@@ -786,7 +786,7 @@ const Admin = () => {
             <div
               style={{ padding: "20px", textAlign: "center", color: "#666" }}
             >
-              Content for {activeSection} {modalType} modal coming soon...
+              {activeSection} {modalType} içeriği yakında gelecek...
             </div>
           )}
         </div>
@@ -812,9 +812,9 @@ const Admin = () => {
               }}
             >
               <div>
-                <h2 style={{ margin: 0, color: "#333" }}>Blog Management</h2>
+                <h2 style={{ margin: 0, color: "#333" }}>Blog Yönetimi</h2>
                 <p style={{ margin: 0, color: "#666", fontSize: "0.9rem" }}>
-                  Manage your blog posts and content
+                  Blog yazılarınızı ve içeriklerinizi yönetin
                 </p>
               </div>
               <button
@@ -834,7 +834,7 @@ const Admin = () => {
                 }}
               >
                 <Plus size={16} />
-                New Blog Post
+                Yeni Blog Yazısı
               </button>
             </div>
 
@@ -857,10 +857,11 @@ const Admin = () => {
                   borderBottom: "2px solid #e9ecef",
                 }}
               >
-                <div>Title</div>
-                <div>Category</div>
-                <div>Status</div>
-                <div>Created</div>
+                <div>Başlık</div>
+                <div>Kategori</div>
+                <div>Durum</div>
+                <div>Oluşturulma</div>
+                <div>İşlemler</div>
               </div>
 
               {loadingStates.blogs ? (
@@ -871,7 +872,7 @@ const Admin = () => {
                     color: "#666",
                   }}
                 >
-                  Loading blogs...
+                  Bloglar yükleniyor...
                 </div>
               ) : blogs.length === 0 ? (
                 <div
@@ -886,8 +887,8 @@ const Admin = () => {
                     color="#ccc"
                     style={{ marginBottom: "20px" }}
                   />
-                  <h3>No Blog Posts Found</h3>
-                  <p>Start by creating your first blog post.</p>
+                  <h3>Blog Yazısı Bulunamadı</h3>
+                  <p>İlk blog yazınızı oluşturarak başlayın.</p>
                 </div>
               ) : (
                 blogs.map((blog) => (
@@ -912,11 +913,11 @@ const Admin = () => {
                         {blog.title}
                       </div>
                       <div style={{ fontSize: "0.8rem", color: "#666" }}>
-                        {blog.excerpt || "No excerpt available"}
+                        {blog.excerpt || "Açıklama mevcut değil"}
                       </div>
                     </div>
                     <div style={{ color: "#666" }}>
-                      {blog.category || "Uncategorized"}
+                      {blog.category || "Kategorisiz"}
                     </div>
                     <div>
                       <span
@@ -934,13 +935,14 @@ const Admin = () => {
                           textTransform: "capitalize",
                         }}
                       >
-                        {blog.status}
+                        {blog.status === "published" ? "Yayında" :
+                         blog.status === "draft" ? "Taslak" : blog.status}
                       </span>
                     </div>
                     <div style={{ color: "#666", fontSize: "0.9rem" }}>
                       {new Date(
                         blog.created_at || blog.createdAt
-                      ).toLocaleDateString()}
+                      ).toLocaleDateString("tr-TR")}
                     </div>
                     <div style={{ display: "flex", gap: "8px" }}>
                       <button
@@ -957,7 +959,10 @@ const Admin = () => {
                           color: "white",
                           cursor: "pointer",
                         }}
-                      ></button>
+                        title="Görüntüle"
+                      >
+                        <FileText size={14} />
+                      </button>
                       <button
                         onClick={() => navigate(`/admin/edit-blog/${blog.id}`)}
                         style={{
@@ -968,6 +973,7 @@ const Admin = () => {
                           color: "white",
                           cursor: "pointer",
                         }}
+                        title="Düzenle"
                       >
                         <Edit size={14} />
                       </button>
@@ -985,6 +991,7 @@ const Admin = () => {
                           color: "white",
                           cursor: "pointer",
                         }}
+                        title="Sil"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -999,8 +1006,8 @@ const Admin = () => {
         return (
           <div style={{ padding: "40px", textAlign: "center", color: "#666" }}>
             <Settings size={48} color="#ccc" style={{ marginBottom: "20px" }} />
-            <h3>Coming Soon</h3>
-            <p>This section is under development...</p>
+            <h3>Yakında Gelecek</h3>
+            <p>Bu bölüm geliştirme aşamasında...</p>
           </div>
         );
     }
@@ -1035,7 +1042,7 @@ const Admin = () => {
           }}
         >
           <h3 style={{ margin: 0, color: "#1ECB15", fontWeight: "bold" }}>
-            Admin Panel
+            Yönetim Paneli
           </h3>
         </div>
 
@@ -1048,7 +1055,6 @@ const Admin = () => {
                 if (item.route) {
                   navigate(item.route);
                 } else {
-                  console.log(`🔄 Switching to section: ${item.id}`);
                   setActiveSection(item.id);
 
                   // Log section navigation for analytics
@@ -1127,7 +1133,7 @@ const Admin = () => {
             }}
           >
             <LogOut size={20} />
-            Logout
+            Çıkış Yap
           </button>
         </div>
       </div>

@@ -156,7 +156,7 @@ const GoogleMapsReviews = () => {
                       fontSize: "0.9rem",
                     }}
                   >
-                    Pazartesi - Pazar: 08:00 - 18:00
+                    Pazartesi - Cuma: 08:00 - 18:00
                   </p>
                 </div>
               </div>

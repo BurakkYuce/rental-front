@@ -545,8 +545,8 @@ const CarsSingle = () => {
       { title: "Yakıt", value: car.fuelType || car.fuel || "Benzin" },
       { title: "Vites", value: car.transmission || "Manuel" },
       { title: "Kasa Tipi", value: car.bodyType || car.type || "Hatchback" },
-      { title: "Koltuk Sayısı", value: `${car.seats || 4} seats` },
-      { title: "Kapı Sayısı", value: `${car.doors || 4} doors` },
+      { title: "Koltuk Sayısı", value: `${car.seats || 4} koltuk`},
+      { title: "Kapı Sayısı", value: `${car.doors || 4} kapı` },
     ];
   }, [car]);
 

@@ -34,22 +34,22 @@ const TransferService = () => {
   const capacityOptions = [
     {
       key: "capacity_1_4",
-      label: "1-4 Passengers",
-      description: "Sedan / Standard Car",
+      label: "1-4 Yolcu",
+      description: "Sedan / Standart Araç",
       icon: "🚗",
       maxPassengers: 4,
     },
     {
       key: "capacity_1_6",
-      label: "1-6 Passengers",
+      label: "1-6 Yolcu",
       description: "MPV / Minivan",
       icon: "🚐",
       maxPassengers: 6,
     },
     {
       key: "capacity_1_16",
-      label: "1-16 Passengers",
-      description: "Minibus / Coach",
+      label: "1-16 Yolcu",
+      description: "Minibüs / Otobüs",
       icon: "🚌",
       maxPassengers: 16,
     },
@@ -68,7 +68,7 @@ const TransferService = () => {
           setZones(response.data.data || []);
         } else {
           throw new Error(
-            response.data.error || "Failed to load transfer zones"
+            response.data.error || "Transfer bölgeleri yüklenemedi"
           );
         }
       } catch (err) {
@@ -246,10 +246,10 @@ const TransferService = () => {
           style={{ padding: "100px 0", textAlign: "center" }}
         >
           <div className="spinner-border text-primary" role="status">
-            <span className="sr-only">Loading...</span>
+            <span className="sr-only">Yükleniyor...</span>
           </div>
           <p style={{ marginTop: "20px", color: "#666" }}>
-            Loading transfer services...
+            Transfer hizmetleri yükleniyor...
           </p>
         </div>
         <Footer />
@@ -307,10 +307,10 @@ const TransferService = () => {
                 marginBottom: "15px",
               }}
             >
-              Aracıınzı Seçin
+              Aracınızı Seçin
             </h2>
             <p style={{ fontSize: "1.1rem", color: "#666" }}>
-              Select the vehicle type that best fits your group size
+              Grup büyüklüğünüze en uygun araç tipini seçin
             </p>
           </div>
 
@@ -398,14 +398,14 @@ const TransferService = () => {
               Güzergâhlar ve Fiyatlandırma
             </h2>
             <p style={{ fontSize: "1.1rem", color: "#666" }}>
-              Pricing for {getSelectedCapacityInfo()?.label} -{" "}
-              {getSelectedCapacityInfo()?.description}
+              {getSelectedCapacityInfo()?.label} -{" "}
+              {getSelectedCapacityInfo()?.description} için fiyatlar
             </p>
           </div>
 
           {error ? (
             <div className="alert alert-danger text-center">
-              <h5>Unable to load transfer zones</h5>
+              <h5>Transfer bölgeleri yüklenemedi</h5>
               <p>{error}</p>
             </div>
           ) : zones.length === 0 ? (
@@ -417,10 +417,10 @@ const TransferService = () => {
                 className="fa fa-car"
                 style={{ fontSize: "60px", opacity: 0.3, marginBottom: "20px" }}
               ></i>
-              <h5>No transfer zones available</h5>
+              <h5>Transfer bölgesi bulunamadı</h5>
               <p>
                 Özel transfer düzenlemeleri için lütfen bizimle iletişime
-                geçin..
+                geçin.
               </p>
             </div>
           ) : (
@@ -580,7 +580,7 @@ const TransferService = () => {
                 </h5>
                 <p style={{ color: "#666", fontSize: "0.9rem" }}>
                   Gerçek zamanlı takip ve 7/24 müşteri desteği ile dakik alma ve
-                  bırakma hizmeti..
+                  bırakma hizmeti.
                 </p>
               </div>
             </div>
@@ -609,7 +609,7 @@ const TransferService = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  Komforlu Araçlar
+                  Konforlu Araçlar
                 </h5>
                 <p style={{ color: "#666", fontSize: "0.9rem" }}>
                   Klimalı ve geniş iç mekâna sahip, modern, temiz ve bakımlı
@@ -713,7 +713,7 @@ const TransferService = () => {
                         className="form-label"
                         style={{ fontWeight: "600", color: "#333" }}
                       >
-                        Full Name *
+                        Ad Soyad *
                       </label>
                       <input
                         type="text"
@@ -722,7 +722,7 @@ const TransferService = () => {
                         value={contactForm.name}
                         onChange={handleFormChange}
                         required
-                        placeholder="Burak Yüce"
+                        placeholder="isim Soyisim"
                         style={{ padding: "12px" }}
                       />
                     </div>
@@ -731,7 +731,7 @@ const TransferService = () => {
                         className="form-label"
                         style={{ fontWeight: "600", color: "#333" }}
                       >
-                        Email Address *
+                        Email Adresi *
                       </label>
                       <input
                         type="email"
@@ -752,7 +752,7 @@ const TransferService = () => {
                         className="form-label"
                         style={{ fontWeight: "600", color: "#333" }}
                       >
-                        Phone Number *
+                        Telefon Numarası *
                       </label>
                       <input
                         type="tel"
@@ -770,7 +770,7 @@ const TransferService = () => {
                         className="form-label"
                         style={{ fontWeight: "600", color: "#333" }}
                       >
-                        Number of Passengers *
+                        Yolcu Sayısı *
                       </label>
                       <select
                         name="passengers"
@@ -787,7 +787,7 @@ const TransferService = () => {
                           },
                           (_, i) => (
                             <option key={i + 1} value={i + 1}>
-                              {i + 1} {i + 1 === 1 ? "passenger" : "passengers"}
+                              {i + 1} {i + 1 === 1 ? "yolcu" : "yolcu"}
                             </option>
                           )
                         )}
@@ -801,7 +801,7 @@ const TransferService = () => {
                         className="form-label"
                         style={{ fontWeight: "600", color: "#333" }}
                       >
-                        Pickup Location *
+                        Alış Yeri *
                       </label>
                       <input
                         type="text"
@@ -819,7 +819,7 @@ const TransferService = () => {
                         className="form-label"
                         style={{ fontWeight: "600", color: "#333" }}
                       >
-                        Drop-off Location *
+                        Varış Yeri *
                       </label>
                       <input
                         type="text"
@@ -840,7 +840,7 @@ const TransferService = () => {
                         className="form-label"
                         style={{ fontWeight: "600", color: "#333" }}
                       >
-                        Date *
+                        Tarih *
                       </label>
                       <input
                         type="date"
@@ -858,7 +858,7 @@ const TransferService = () => {
                         className="form-label"
                         style={{ fontWeight: "600", color: "#333" }}
                       >
-                        Time *
+                        Saat *
                       </label>
                       <input
                         type="time"
@@ -877,7 +877,7 @@ const TransferService = () => {
                       className="form-label"
                       style={{ fontWeight: "600", color: "#333" }}
                     >
-                      Additional Information
+                      Ek Bilgiler
                     </label>
                     <textarea
                       name="message"

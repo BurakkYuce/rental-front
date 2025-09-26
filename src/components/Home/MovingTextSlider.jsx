@@ -2,12 +2,13 @@
 import React from "react";
 import "../../assets/css/MovingTextSlider.css";
 const MovingTextSlider = () => {
-  const carTypes = [
-    "EK İŞİMİZ DEĞİL TEK İŞİMİZ",
-    "EK İŞİMİZ DEĞİL TEK İŞİMİZ",
-    "EK İŞİMİZ DEĞİL TEK İŞİMİZ",
-    "EK İŞİMİZ DEĞİL TEK İŞİMİZ",
-  ];
+const carTypes = [
+  "7/24 SERVİS",
+  "İKAME ARAÇ HİZMETİ",
+  "HAVALİMANI TESLİMAT",
+  "TAM SİGORTA GÜVENCESİ",
+  "HIZLI TESLİM & İADE"
+];
 
   return (
     <div className="moving-text-section">

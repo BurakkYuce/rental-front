@@ -1,947 +1,503 @@
-// src/pages/TransferService.jsx - Transfer Service Page for Customers
-import React, { useState, useEffect } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import BackToHomeButton from "../components/BackToHomeButton.jsx";
-import api from "../services/api.js";
-import FAQContactFooter from "../components/Home/FAQContactFooter.jsx";
+// src/components/Home/FAQContactFooter.jsx
+import React, { useState } from "react";
 
-const TransferService = () => {
-  const [zones, setZones] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [selectedZone, setSelectedZone] = useState(null);
-  const [selectedCapacity, setSelectedCapacity] = useState("capacity_1_4");
-  let a = 5;
-  console.log(a);
-  // Contact form state
-  const [contactForm, setContactForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    passengers: "1",
-    pickupLocation: "",
-    dropoffLocation: "",
-    date: "",
-    time: "",
-    message: "",
-  });
+const FAQContactFooter = () => {
+  const [openFAQ, setOpenFAQ] = useState(null);
 
-  const [contactFormSubmitting, setContactFormSubmitting] = useState(false);
-  const [contactFormSuccess, setContactFormSuccess] = useState(false);
-
-  // Capacity options
-  const capacityOptions = [
+  // FAQ verilerini buradan kolayca değiştirebilirsin
+  const faqData = [
     {
-      key: "capacity_1_4",
-      label: "1-4 Yolcu",
-      description: "Sedan / Standart Araç",
-      icon: "🚗",
-      maxPassengers: 4,
+      id: 1,
+      question: "Ödeme Seçenekleri Nelerdir?",
+      answer:
+        "Önceden belirtmek koşulu ile kredi kartı, ile ödeme , Eft-Havale ve peşin.",
     },
     {
-      key: "capacity_1_6",
-      label: "1-6 Yolcu",
-      description: "MPV / Minivan",
-      icon: "🚐",
-      maxPassengers: 6,
+      id: 2,
+      question: "Araç Kiralanırken Depozito Alıyor Musunuz? Neden?",
+      answer:
+        "Kiralanan aracın marka modeline ve araç yaşına bağlı olarak depozit alınmaktadır, bunun nedeni ise araç dönüşunde km farkı HGS ve yakıt durumu gibi durumlar kontrol edilir uygun olmayan durumlarda depozitten düşülür.",
     },
     {
-      key: "capacity_1_16",
-      label: "1-16 Yolcu",
-      description: "Minibüs / Otobüs",
-      icon: "🚌",
-      maxPassengers: 16,
+      id: 3,
+      question: "Kiraladığım Araçla Yurtdışına Çıkabilir Miyim?",
+      answer:
+        "Şirket prosedürleri gereği kiraladığınız araçka yurtdışına çıkamazsınız. ",
+    },
+    {
+      id: 4,
+      question: "Araçlarınızda Bulunan Sigortalar Nelerdir?",
+      answer:
+        "Araçlarımızda Zotunlu Trafik Sigortası , Muafiyeti Rent A Car Kaskosu, Hırsızlık Sigortası mevcuttur.",
+    },
+    {
+      id: 5,
+      question: "Sigorta Ve Kasko Hangi Koşullarda Geçerlidir?",
+      answer:
+        "Trafik ve alkol raporları kazadan hemen sonra tutulmalıdır. Kaza olduğu andaki fotoğrafları mutlaka olmalıdır. Araçların neresinden hasar aldıysa oralar mutlaka fotoğraflarda açıkça belirtilmelidir. Kaza çift taraflı ise karşı tarafa ait ruhsat fotokopisi, sigorta poliçesi fotokopisi ve ehliyet fotokopisi kaza yerinde karşı taraftan alınmalı ve size ait aynı belgeler karşı tarafa verilmelidir. Kaza olduğu anda lütfen hemen bizi arayınız 0242 243 49 48 - 0554 633 16 50 Aracın alkollü, herhangi bir madde etkisi altında veya hız sınırlarının üzerinde kullanılması ve aracı kiralayan kişinin tamamen kusurlu olması durumunda aracı kiralayan kişi oluşabilecek tüm hasarlardan sorumlu tutulur. Rapor tutulmayan, eksik veya geçersiz evrak durumunda kiracı hiçbir şekilde sigortadan yararlanamaz ve yararlanmayı talep edemez. Belirtilen durumlarda sigortadan yararlanma talebi geçersiz sayılacak ve oluşan zararlar sigorta kapsamı dışında kalacaktır. Aracı kira sözleşmesi üzerinde belirtilen isim veya isimler dışında bir kişinin kullanması. Aracı normal koşullar dışında kullanma. (Motora zarar verecek kullanımlar, yol şartları, patlak veya hasarlı lastik ile kullanma, hatalı yakıt doldurma.) Trafik kuralları dışında kullanılması.(Hız sınırının aşılması, kırmızı ışık vb. diğer ihlaller, aracı alkol veya herhangi bir maddenin etkisi altında kullanma.) Araçta taşınan yükün bir kazaya sebebiyet vermesi. Aracın dikkatsiz kullanılması. (Aracın yağış veya yol durumuna göre kullanılmaması, öndeki aracın emniyet takip mesafesine uygun takip edilmemesi vb. durumlar.) Oluşan bir kaza, hasar veya çalınma durumunda verilen irtibat numarasından haber verilmemesi, aracın kaza yerinde terk edilmesi durumları. Oluşan kazanın üzerinden en çok 24 saat geçmesine rağmen trafik ve alkol raporunun alınmaması. Aracın çalınması durumunda orijinal anahtarının teslim edilmemesi. ( anahtar sizde olmalı mutlaka ) Kira süresi bitmiş olmasına rağmen herhangi bir onay alınmadan aracın kullanılmaya devam edilmesi ve teslim edilmemesi. Lastik, far veya camlarda meydana gelen hasarlarda ilgili irtibat numaralarından haber verilmeden işlem yapılması. Gibi durumlar sigortaya dahil değildir. ARACI KİRALAYAN SORUMLU OLUR. Oluşan kazalarda 3.şahıslara verilen hasarlardan oluşacak maddi tazminat tutarı, mali mesuliyet sigortası teminatı altındadır. Teminat dışında kalan tutarlar müşterinin sorumluluğundadır. Teminat dışında kalan tutarlar için RENTACARANTALYA.NET sorumlu tutulamaz. LÜTFEN HIZ SINIRLARINA UYUNUZ. KEMER TAKINIZ. ARAÇ KULLANIM ESNAFINDA TELEFON İLE GÖRÜŞMEYİZ. ALKOLLÜ VB MADDELERİ ALARAK ARAÇ KULLANMAYINIZ..",
     },
   ];
 
-  // Fetch transfer zones
-
-  useEffect(() => {
-    const fetchZones = async () => {
-      try {
-        setLoading(true);
-        // api.js'deki konfigürasyonu kullan
-        const response = await api.get("/transfers");
-
-        if (response.data.success) {
-          setZones(response.data.data || []);
-        } else {
-          throw new Error(
-            response.data.error || "Transfer bölgeleri yüklenemedi"
-          );
-        }
-      } catch (err) {
-        console.error("❌ Failed to load transfer zones:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchZones();
-  }, []);
-
-  // Generate WhatsApp message with transfer details
-  const generateWhatsAppMessage = () => {
-    const selectedCapacityInfo = getSelectedCapacityInfo();
-
-    // Find the selected transfer zone for pricing
-    const selectedZoneData = zones.find(
-      (zone) =>
-        contactForm.dropoffLocation
-          .toLowerCase()
-          .includes(zone.zoneName.toLowerCase()) ||
-        zone.zoneName
-          .toLowerCase()
-          .includes(contactForm.dropoffLocation.toLowerCase())
-    );
-
-    const zonePricing = selectedZoneData
-      ? selectedZoneData.pricing[selectedCapacity]
-      : "Özel Fiyat";
-
-    // Build the message
-    let message = `Merhaba, transfer hizmeti için rezervasyon yapmak istiyorum 🚐\n\n`;
-
-    message += `Ad Soyad: ${contactForm.name}\n`;
-    message += `Email: ${contactForm.email}\n`;
-    message += `Telefon: ${contactForm.phone}\n`;
-    message += `Yolcu Sayısı: ${contactForm.passengers} kişi\n\n`;
-
-    message += `Araç Tipi: ${selectedCapacityInfo?.label} - ${selectedCapacityInfo?.description}\n`;
-    message += `Alış Yeri: ${contactForm.pickupLocation}\n`;
-    message += `Varış Yeri: ${contactForm.dropoffLocation}\n`;
-    message += `Tarih: ${contactForm.date}\n`;
-    message += `Saat: ${contactForm.time}\n\n`;
-
-    if (selectedZoneData) {
-      message += `Bölge: ${selectedZoneData.zoneName}\n`;
-      message += `Tahmini Fiyat: €${zonePricing}\n\n`;
-    }
-
-    if (contactForm.message.trim()) {
-      message += `Ek Bilgiler: ${contactForm.message}\n\n`;
-    }
-
-    message += `Lütfen müsaitliği ve fiyatı teyit eder misiniz? 🙂`;
-
-    return message;
+  const toggleFAQ = (id) => {
+    setOpenFAQ(openFAQ === id ? null : id);
   };
 
-  // Validate form
-  const validateForm = () => {
-    const errors = {};
-
-    if (!contactForm.name.trim()) {
-      errors.name = "Ad soyad gereklidir";
-    }
-
-    if (!contactForm.email.trim()) {
-      errors.email = "Email adresi gereklidir";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactForm.email)) {
-      errors.email = "Geçerli bir email adresi giriniz";
-    }
-
-    if (!contactForm.phone.trim()) {
-      errors.phone = "Telefon numarası gereklidir";
-    }
-
-    if (!contactForm.pickupLocation.trim()) {
-      errors.pickupLocation = "Alış yeri gereklidir";
-    }
-
-    if (!contactForm.dropoffLocation.trim()) {
-      errors.dropoffLocation = "Varış yeri gereklidir";
-    }
-
-    if (!contactForm.date) {
-      errors.date = "Tarih seçimi gereklidir";
-    }
-
-    if (!contactForm.time) {
-      errors.time = "Saat seçimi gereklidir";
-    }
-
-    return errors;
-  };
-
-  // Handle contact form submission - Open WhatsApp instead
-  const handleContactSubmit = async (e) => {
-    e.preventDefault();
-
-    const errors = validateForm();
-    if (Object.keys(errors).length > 0) {
-      // Show validation errors
-      let errorMessage = "Lütfen şu alanları kontrol edin:\n";
-      Object.values(errors).forEach((error) => {
-        errorMessage += `• ${error}\n`;
-      });
-      alert(errorMessage);
-      return;
-    }
-
-    setContactFormSubmitting(true);
-
-    try {
-      // Generate WhatsApp message
-      const message = generateWhatsAppMessage();
-      const encodedMessage = encodeURIComponent(message);
-      const whatsappNumber = "905530755678"; // Turkish number format
-      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-
-      // Open WhatsApp in new tab
-      window.open(whatsappURL, "_blank");
-
-      // Show success message
-      setContactFormSuccess(true);
-
-      // Reset form after a short delay
-      setTimeout(() => {
-        setContactForm({
-          name: "",
-          email: "",
-          phone: "",
-          passengers: "1",
-          pickupLocation: "",
-          dropoffLocation: "",
-          date: "",
-          time: "",
-          message: "",
-        });
-      }, 1000);
-    } catch (error) {
-      console.error("WhatsApp redirect failed:", error);
-      alert("WhatsApp açılırken bir hata oluştu. Lütfen tekrar deneyin.");
-    } finally {
-      setContactFormSubmitting(false);
-    }
-  };
-
-  // Handle form input changes
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setContactForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Get price for selected capacity and zone
-  const getPrice = (zone, capacity) => {
-    return zone.pricing?.[capacity] || 0;
-  };
-
-  // Get selected capacity info
-  const getSelectedCapacityInfo = () => {
-    return capacityOptions.find((option) => option.key === selectedCapacity);
-  };
-
-  if (loading) {
-    return (
-      <div>
-        <Header />
-        <div
-          className="loading-container"
-          style={{ padding: "100px 0", textAlign: "center" }}
-        >
-          <div className="spinner-border text-primary" role="status">
-            <span className="sr-only">Yükleniyor...</span>
-          </div>
-          <p style={{ marginTop: "20px", color: "#666" }}>
-            Transfer hizmetleri yükleniyor...
-          </p>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
   return (
-    <div>
-      <Header />
-      <BackToHomeButton />
-      {/* Hero Section */}
-      <section
-        style={{
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          padding: "80px 0",
-          color: "white",
-          textAlign: "center",
-        }}
-      >
+    <>
+      {/* FAQ Section */}
+      <section style={{ backgroundColor: "#f8f9fa", padding: "80px 0" }}>
         <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-lg-8">
-              <i
-                className="fa fa-plane"
-                style={{ fontSize: "60px", marginBottom: "30px", opacity: 0.9 }}
-              ></i>
-              <h1
+          {/* Section Header */}
+          <div className="row">
+            <div className="col-12 text-center mb-5">
+              <h2
                 style={{
-                  fontSize: "3rem",
+                  fontSize: "2.5rem",
                   fontWeight: "700",
+                  color: "#2c3e50",
                   marginBottom: "20px",
                 }}
               >
-                Transfer Hizmetleri
-              </h1>
-              <p style={{ fontSize: "1.2rem", opacity: 0.9, lineHeight: 1.6 }}>
-                Hedefinize profesyonel ve güvenilir transfer hizmetleri. Tüm
-                yolcu kapasitelerine uygun, deneyimli şoförlerle donatılmış
-                konforlu araçlar.
-              </p>
+                Sıkça Sorulan Sorular
+              </h2>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Vehicle Capacity Selection */}
-      <section style={{ padding: "60px 0", backgroundColor: "#f8f9fa" }}>
-        <div className="container">
-          <div className="text-center" style={{ marginBottom: "50px" }}>
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: "600",
-                color: "#333",
-                marginBottom: "15px",
-              }}
-            >
-              Aracınızı Seçin
-            </h2>
-            <p style={{ fontSize: "1.1rem", color: "#666" }}>
-              Grup büyüklüğünüze en uygun araç tipini seçin
-            </p>
-          </div>
-
+          {/* FAQ Grid */}
           <div className="row">
-            {capacityOptions.map((option) => (
-              <div key={option.key} className="col-lg-4 col-md-6 mb-4">
-                <div
-                  className={`card h-100 ${
-                    selectedCapacity === option.key
-                      ? "border-primary bg-primary text-white"
-                      : ""
-                  }`}
-                  style={{
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    border:
-                      selectedCapacity === option.key
-                        ? "3px solid #007bff"
-                        : "1px solid #dee2e6",
-                  }}
-                  onClick={() => setSelectedCapacity(option.key)}
-                >
+            {/* Sol Taraf */}
+            <div className="col-md-6">
+              {faqData.slice(0, 3).map((faq) => (
+                <div key={faq.id} style={{ marginBottom: "20px" }}>
                   <div
-                    className="card-body text-center"
-                    style={{ padding: "30px" }}
+                    onClick={() => toggleFAQ(faq.id)}
+                    style={{
+                      backgroundColor: "white",
+                      padding: "20px",
+                      borderRadius: "10px",
+                      cursor: "pointer",
+                      boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                      border:
+                        openFAQ === faq.id
+                          ? "2px solid #4A90E2"
+                          : "2px solid transparent",
+                      transition: "all 0.3s ease",
+                    }}
                   >
-                    <div style={{ fontSize: "3rem", marginBottom: "20px" }}>
-                      {option.icon}
-                    </div>
-                    <h5
-                      className="card-title"
-                      style={{ fontWeight: "600", marginBottom: "10px" }}
-                    >
-                      {option.label}
-                    </h5>
-                    <p
-                      className="card-text"
-                      style={{
-                        opacity: selectedCapacity === option.key ? 0.9 : 0.7,
-                        marginBottom: "15px",
-                      }}
-                    >
-                      {option.description}
-                    </p>
                     <div
                       style={{
-                        display: "inline-flex",
+                        display: "flex",
+                        justifyContent: "space-between",
                         alignItems: "center",
-                        gap: "8px",
-                        fontSize: "0.9rem",
-                        fontWeight: "500",
                       }}
                     >
-                      <i className="fa fa-users"></i>
-                      Maksimum {option.maxPassengers} Yolcu
+                      <h5
+                        style={{
+                          color: "#2c3e50",
+                          fontWeight: "600",
+                          margin: "0",
+                          fontSize: "1.1rem",
+                        }}
+                      >
+                        {faq.question}
+                      </h5>
+                      <div
+                        style={{
+                          width: "30px",
+                          height: "30px",
+                          backgroundColor: "#4A90E2",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "white",
+                          fontSize: "1.2rem",
+                          flexShrink: 0,
+                          marginLeft: "10px",
+                          transform:
+                            openFAQ === faq.id
+                              ? "rotate(45deg)"
+                              : "rotate(0deg)",
+                          transition: "transform 0.3s ease",
+                        }}
+                      >
+                        +
+                      </div>
                     </div>
-                    {selectedCapacity === option.key && (
-                      <div style={{ marginTop: "15px" }}>
-                        <i
-                          className="fa fa-check"
-                          style={{ fontSize: "20px" }}
-                        ></i>
+
+                    {openFAQ === faq.id && (
+                      <div
+                        style={{
+                          marginTop: "15px",
+                          paddingTop: "15px",
+                          borderTop: "1px solid #e9ecef",
+                          color: "#6c757d",
+                          lineHeight: "1.6",
+                          fontSize: "0.95rem",
+                        }}
+                      >
+                        {faq.answer}
                       </div>
                     )}
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Transfer Zones & Pricing */}
-      <section style={{ padding: "60px 0" }}>
-        <div className="container">
-          <div className="text-center" style={{ marginBottom: "50px" }}>
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: "600",
-                color: "#333",
-                marginBottom: "15px",
-              }}
-            >
-              Güzergâhlar ve Fiyatlandırma
-            </h2>
-            <p style={{ fontSize: "1.1rem", color: "#666" }}>
-              {getSelectedCapacityInfo()?.label} -{" "}
-              {getSelectedCapacityInfo()?.description} için fiyatlar
-            </p>
-          </div>
-
-          {error ? (
-            <div className="alert alert-danger text-center">
-              <h5>Transfer bölgeleri yüklenemedi</h5>
-              <p>{error}</p>
+              ))}
             </div>
-          ) : zones.length === 0 ? (
-            <div
-              className="text-center"
-              style={{ color: "#666", padding: "40px 0" }}
-            >
-              <i
-                className="fa fa-car"
-                style={{ fontSize: "60px", opacity: 0.3, marginBottom: "20px" }}
-              ></i>
-              <h5>Transfer bölgesi bulunamadı</h5>
-              <p>
-                Özel transfer düzenlemeleri için lütfen bizimle iletişime
-                geçin.
-              </p>
-            </div>
-          ) : (
-            <div className="row">
-              {zones.map((zone) => (
-                <div key={zone.id} className="col-lg-6 col-md-6 mb-4">
-                  <div className="card h-100 shadow-sm">
-                    <div className="card-body" style={{ padding: "25px" }}>
-                      <div
+
+            {/* Sağ Taraf */}
+            <div className="col-md-6">
+              {faqData.slice(3, 6).map((faq) => (
+                <div key={faq.id} style={{ marginBottom: "20px" }}>
+                  <div
+                    onClick={() => toggleFAQ(faq.id)}
+                    style={{
+                      backgroundColor: "white",
+                      padding: "20px",
+                      borderRadius: "10px",
+                      cursor: "pointer",
+                      boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                      border:
+                        openFAQ === faq.id
+                          ? "2px solid #4A90E2"
+                          : "2px solid transparent",
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <h5
                         style={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: "15px",
+                          color: "#2c3e50",
+                          fontWeight: "600",
+                          margin: "0",
+                          fontSize: "1.1rem",
                         }}
                       >
-                        <i
-                          className="fa fa-map-marker"
-                          style={{
-                            fontSize: "24px",
-                            color: "#007bff",
-                            marginTop: "5px",
-                            flexShrink: 0,
-                          }}
-                        ></i>
-                        <div style={{ flex: 1 }}>
-                          <h5
-                            style={{
-                              fontWeight: "600",
-                              color: "#333",
-                              marginBottom: "8px",
-                            }}
-                          >
-                            {zone.zoneName}
-                          </h5>
-                          {zone.description && (
-                            <p
-                              style={{
-                                color: "#666",
-                                fontSize: "0.95rem",
-                                marginBottom: "15px",
-                              }}
-                            >
-                              {zone.description}
-                            </p>
-                          )}
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              backgroundColor: "#f8f9fa",
-                              padding: "15px",
-                              borderRadius: "8px",
-                            }}
-                          >
-                            <span style={{ color: "#666", fontSize: "0.9rem" }}>
-                              {getSelectedCapacityInfo()?.label}
-                            </span>
-                            <span
-                              style={{
-                                fontSize: "1.5rem",
-                                fontWeight: "700",
-                                color: "#28a745",
-                              }}
-                            >
-                              €{getPrice(zone, selectedCapacity)}
-                            </span>
-                          </div>
-                        </div>
+                        {faq.question}
+                      </h5>
+                      <div
+                        style={{
+                          width: "30px",
+                          height: "30px",
+                          backgroundColor: "#4A90E2",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "white",
+                          fontSize: "1.2rem",
+                          flexShrink: 0,
+                          marginLeft: "10px",
+                          transform:
+                            openFAQ === faq.id
+                              ? "rotate(45deg)"
+                              : "rotate(0deg)",
+                          transition: "transform 0.3s ease",
+                        }}
+                      >
+                        +
                       </div>
                     </div>
+
+                    {openFAQ === faq.id && (
+                      <div
+                        style={{
+                          marginTop: "15px",
+                          paddingTop: "15px",
+                          borderTop: "1px solid #e9ecef",
+                          color: "#6c757d",
+                          lineHeight: "1.6",
+                          fontSize: "0.95rem",
+                        }}
+                      >
+                        {faq.answer}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
-          )}
-
-          <div className="text-center" style={{ marginTop: "40px" }}>
-            <p style={{ color: "#666", fontSize: "0.9rem" }}>
-              *Fiyatlar EUR cinsindendir ve KDV dahildir. Bekleme süresi, otoyol
-              ücretleri veya özel talepler için ek ücret uygulanabilir.
-            </p>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section style={{ padding: "60px 0", backgroundColor: "#f8f9fa" }}>
+      {/* Blue Contact Section */}
+      <section
+        style={{
+          background: "linear-gradient(135deg, #4A90E2 0%, #0077BE 100%)",
+          padding: "60px 0",
+        }}
+      >
         <div className="container">
-          <div className="text-center" style={{ marginBottom: "50px" }}>
-            <h2
-              style={{ fontSize: "2.5rem", fontWeight: "600", color: "#333" }}
-            >
-              Neden Bizim Transfer Hizmetimizi Seçmelisiniz?{" "}
-            </h2>
-          </div>
+          <div className="row align-items-center">
+            {/* Sol Taraf - Text */}
+            <div className="col-lg-6">
+              <p
+                style={{
+                  color: "white",
+                  fontSize: "1.1rem",
+                  margin: "0 0 10px 0",
+                  opacity: "0.9",
+                }}
+              >
+                Bize Ulaşın
+              </p>
+              <h3
+                style={{
+                  color: "white",
+                  fontSize: "2.2rem",
+                  fontWeight: "700",
+                  lineHeight: "1.3",
+                  margin: "0",
+                  textShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                }}
+              >
+                Mitcar Rental
+                <br />
+                Her Zaman Sizin Hizmetinizde
+                <br />
+              </h3>
+            </div>
 
-          <div className="row">
-            <div className="col-lg-3 col-md-6 mb-4">
-              <div className="text-center">
+            {/* Sağ Taraf - Phone & Button */}
+            <div className="col-lg-6 text-center">
+              <div style={{ marginBottom: "20px" }}>
                 <div
                   style={{
-                    width: "80px",
-                    height: "80px",
-                    backgroundColor: "#007bff",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "0 auto 20px",
-                    color: "white",
-                  }}
-                >
-                  <i className="fa fa-car" style={{ fontSize: "30px" }}></i>
-                </div>
-                <h5
-                  style={{
-                    fontWeight: "600",
-                    color: "#333",
+                    fontSize: "3rem",
                     marginBottom: "10px",
                   }}
                 >
-                  Profesyonel Sürücüler
-                </h5>
-                <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Deneyimli, lisanslı, yerel güzergâhları bilen ve birden fazla
-                  dil konuşabilen şoförler.{" "}
-                </p>
-              </div>
-            </div>
-
-            <div className="col-lg-3 col-md-6 mb-4">
-              <div className="text-center">
-                <div
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    backgroundColor: "#28a745",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "0 auto 20px",
-                    color: "white",
-                  }}
-                >
-                  <i className="fa fa-check" style={{ fontSize: "30px" }}></i>
+                  📞
                 </div>
-                <h5
+                <p
                   style={{
-                    fontWeight: "600",
-                    color: "#333",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Güvenilir Servis
-                </h5>
-                <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Gerçek zamanlı takip ve 7/24 müşteri desteği ile dakik alma ve
-                  bırakma hizmeti.
-                </p>
-              </div>
-            </div>
-
-            <div className="col-lg-3 col-md-6 mb-4">
-              <div className="text-center">
-                <div
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    backgroundColor: "#ffc107",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "0 auto 20px",
                     color: "white",
+                    fontSize: "1rem",
+                    margin: "0 0 5px 0",
+                    opacity: "0.9",
                   }}
                 >
-                  <i className="fa fa-users" style={{ fontSize: "30px" }}></i>
-                </div>
-                <h5
-                  style={{
-                    fontWeight: "600",
-                    color: "#333",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Konforlu Araçlar
-                </h5>
-                <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Klimalı ve geniş iç mekâna sahip, modern, temiz ve bakımlı
-                  araçlar.
+                  {" "}
                 </p>
-              </div>
-            </div>
-
-            <div className="col-lg-3 col-md-6 mb-4">
-              <div className="text-center">
-                <div
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    backgroundColor: "#dc3545",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "0 auto 20px",
-                    color: "white",
-                  }}
-                >
-                  <i className="fa fa-phone" style={{ fontSize: "30px" }}></i>
-                </div>
-                <h5
-                  style={{
-                    fontWeight: "600",
-                    color: "#333",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Kolay Rezervasyon
-                </h5>
-                <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                  Kolay çevrimiçi rezervasyon süreci, anında onay ve esnek ödeme
-                  seçenekleri.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Form Section */}
-      <section style={{ padding: "60px 0" }}>
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-lg-8">
-              <div className="text-center" style={{ marginBottom: "40px" }}>
                 <h2
                   style={{
+                    color: "white",
                     fontSize: "2.5rem",
-                    fontWeight: "600",
-                    color: "#333",
-                    marginBottom: "15px",
+                    fontWeight: "700",
+                    margin: "0 0 20px 0",
+                    textShadow: "0 2px 4px rgba(0,0,0,0.2)",
                   }}
                 >
-                  Transferinizi Rezerve Edin
+                  0 (536) 603 9907
                 </h2>
-                <p style={{ fontSize: "1.1rem", color: "#666" }}>
-                  Bilgilerinizi doldurun ve WhatsApp üzerinden transfer
-                  rezervasyonu yapın
-                </p>
-              </div>
-
-              {contactFormSuccess ? (
-                <div className="alert alert-success text-center">
-                  <i
-                    className="fa fa-whatsapp"
-                    style={{
-                      fontSize: "40px",
-                      marginBottom: "15px",
-                      color: "#25D366",
-                    }}
-                  ></i>
-                  <h5>WhatsApp Açılıyor!</h5>
-                  <p>
-                    Transfer rezervasyon talebiniz hazırlandı. WhatsApp
-                    üzerinden talebi gönderebilirsiniz.
-                  </p>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => setContactFormSuccess(false)}
-                  >
-                    Yeni Transfer Rezervasyonu
-                  </button>
-                </div>
-              ) : (
-                <form
-                  onSubmit={handleContactSubmit}
-                  className="card"
+                <button
                   style={{
-                    padding: "30px",
+                    backgroundColor: "white",
+                    color: "#4A90E2",
+                    border: "none",
+                    borderRadius: "8px",
+                    padding: "12px 30px",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                   }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = "rgba(255,255,255,0.95)";
+                    e.target.style.transform = "translateY(-2px)";
+                    e.target.style.boxShadow = "0 6px 20px rgba(0,0,0,0.2)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = "white";
+                    e.target.style.transform = "translateY(0)";
+                    e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+                  }}
                 >
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label
-                        className="form-label"
-                        style={{ fontWeight: "600", color: "#333" }}
-                      >
-                        Ad Soyad *
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        className="form-control"
-                        value={contactForm.name}
-                        onChange={handleFormChange}
-                        required
-                        placeholder="John Doe"
-                        style={{ padding: "12px" }}
-                      />
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label
-                        className="form-label"
-                        style={{ fontWeight: "600", color: "#333" }}
-                      >
-                        Email Adresi *
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        className="form-control"
-                        value={contactForm.email}
-                        onChange={handleFormChange}
-                        required
-                        placeholder="user@example.com"
-                        style={{ padding: "12px" }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label
-                        className="form-label"
-                        style={{ fontWeight: "600", color: "#333" }}
-                      >
-                        Telefon Numarası *
-                      </label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        className="form-control"
-                        value={contactForm.phone}
-                        onChange={handleFormChange}
-                        required
-                        placeholder="555 555 55 55"
-                        style={{ padding: "12px" }}
-                      />
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label
-                        className="form-label"
-                        style={{ fontWeight: "600", color: "#333" }}
-                      >
-                        Yolcu Sayısı *
-                      </label>
-                      <select
-                        name="passengers"
-                        className="form-control"
-                        value={contactForm.passengers}
-                        onChange={handleFormChange}
-                        required
-                        style={{ padding: "12px" }}
-                      >
-                        {Array.from(
-                          {
-                            length:
-                              getSelectedCapacityInfo()?.maxPassengers || 4,
-                          },
-                          (_, i) => (
-                            <option key={i + 1} value={i + 1}>
-                              {i + 1} {i + 1 === 1 ? "yolcu" : "yolcu"}
-                            </option>
-                          )
-                        )}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label
-                        className="form-label"
-                        style={{ fontWeight: "600", color: "#333" }}
-                      >
-                        Alış Yeri *
-                      </label>
-                      <input
-                        type="text"
-                        name="pickupLocation"
-                        className="form-control"
-                        value={contactForm.pickupLocation}
-                        onChange={handleFormChange}
-                        required
-                        placeholder=""
-                        style={{ padding: "12px" }}
-                      />
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label
-                        className="form-label"
-                        style={{ fontWeight: "600", color: "#333" }}
-                      >
-                        Varış Yeri *
-                      </label>
-                      <input
-                        type="text"
-                        name="dropoffLocation"
-                        className="form-control"
-                        value={contactForm.dropoffLocation}
-                        onChange={handleFormChange}
-                        required
-                        placeholder=""
-                        style={{ padding: "12px" }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label
-                        className="form-label"
-                        style={{ fontWeight: "600", color: "#333" }}
-                      >
-                        Tarih *
-                      </label>
-                      <input
-                        type="date"
-                        name="date"
-                        className="form-control"
-                        value={contactForm.date}
-                        onChange={handleFormChange}
-                        required
-                        min={new Date().toISOString().split("T")[0]}
-                        style={{ padding: "12px" }}
-                      />
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label
-                        className="form-label"
-                        style={{ fontWeight: "600", color: "#333" }}
-                      >
-                        Saat *
-                      </label>
-                      <input
-                        type="time"
-                        name="time"
-                        className="form-control"
-                        value={contactForm.time}
-                        onChange={handleFormChange}
-                        required
-                        style={{ padding: "12px" }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mb-3">
-                    <label
-                      className="form-label"
-                      style={{ fontWeight: "600", color: "#333" }}
-                    >
-                      Ek Bilgiler
-                    </label>
-                    <textarea
-                      name="message"
-                      className="form-control"
-                      rows="4"
-                      value={contactForm.message}
-                      onChange={handleFormChange}
-                      placeholder="Uçak saati, özel istekler, vb."
-                      style={{ padding: "12px" }}
-                    />
-                  </div>
-
-                  <div className="text-center">
-                    <button
-                      type="submit"
-                      className="btn"
-                      disabled={contactFormSubmitting}
-                      style={{
-                        padding: "12px 40px",
-                        fontSize: "1.1rem",
-                        fontWeight: "600",
-                        backgroundColor: "#25D366",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "8px",
-                        transition: "all 0.3s ease",
-                      }}
-                      onMouseOver={(e) =>
-                        (e.target.style.backgroundColor = "#128C7E")
-                      }
-                      onMouseOut={(e) =>
-                        (e.target.style.backgroundColor = "#25D366")
-                      }
-                    >
-                      {contactFormSubmitting ? (
-                        <>
-                          <span
-                            className="spinner-border spinner-border-sm me-2"
-                            role="status"
-                            aria-hidden="true"
-                          ></span>
-                          WhatsApp Açılıyor...
-                        </>
-                      ) : (
-                        <>
-                          <i
-                            className="fa fa-whatsapp"
-                            style={{ marginRight: "8px" }}
-                          ></i>
-                          WhatsApp ile Transfer Rezervasyonu
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
-              )}
+                  Bizi Arayın
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <FAQContactFooter />
-    </div>
+      {/* Footer */}
+      <footer style={{ backgroundColor: "#2c3e50", padding: "60px 0 20px 0" }}>
+        <div className="container">
+          <div className="row">
+            {/* About Rentaly */}
+            <div className="col-lg-3 col-md-6 mb-4">
+              <h5
+                style={{
+                  color: "white",
+                  fontSize: "1.3rem",
+                  fontWeight: "700",
+                  marginBottom: "20px",
+                }}
+              >
+                MITCAR RENTAL
+              </h5>
+              <p
+                style={{
+                  color: "#bbb",
+                  lineHeight: "1.6",
+                  fontSize: "0.95rem",
+                }}
+              >
+                Kalite ile Uygun Fiyatın Buluştuğu Nokta Hızlı, güvenilir ve
+                güvenli araç kiralama hizmetleri sunuyoruz.{" "}
+              </p>
+              <div style={{ marginTop: "20px" }}>
+                <img
+                  src="/images/logo/UMİT-2.png"
+                  alt="ümit"
+                  style={{ height: "40px" }}
+                />
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            <div className="col-lg-3 col-md-6 mb-4">
+              <h5
+                style={{
+                  color: "white",
+                  fontSize: "1.3rem",
+                  fontWeight: "700",
+                  marginBottom: "20px",
+                }}
+              >
+                İletişim Bilgileri
+              </h5>
+              <div style={{ color: "#bbb", fontSize: "0.95rem" }}>
+                <p style={{ marginBottom: "10px" }}>
+                  📍 Kızıltoprak Mah. 939 Sok. No.6/B MURATPAŞA / ANTALYA
+                </p>
+                <p style={{ marginBottom: "10px" }}>📞 0 (536) 603 9907</p>
+
+                <p style={{ marginBottom: "0" }}>
+                  🕒 Pazartesi - Cuma: 08:00 - 18:00
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div className="col-lg-3 col-md-6 mb-4">
+              <h5
+                style={{
+                  color: "white",
+                  fontSize: "1.3rem",
+                  fontWeight: "700",
+                  marginBottom: "20px",
+                }}
+              >
+                Hızlı Linkler
+              </h5>
+              <ul style={{ listStyle: "none", padding: "0", margin: "0" }}>
+                {[
+                  "Hakkımızda",
+                  "Araçlar",
+                  "Rezervasyon",
+                  "SSS",
+                  "İletişim",
+                  "Şartlar ve Koşullar",
+                  "Gizlilik Politikası",
+                ].map((link, index) => (
+                  <li key={index} style={{ marginBottom: "8px" }}>
+                    <a
+                      href="#"
+                      style={{
+                        color: "#bbb",
+                        textDecoration: "none",
+                        fontSize: "0.95rem",
+                        transition: "color 0.3s ease",
+                      }}
+                      onMouseEnter={(e) => (e.target.style.color = "#4A90E2")}
+                      onMouseLeave={(e) => (e.target.style.color = "#bbb")}
+                    >
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Social Network */}
+            <div className="col-lg-3 col-md-6 mb-4">
+              <h5
+                style={{
+                  color: "white",
+                  fontSize: "1.3rem",
+                  fontWeight: "700",
+                  marginBottom: "20px",
+                }}
+              >
+                Sosyal Medya
+              </h5>
+              <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
+                {[
+                  { name: "Facebook", icon: "📘", url: "#" },
+                  { name: "Twitter", icon: "🐦", url: "#" },
+                  { name: "Instagram", icon: "📷", url: "#" },
+                  { name: "LinkedIn", icon: "💼", url: "#" },
+                  { name: "YouTube", icon: "📺", url: "#" },
+                ].map((social, index) => (
+                  <a
+                    key={index}
+                    href={social.url}
+                    style={{
+                      width: "45px",
+                      height: "45px",
+                      backgroundColor: "#3b4a5a",
+                      borderRadius: "8px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "1.2rem",
+                      textDecoration: "none",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = "#4A90E2";
+                      e.target.style.transform = "translateY(-3px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = "#3b4a5a";
+                      e.target.style.transform = "translateY(0)";
+                    }}
+                  >
+                    {social.icon}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Copyright */}
+          <div
+            className="row"
+            style={{
+              borderTop: "1px solid #3b4a5a",
+              paddingTop: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <div className="col-12 text-center">
+              <p style={{ color: "#bbb", margin: "0", fontSize: "0.9rem" }}>
+                Copyright 2025 - MITCAR RENTAL. Tüm Hakları Saklıdır.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </>
   );
 };
 
-export default TransferService;
+export default FAQContactFooter;

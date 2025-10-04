@@ -316,7 +316,7 @@ const LatestNews = () => {
                                       marginBottom: "1.5rem",
                                     }}
                                   >
-                                    {post.excerpt}
+  {post.excerpt?.split(" ").filter(w => !w.includes("https")).join(" ") || post.excerpt}
                                   </p>
 
                                   <button
@@ -512,7 +512,7 @@ const LatestNews = () => {
                                           flex: "1",
                                         }}
                                       >
-                                        {post.excerpt}
+  {post.excerpt?.split(" ").filter(w => !w.includes("https")).join(" ") || post.excerpt}
                                       </p>
 
                                       {/* Read More Button */}

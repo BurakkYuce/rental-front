@@ -1,0 +1,155 @@
+/* src/assets/css/moving-text-slider.css */
+
+/* Container Styles */
+.moving-text-section {
+  background-color: #111111;
+  padding: 25px 0;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  border-top: 3px solid #ffffff;
+  border-bottom: 3px solid #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 255, 136, 0.15);
+}
+
+.moving-text-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Animation Track */
+.moving-text-track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: slideLeft 40s linear infinite;
+  width: fit-content;
+}
+
+/* Text Items */
+.moving-text-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.car-type-text {
+  color: #ffffff;
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+  margin: 0 20px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Separator */
+.separator {
+  color: #00d9ff;
+  font-size: 1.5rem;
+  margin: 0 10px;
+  opacity: 0.6;
+}
+
+/* Animation */
+@keyframes slideLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Hover Effects */
+.moving-text-section:hover .moving-text-track {
+  animation-play-state: paused;
+}
+
+.car-type-text:hover {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
+}
+
+/* Glow Effect */
+.car-type-text::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -10px;
+  right: -10px;
+  bottom: -5px;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(0, 255, 136, 0.1),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 4px;
+}
+
+.moving-text-item:hover .car-type-text::after {
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .moving-text-section {
+    padding: 20px 0;
+  }
+
+  .car-type-text {
+    font-size: 1.8rem;
+    margin: 0 15px;
+  }
+
+  .separator {
+    font-size: 1.2rem;
+    margin: 0 8px;
+  }
+
+  .moving-text-track {
+    animation-duration: 30s;
+  }
+}
+
+@media (max-width: 480px) {
+  .moving-text-section {
+    padding: 15px 0;
+    border-width: 2px;
+  }
+
+  .car-type-text {
+    font-size: 1.4rem;
+    margin: 0 12px;
+    letter-spacing: 1px;
+  }
+
+  .separator {
+    font-size: 1rem;
+    margin: 0 6px;
+  }
+
+  .moving-text-track {
+    animation-duration: 25s;
+  }
+}
+
+/* Performance Optimization */
+@media (prefers-reduced-motion: reduce) {
+  .moving-text-track {
+    animation: none;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .moving-text-section {
+    background-color: #0a0a0a;
+  }
+}

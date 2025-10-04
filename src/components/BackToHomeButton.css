@@ -1,0 +1,140 @@
+/* BackToHomeButton.css */
+.back-to-home-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1ecb15;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(30, 203, 21, 0.3);
+  z-index: 1001;
+  border: none;
+  cursor: pointer;
+}
+
+/* Mobile styles - Instagram butonunun 15px üstünde */
+.back-to-home-button {
+  position: fixed;
+  bottom: 85px; /* FloatingContactButton (70px) + 15px mesafe */
+  right: var(--mobile-right, 0px);
+  left: auto;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+}
+
+.back-to-home-button .mobile-content {
+  display: block;
+}
+
+.back-to-home-button .desktop-content {
+  display: none;
+}
+
+/* Hover effects for mobile */
+.back-to-home-button:hover {
+  background-color: #179510;
+  transform: translateX(-2px);
+  box-shadow: 0 6px 20px rgba(30, 203, 21, 0.4);
+}
+
+.back-to-home-button:active {
+  transform: translateX(0);
+  box-shadow: 0 2px 8px rgba(30, 203, 21, 0.3);
+}
+
+/* Inline variant */
+.back-to-home-button.inline {
+  position: static !important;
+  margin: 20px 0;
+  bottom: auto !important;
+  right: auto !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .back-to-home-button {
+    position: fixed;
+    top: var(--desktop-top, 100px);
+    right: var(--desktop-right, 20px);
+    bottom: auto;
+    left: auto;
+    width: auto;
+    height: auto;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .back-to-home-button .mobile-content {
+    display: none;
+  }
+
+  .back-to-home-button .desktop-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .back-to-home-button .desktop-content i {
+    font-size: 1rem;
+  }
+
+  /* Desktop hover effect */
+  .back-to-home-button:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 481px) and (max-width: 767px) {
+  .back-to-home-button {
+    width: 55px;
+    height: 55px;
+    font-size: 1.5rem;
+    bottom: 90px;
+    right: var(--mobile-right, 5px);
+  }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 480px) {
+  .back-to-home-button {
+    width: 45px;
+    height: 45px;
+    font-size: 1.2rem;
+    bottom: 80px;
+    right: var(--mobile-right, 0px);
+  }
+}
+
+/* Accessibility improvements */
+.back-to-home-button:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Prevent text selection */
+.back-to-home-button {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Smooth animations */
+.back-to-home-button * {
+  transition: inherit;
+}
+
+/* FloatingContactButton ile çakışma engelleme */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 0;
+  }
+}

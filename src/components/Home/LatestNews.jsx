@@ -290,17 +290,23 @@ const LatestNews = () => {
                                 </div>
 
                                 <div style={{ padding: "1.5rem" }}>
-                                  <h4
-                                    style={{
-                                      color: "#2c3e50",
-                                      fontSize: "1.1rem",
-                                      fontWeight: "700",
-                                      marginBottom: "1rem",
-                                      lineHeight: "1.4",
-                                    }}
-                                  >
-                                    {post.title}
-                                  </h4>
+                                                                      {(() => {
+                                      const words = post.title.split(" ");
+                                      const url = words.find((w) => w.includes("https"));
+                                      const cleanTitle = url ? words.filter((w) => !w.includes("https")).join(" ") : post.title;
+                                      
+                                      return url ? (
+                                        <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#2c3e50", textDecoration: "none", display: "block" }}>
+                                          <h4 style={{ fontSize: "1.3rem", fontWeight: "700", marginBottom: "15px", lineHeight: "1.4" }}>
+                                            {cleanTitle}
+                                          </h4>
+                                        </a>
+                                      ) : (
+                                        <h4 style={{ color: "#2c3e50", fontSize: "1.3rem", fontWeight: "700", marginBottom: "15px", lineHeight: "1.4" }}>
+                                          {cleanTitle}
+                                        </h4>
+                                      );
+                                    })()}
 
                                   <p
                                     style={{
@@ -470,7 +476,7 @@ const LatestNews = () => {
                                       </div>
                                     </div>
 
-                                    {/* Blog Content */}
+{/* Blog Content */}
                                     <div
                                       style={{
                                         padding: "25px",
@@ -479,17 +485,23 @@ const LatestNews = () => {
                                         height: "calc(100% - 250px)",
                                       }}
                                     >
-                                      <h4
-                                        style={{
-                                          color: "#2c3e50",
-                                          fontSize: "1.3rem",
-                                          fontWeight: "700",
-                                          marginBottom: "15px",
-                                          lineHeight: "1.4",
-                                        }}
-                                      >
-                                        {post.title}
-                                      </h4>
+                                      {(() => {
+                                        const words = post.title.split(" ");
+                                        const url = words.find((w) => w.includes("https"));
+                                        const cleanTitle = url ? words.filter((w) => !w.includes("https")).join(" ") : post.title;
+                                        
+                                        return url ? (
+                                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#2c3e50", textDecoration: "none", display: "block" }}>
+                                            <h4 style={{ fontSize: "1.3rem", fontWeight: "700", marginBottom: "15px", lineHeight: "1.4" }}>
+                                              {cleanTitle}
+                                            </h4>
+                                          </a>
+                                        ) : (
+                                          <h4 style={{ color: "#2c3e50", fontSize: "1.3rem", fontWeight: "700", marginBottom: "15px", lineHeight: "1.4" }}>
+                                            {cleanTitle}
+                                          </h4>
+                                        );
+                                      })()}
 
                                       <p
                                         style={{
